@@ -19,7 +19,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.12.0
-          cache: 'npm install'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache
+          key: npm-cache-${{ hashFiles('package-lock.json') }}
       - run: npm install
       - run: npm run lint
 
@@ -31,7 +36,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.11.0
-          cache: 'npm install'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache
+          key: npm-cache-${{ hashFiles('package-lock.json') }}
       - run: npm install
 
   build:
@@ -42,11 +52,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.11.0
-          cache: 'npm run install'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache
+          key: npm-cache-${{ hashFiles('package-lock.json') }}
       - run: npm install
       - run: npm run build
       - name: Cache build output
         uses: actions/cache@v3
         with:
           path: .next
-          key: build-cache-${{ hashFiles('yarn.lock') }}
+          key: build-cache-${{ hashFiles('package-lock.json') }}
