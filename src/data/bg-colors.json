@@ -1,0 +1,26 @@
+[
+    {
+        "id": "0",
+        "color": "blue",
+        "colorRu": "голубой",
+        "hex": "#ADD8E680"
+    },
+    {
+        "id": "1",
+        "color": "green",
+        "colorRu": "зеленый",
+        "hex": "#90EE9080"
+    },
+    {
+        "id": "2",
+        "color": "red",
+        "colorRu": "красный",
+        "hex": "#FF634780"
+    },
+    {
+        "id": "3",
+        "color": "gray",
+        "colorRu": "серый",
+        "hex": "#D3D3D380"
+    }
+]

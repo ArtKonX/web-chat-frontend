@@ -1,0 +1,33 @@
+.ol-attribution {
+    display: none;
+}
+
+.ol-overlaycontainer-stopevent {
+    position: relative;
+    .ol-hidden {
+        display: none;
+    }
+    .ol-control {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: white;
+        padding: 8px;
+        border-radius: 15px;
+
+        .ol-rotate-reset {
+            display: none !important;
+        }
+
+        .ol-zoom-in,
+        .ol-zoom-out {
+            padding: 5px 10px;
+            background-color: rgb(255, 217, 0);
+            border-radius: 10px;
+        }
+
+        .ol-zoom-in {
+            margin-right: 10px;
+        }
+    }
+}

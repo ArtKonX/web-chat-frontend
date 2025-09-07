@@ -1,0 +1,52 @@
+name: Build Next.js Application
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 'build-test'
+  cancel-in-progress: false
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.0
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: eslint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: 'yarn'
+      - run: yarn
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [eslint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn build
+      - name: Cache build output
+        uses: actions/cache@v3
+        with:
+          path: .next
+          key: build-cache-${{ hashFiles('yarn.lock') }}

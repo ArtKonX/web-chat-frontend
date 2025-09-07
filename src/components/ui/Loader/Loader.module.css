@@ -1,0 +1,30 @@
+@keyframes rotate-45 {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-45deg);
+    }
+}
+
+@keyframes rotate-315 {
+    from,
+    to {
+        transform: rotate(0);
+    }
+
+    50% {
+        transform: rotate(45deg);
+    }
+}
+
+.animate-rotate-315 {
+    animation: rotate-315 1.5s ease-in-out infinite;
+}
+
+.animate-rotate-45 {
+    animation: rotate-45 1.5s ease-in-out infinite;
+}
