@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { HeadingWithTitleProps } from "@/interfaces/components/ui"
 
 const HeadingWithTitle = (

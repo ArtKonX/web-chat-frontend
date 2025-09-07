@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UpdateProfilePage from "@/pages/UpdateProfilePage/UpdateProfilePage"
 import { Metadata } from "next";
 

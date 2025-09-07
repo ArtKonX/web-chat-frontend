@@ -1,3 +1,5 @@
+import React from 'react';
+
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"
 import ChoosingCitiesList from "./ChoosingCitiesList/ChoosingCitiesList"
 import { ChangeEvent } from "react";

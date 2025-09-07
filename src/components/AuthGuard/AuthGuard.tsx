@@ -1,5 +1,8 @@
 'use client'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from 'react';
+
 import { useCheckAuthQuery, useUpdateCityMutation } from "@/redux/services/authApi";
 import { selectbackgroundState } from "@/selectors/selectors";
 import { ReactNode, useEffect, useState } from "react";

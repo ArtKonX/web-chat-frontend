@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UploadFileForm from "@/components/upload-file-components/UploadFileForm/UploadFileForm"
 import { UploadFileProps, UploadFileResponse } from "@/interfaces/components/file-upload";
 import { useEffect, useState } from "react";

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Btn from "@/components/ui/Btn/Btn";
 import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { WindowWithInfoProps } from "@/interfaces/components/window-with-info"
 
 const WindowWithInfo = (

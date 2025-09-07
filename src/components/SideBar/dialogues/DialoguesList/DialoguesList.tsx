@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UserItem from "../Dialogue/Dialogue"
 import { useSelector } from "@/hooks/useTypedSelector"
 import { DialoguesListProps } from "@/interfaces/components/side-bar"

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useEffect, useRef, useState } from "react";
 import MessageItem from "../MessageItem/MessageItem";
 import Btn from "@/components/ui/Btn/Btn";

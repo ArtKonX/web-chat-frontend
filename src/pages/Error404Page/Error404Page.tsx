@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import LinkNavigate from "@/components/ui/LinkNavigate/LinkNavigate";
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react";

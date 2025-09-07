@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { InputProps } from "@/interfaces/components/ui"
 
 const Input = (

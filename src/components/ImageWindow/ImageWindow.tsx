@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useDispatch } from "react-redux"
 import CloseBtn from "../ui/CloseBtn/CloseBtn"
 import { resetUrl } from "@/redux/slices/imageSlice";

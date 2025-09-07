@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react';
+
 import Btn from "@/components/ui/Btn/Btn"
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"
 import InputWithLabelAndInfo from "@/components/ui/InputWithLabelAndInfo/InputWithLabelAndInfo"

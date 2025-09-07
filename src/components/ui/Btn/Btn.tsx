@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { BtnProps } from "@/interfaces/components/ui"
 
 const Btn = ({ text, type, onAction, disable }: BtnProps) => {

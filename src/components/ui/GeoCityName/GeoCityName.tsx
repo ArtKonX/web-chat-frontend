@@ -1,3 +1,5 @@
+import React from 'react';
+
 const GeoCityName = (
     { city }: { city: string }
 ) => {

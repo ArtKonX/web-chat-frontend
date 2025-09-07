@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from 'react';
+
 import { useSelector } from "@/hooks/useTypedSelector";
 import { WSDialogueData } from "@/interfaces/components/websocket-connection";
 import { PrivatKey } from "@/interfaces/encryption";

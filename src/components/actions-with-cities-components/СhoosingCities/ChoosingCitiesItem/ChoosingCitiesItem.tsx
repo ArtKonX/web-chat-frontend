@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { ChoosingCitiesItemProps } from "@/interfaces/components/actions-with-cities-components"
 
 const ChoosingCitiesItem = (

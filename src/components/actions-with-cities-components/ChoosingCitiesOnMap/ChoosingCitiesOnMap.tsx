@@ -1,3 +1,5 @@
+import React from 'react';
+
 import './ChoosingCitiesOnMap.scss'
 
 import Btn from "@/components/ui/Btn/Btn";

@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react';
+
 import FormTurnOff2FA from "@/components/components-for-work-2fa/FormTurnOff2FA/FormTurnOff2FA";
 import PopUpPin2FA from "@/components/components-for-work-2fa/PopUpPin2FA/PopUpPin2FA";
 import Btn from "@/components/ui/Btn/Btn"

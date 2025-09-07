@@ -1,3 +1,5 @@
+import React from 'react';
+
 import SkeletonMessageItem from "../SkeletonMessageItem/SkeletonMessageItem"
 
 const SkeletonMessagesList = (

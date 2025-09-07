@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { HeaderBurgerProps } from "@/interfaces/components/header"
 
 const HeaderBurger = (

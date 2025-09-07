@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react';
+
 import "./globals.css";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import Layout from "@/components/Layout/Layout";

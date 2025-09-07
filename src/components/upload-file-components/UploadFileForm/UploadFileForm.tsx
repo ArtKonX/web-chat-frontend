@@ -1,3 +1,5 @@
+import React from 'react';
+
 import CloseBtn from "@/components/ui/CloseBtn/CloseBtn"
 import Loader from "@/components/ui/Loader/Loader";
 import { UploadFileFormProps } from "@/interfaces/components/upload-file-components";

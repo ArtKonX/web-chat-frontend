@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { HeaderMenuItemProps } from "@/interfaces/components/header";
 import Link from "next/link"
 import { usePathname } from "next/navigation";

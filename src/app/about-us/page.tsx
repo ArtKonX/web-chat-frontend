@@ -1,3 +1,5 @@
+import React from 'react';
+
 import AboutUsPage from "@/pages/AboutUsPage/AboutUsPage";
 import { Metadata } from "next";
 

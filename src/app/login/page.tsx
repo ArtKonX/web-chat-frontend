@@ -1,3 +1,5 @@
+import React from 'react';
+
 import LoginPage from "@/pages/LoginPage/LoginPage"
 import { Metadata } from "next";
 

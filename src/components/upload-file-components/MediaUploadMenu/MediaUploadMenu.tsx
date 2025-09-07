@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useRef } from "react";
 import MediaUploadItem from "../MediaUploadItem/MediaUploadItem";
 import { MediaUploadMenuProps } from "@/interfaces/components/upload-file-components";

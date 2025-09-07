@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { MediaUploadItemProps } from "@/interfaces/components/upload-file-components"
 
 const MediaUploadItem = (

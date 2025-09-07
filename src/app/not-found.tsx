@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Error404Page from "@/pages/Error404Page/Error404Page"
 import { Metadata } from "next";
 

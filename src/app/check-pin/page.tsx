@@ -1,3 +1,5 @@
+import React from 'react';
+
 import CheckPinPage from "@/pages/CheckPinPage/CheckPinPage"
 import { Metadata } from "next";
 

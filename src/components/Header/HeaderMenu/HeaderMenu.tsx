@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { MenuDataElem } from "@/interfaces/components/header"
 import HeaderMenuItem from "./HeaderMenuItem/HeaderMenuItem"
 

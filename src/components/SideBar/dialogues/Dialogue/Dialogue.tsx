@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
 import Link from "next/link"

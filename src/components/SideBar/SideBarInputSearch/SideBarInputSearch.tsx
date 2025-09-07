@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { SideBarInputSearchProps } from "@/interfaces/components/side-bar"
 
 const SideBarInputSearch = (

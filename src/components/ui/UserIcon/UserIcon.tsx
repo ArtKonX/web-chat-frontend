@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { UserIconProps } from "@/interfaces/components/ui";
 import { useEffect, useRef } from "react"
 

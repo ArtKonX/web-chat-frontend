@@ -1,3 +1,5 @@
+import React from 'react';
+
 import MediaUploadMenu from "@/components/upload-file-components/MediaUploadMenu/MediaUploadMenu";
 import { useSelector } from "@/hooks/useTypedSelector";
 import { UploadMenuWithButtonActionProps } from "@/interfaces/components/file-upload";

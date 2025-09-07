@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import FormSendMessages from "@/components/FormSendMessages/FormSendMessages";
 import Loader from "@/components/ui/Loader/Loader";
 import MessageList from "@/components/messages-components/MessageList/MessageList";

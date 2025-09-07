@@ -1,3 +1,5 @@
+import React from 'react';
+
 import RegistrationPage from "@/pages/RegistarationPage/RegistarationPage"
 import { Metadata } from "next";
 

@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react';
+
 import { ChangeEvent, ReactNode, useEffect, useState } from "react"
 import Header from "../Header/Header"
 import { usePathname, useSearchParams } from "next/navigation";

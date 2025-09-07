@@ -1,4 +1,7 @@
 'use client'
+
+import React from 'react';
+
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect } from 'react';
 import FormRegistrationOrLogin from '@/components/FormRegistarationOrLogin/FormRegistarationOrLogin';

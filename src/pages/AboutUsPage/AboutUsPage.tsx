@@ -1,3 +1,5 @@
+import React from 'react';
+
 import HeaderLogo from "@/components/Header/HeaderLogo/HeaderLogo"
 
 import authorImg from '../../../public/images/img-author.jpg';

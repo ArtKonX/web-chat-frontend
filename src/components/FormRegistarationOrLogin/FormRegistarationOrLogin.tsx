@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { FormRegistrationOrLoginProps } from "@/interfaces/components/form-registaration-or-login";
 import Btn from "../ui/Btn/Btn"
 import HeadingWithTitle from "../ui/HeadingWithTitle/HeadingWithTitle"

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import GeoCityName from "@/components/ui/GeoCityName/GeoCityName";
 import UserIcon from "@/components/ui/UserIcon/UserIcon";
 import useUrl from "@/hooks/useUrl";

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import HeadingWithTitle from "../ui/HeadingWithTitle/HeadingWithTitle"
 
 import bg from '../../../public/backgrounds/background.svg';

@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react';
+
 import FormRegistrationOrLogin from "@/components/FormRegistarationOrLogin/FormRegistarationOrLogin";
 import Loader from "@/components/ui/Loader/Loader";
 import { useSelector } from "@/hooks/useTypedSelector";

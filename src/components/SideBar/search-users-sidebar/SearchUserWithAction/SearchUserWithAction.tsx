@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { UserData } from "@/interfaces/users"
 import Link from "next/link"
