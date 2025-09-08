@@ -17,6 +17,7 @@ import dataMenu from '../../data/data-menu.json';
 import HeaderMenuItem from "./HeaderMenu/HeaderMenuItem/HeaderMenuItem"
 import { useGetUsersQuery } from "@/redux/services/usersApi"
 import { HeaderProps } from "@/interfaces/components/header"
+import useUrl from '@/hooks/useUrl'
 
 const Header = (
     { isDemoHeader, isWelcomePage }: HeaderProps
@@ -28,15 +29,19 @@ const Header = (
 
     const { data: userData, isLoading: userIsLoading } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authData?.id })
 
+    const { url } = useUrl()
+
     const [userName, setUserName] = useState<string | null | undefined>(null);
-    const [url, setUrl] = useState<URL | null>(null);
+
+    const [dataUser, setDataUser] = useState({
+        city: 'Москва',
+        colorBackgroundIcon: '',
+        userName: ''
+    })
 
     useEffect(() => {
-        // Инициализируем URL
-        if (typeof window !== 'undefined') {
-            setUrl(new URL(window.location.href));
-        }
-    }, []);
+
+    }, [searchParams.get('tab'),])
 
     useEffect(() => {
         if (!userIsLoading && searchParams?.get('user')) {
@@ -45,12 +50,6 @@ const Header = (
             setUserName(null)
         }
     }, [userIsLoading, userData, searchParams?.get('user')])
-
-    const [dataUser, setDataUser] = useState({
-        city: 'Москва',
-        colorBackgroundIcon: '',
-        userName: ''
-    })
 
     useEffect(() => {
         if (authData) {
@@ -70,20 +69,21 @@ const Header = (
     const showSendSettings = () => {
 
         if (url) {
-            if (!url?.searchParams?.get('settings')) {
+            if (!searchParams?.get('settings')) {
                 url?.searchParams.set('settings', 'true');
             }
 
-            const tab = url.searchParams.get('tab');
+            const tab = searchParams.get('tab');
 
-            if (tab) {
+            if (tab === 'chats') {
                 url?.searchParams.set('tab', tab);
-            }
-
-            const user = url.searchParams.get('user');
-
-            if (user) {
-                url?.searchParams.set('user', user);
+                const user = searchParams.get('user');
+                if (user) {
+                    url?.searchParams.set('user', user);
+                }
+            } else if (tab === 'users') {
+                url?.searchParams.set('tab', tab);
+                url?.searchParams?.delete('user')
             }
 
             router.push(url?.href);

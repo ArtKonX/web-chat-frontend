@@ -113,7 +113,7 @@ const SettingsWindow = (
                         <img className="z-120 w-full h-full object-cover absolute" src={bg.src} alt="фон" />
                     </div>
 
-                    <select onChange={onChangeColor} className="my-4" name="city" id="city-select">
+                    <select defaultValue={bgColor.bgColor} onChange={onChangeColor} className="my-4" name="city" id="city-select">
                         {bgColors.map(color => (
                             <option selected={bgColor.bgColor === color.hex} key={color.id} value={`${color.hex},${color.color}`}>{color.colorRu}</option>
                         ))}
