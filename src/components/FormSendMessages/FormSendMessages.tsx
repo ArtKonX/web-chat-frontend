@@ -62,6 +62,7 @@ const FormSendMessages = (
                     }
 
                     formData.append('message', JSON.stringify(messageData))
+                    formData.append('action', JSON.stringify(message.toLowerCase()))
 
                     const userId = searchParams?.get('user');
 
@@ -104,7 +105,6 @@ const FormSendMessages = (
         if (publicKeys) {
 
             setIsSubmit(true)
-                        console.log(message, publicKeys)
             const encryptMessage = await encryptText(message, publicKeys);
             console.log(encryptMessage, message, publicKeys)
             if (encryptMessage) {

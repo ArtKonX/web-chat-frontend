@@ -73,115 +73,131 @@ const WebSocketConnection = () => {
 
             // Создаем обработчик обмена сообщениями
             currentSocket.onmessage = async (event) => {
-                const newMessage = JSON.parse(event.data);
-                // Фильтруем сообщения, чтобы они были только по id от получателя
-                // или отправителя
-                if ((newMessage.sender_id === searchParams?.get('user')
-                    && newMessage.recipient_id === authData?.id) ||
-                    (newMessage.sender_id === authData?.id
-                        && newMessage.recipient_id === searchParams?.get('user'))) {
-                    if (newMessage.type === 'message') {
-                        if (!wsMessages.find(message => message.id === newMessage.id)) {
-                            if (newMessage.file_type && privatKey) {
-                                const fetchFile = async () => {
-                                    const encryptedFile = await loadFile(
-                                        newMessage.file_url, newMessage.file_type, newMessage.file_name
-                                    );
+                try {
+                    const newMessage = JSON.parse(event.data);
+                    // Фильтруем сообщения, чтобы они были только по id от получателя
+                    // или отправителя
+                    if ((newMessage.sender_id === searchParams?.get('user')
+                        && newMessage.recipient_id === authData?.id) ||
+                        (newMessage.sender_id === authData?.id
+                            && newMessage.recipient_id === searchParams?.get('user'))) {
+                        if (newMessage.type === 'message') {
+                            if (!wsMessages.find(message => message.id === newMessage.id)) {
+                                if (newMessage.file_type && privatKey) {
+                                    const fetchFile = async () => {
+                                        const encryptedFile = await loadFile(
+                                            newMessage.file_url, newMessage.file_type, newMessage.file_name
+                                        );
 
-                                    if (encryptedFile) {
+                                        if (encryptedFile) {
 
-                                        const decryptedArrayBuffer = await decryptFile(encryptedFile, privatKey.data, newMessage.file_name,
-                                            newMessage.file_type);
+                                            const decryptedArrayBuffer = await decryptFile(encryptedFile, privatKey.data, newMessage.file_name,
+                                                newMessage.file_type);
 
-                                        const messageList = newMessage.message.split('\n');
-                                        let decMessage;
-
-                                        try {
-                                            const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
-                                            decMessage = await decryptText(arrBufferMessage, privatKey.data)
-                                        } catch (err) {
-                                            console.log(err);
-                                            decMessage = messageList[1].trim();
-                                        }
-
-                                        if (decryptedArrayBuffer && decMessage) {
-                                            const allMessage = messageList[0].trim() + ' \n ' + decMessage;
+                                            const messageList = newMessage.message.split('\n');
+                                            let decMessage;
 
                                             try {
+                                                const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
+                                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                            } catch (err) {
+                                                console.log(err);
+                                                decMessage = messageList[1].trim();
+                                            }
 
-                                                // Создаем url адрес
-                                                const url = URL.createObjectURL(decryptedArrayBuffer);
+                                            if (decryptedArrayBuffer && decMessage) {
+                                                const allMessage = messageList[0].trim() + ' \n ' + decMessage;
 
-                                                // Обновляем сообщение
-                                                const updatedMessage = {
-                                                    ...newMessage,
-                                                    message: allMessage,
-                                                    file_url: url,
-                                                    file: {
-                                                        originalName: newMessage.file_name,
+                                                try {
+
+                                                    // Создаем url адрес
+                                                    const url = URL.createObjectURL(decryptedArrayBuffer);
+
+                                                    // Обновляем сообщение
+                                                    const updatedMessage = {
+                                                        ...newMessage,
+                                                        message: allMessage,
                                                         file_url: url,
-                                                        type: newMessage.file_type,
-                                                        size: newMessage.file_size
-                                                    }
-                                                };
+                                                        file: {
+                                                            originalName: newMessage.file_name,
+                                                            file_url: url,
+                                                            type: newMessage.file_type,
+                                                            size: newMessage.file_size
+                                                        }
+                                                    };
 
-                                                // Добавляем обновленное сообщение в список
-                                                setWsMessages(prev => [...prev.filter(elem => elem.id !== newMessage.id), updatedMessage]);
+                                                    // Добавляем обновленное сообщение в список
+                                                    setWsMessages(prev =>
+                                                        [...prev.filter(elem => elem.id !== newMessage.id),
+                                                            updatedMessage]);
 
-                                            } catch (e) {
-                                                console.error(e)
+                                                } catch (err) {
+                                                    console.log(err)
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                fetchFile()
-                            } else {
-                                if (privatKey) {
-                                    const fetchMessage = async () => {
-                                        const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.message));
-                                        const decMessage = await decryptText(arrBufferMessage, privatKey.data)
-                                        if (decMessage) {
-                                            const newMessageDec = { ...newMessage, message: decMessage };
-                                            setWsMessages(prev => [...prev.filter(elem => elem.id !== newMessageDec.id), newMessageDec]);
+                                    fetchFile()
+                                } else {
+                                    if (privatKey) {
+                                        const fetchMessage = async () => {
+                                            let message;
+                                            try {
+                                                const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.message));
+                                                message = await decryptText(arrBufferMessage, privatKey.data)
+                                            } catch (err) {
+                                                console.log(err)
+                                                message = newMessage.message
+                                            }
+
+                                            if (message) {
+                                                const newMessageDec = { ...newMessage, message };
+                                                setTimeout(() => {
+                                                    setWsMessages(prev => [...prev.filter(elem => elem.id !== newMessageDec.id), newMessageDec]);
+                                                }, 400)
+                                            }
                                         }
-                                    }
 
-                                    fetchMessage();
+                                        fetchMessage();
+                                    }
                                 }
+                            }
+
+                        }
+
+                        // Если сообщение удалено
+                        if (newMessage.type === 'delete-message') {
+
+                            setDeleteMessageId(newMessage.idMessage)
+                        }
+
+                        // Если сообщение обновлено
+                        if (newMessage.type === 'update-message' && privatKey) {
+                            const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.message));
+                            const decMessage = await decryptText(arrBufferMessage, privatKey.data)
+
+                            if (decMessage) {
+                                setUpdatedMessage({ idMessage: newMessage.idMessage, message: decMessage })
                             }
                         }
 
-                    }
+                        if (newMessage.type === 'info-about-chat' && privatKey) {
+                            const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
+                            const decMessage = await decryptText(arrBufferMessage, privatKey.data)
 
-                    // Если сообщение удалено
-                    if (newMessage.type === 'delete-message') {
-
-                        setDeleteMessageId(newMessage.idMessage)
-                    }
-
-                    // Если сообщение обновлено
-                    if (newMessage.type === 'update-message' && privatKey) {
-                        const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.message));
-                        const decMessage = await decryptText(arrBufferMessage, privatKey.data)
-
-                        if (decMessage) {
-                            setUpdatedMessage({ idMessage: newMessage.idMessage, message: decMessage })
+                            if (decMessage) {
+                                setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
+                            }
                         }
                     }
 
-                    if (newMessage.type === 'info-about-chat' && privatKey) {
-                        const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
-                        const decMessage = await decryptText(arrBufferMessage, privatKey.data)
-
-                        if (decMessage) {
-                            setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
-                        }
+                    if (newMessage.type === 'user-status') {
+                        setUserStatus(newMessage)
                     }
                 }
-
-                if (newMessage.type === 'user-status') {
-                    setUserStatus(newMessage)
+                catch (err) {
+                    console.log(err)
                 }
             }
         };

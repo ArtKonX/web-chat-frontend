@@ -40,7 +40,7 @@ export async function decryptFile(
             );
 
         } catch (error) {
-            console.error(error)
+            console.log(error)
             // Если не получилось, пробуем второй ключ
             symmetricKeyBuffer = await crypto.subtle.decrypt(
                 decryptParamsRSA,

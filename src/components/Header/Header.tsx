@@ -65,26 +65,6 @@ const Header = (
     const showSideBar = () => {
         // Функция для показа и скрытия сайдбара
         dispatch(toggleSideBar());
-
-        if (url) {
-            if (searchParams && searchParams?.get('q')) {
-                const q = searchParams?.get('q') as string
-                url?.searchParams.set('q', q)
-            }
-
-            if (searchParams && searchParams?.get('tab')) {
-                const tab = searchParams?.get('tab') as string
-                url?.searchParams.set('tab', tab)
-            }
-
-            if (searchParams && searchParams?.get('user')) {
-                const user = searchParams?.get('user') as string
-                url?.searchParams.set('user', user)
-            }
-
-            router.push(url.pathname + url.search);
-        }
-
     }
 
     const showSendSettings = () => {
