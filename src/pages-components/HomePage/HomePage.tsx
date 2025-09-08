@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import FormSendMessages from "@/components/FormSendMessages/FormSendMessages";
 import Loader from "@/components/ui/Loader/Loader";
@@ -348,66 +348,68 @@ const HomePage = () => {
     if (!isLoadingAuth && !authState?.user?.id) return <HomeWelcomePage />
 
     return (
-        <div className={`h-full flex flex-col justify-end w-full relative`}>
-            {imageUrlState.isShowImage && imageUrlState.url ?
-                <ImageWindow url={imageUrlState.url} /> :
-                null}
-            {searchParams?.get('settings') && (
-                <SettingsWindow isFade={true} />
-            )}
+        <Suspense fallback={<Loader isFade={true} />}>
+            <div className={`h-full flex flex-col justify-end w-full relative`}>
+                {imageUrlState.isShowImage && imageUrlState.url ?
+                    <ImageWindow url={imageUrlState.url} /> :
+                    null}
+                {searchParams?.get('settings') && (
+                    <SettingsWindow isFade={true} />
+                )}
 
-            {searchParams?.get('showSelectedCities') && authState?.user?.city && (
-                <WrapperChoosingCities >
-                    <ChoosingCities setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
-                        cities={citiesData?.cities} cityFromServer={authState?.user?.city} />
-                </WrapperChoosingCities>
-            )}
-            {searchParams?.get('showMapCities') && authState?.user.city && (
-                <WrapperChoosingCities >
-                    <ChoosingCitiesOnMap setSelectedCity={setSelectedCity} position={position}
-                        setMapCity={setMapCity} mapCity={mapCity} />
-                </WrapperChoosingCities>
-            )}
-            {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
-                <>
-                    {(!isLoadingMessages &&
-                        !messagesData?.messages.length && !wsMessages.length) ? (
-                        <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
-                    ) : null}
-                    <MessageList
-                        userId={searchParams?.get('user')}
-                        wsMessages={wsMessages}
-                        setCurrentOffSet={setCurrentOffSet}
-                        messages={[...messages || [], ...wsMessages]}
-                        currentUser={authState?.user}
-                        anotherAuthorName={userData && userData?.users[0]}
-                        dataNextLength={dataNextLength}
-                        isLoadingMessages={isLoadingMessages}
-                    />
-                    <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
-                        <UploadMenuWithButtonAction
-                            setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
-                            setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}
-                            setIsFormUploadFile={setIsFormUploadFile} />
-                        <FormSendMessages
-                            publicKeys={publicKeysData?.publicKeys}
-                            messageId={changeMessageState.id}
-                            setMessage={setMessage}
-                            socket={socket} name={userData?.users[0]?.name}
-                            currentUserid={authState?.user?.id}
-                            message={message}
+                {searchParams?.get('showSelectedCities') && authState?.user?.city && (
+                    <WrapperChoosingCities >
+                        <ChoosingCities setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
+                            cities={citiesData?.cities} cityFromServer={authState?.user?.city} />
+                    </WrapperChoosingCities>
+                )}
+                {searchParams?.get('showMapCities') && authState?.user.city && (
+                    <WrapperChoosingCities >
+                        <ChoosingCitiesOnMap setSelectedCity={setSelectedCity} position={position}
+                            setMapCity={setMapCity} mapCity={mapCity} />
+                    </WrapperChoosingCities>
+                )}
+                {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
+                    <>
+                        {(!isLoadingMessages &&
+                            !messagesData?.messages.length && !wsMessages.length) ? (
+                            <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
+                        ) : null}
+                        <MessageList
+                            userId={searchParams?.get('user')}
+                            wsMessages={wsMessages}
+                            setCurrentOffSet={setCurrentOffSet}
+                            messages={[...messages || [], ...wsMessages]}
+                            currentUser={authState?.user}
+                            anotherAuthorName={userData && userData?.users[0]}
+                            dataNextLength={dataNextLength}
+                            isLoadingMessages={isLoadingMessages}
                         />
-                    </div>
-                    <UploadFile isShowUploadForm={Boolean(isFormUploadFile && !isPublicKeyLoading && encFile)}
-                        file={file} fileSrc={fileSrc}
-                        publicKeys={publicKeysData?.publicKeys}
-                        isFormUploadFade={isFormUploadFade}
-                        setIsFormUploadFade={setIsFormUploadFade} isFormUploadFile={isFormUploadFile}
-                        setIsFormUploadFile={setIsFormUploadFile} socket={socket}
-                        authState={authState} encFile={encFile} />
-                </>
-            )}
-        </div>
+                        <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
+                            <UploadMenuWithButtonAction
+                                setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
+                                setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}
+                                setIsFormUploadFile={setIsFormUploadFile} />
+                            <FormSendMessages
+                                publicKeys={publicKeysData?.publicKeys}
+                                messageId={changeMessageState.id}
+                                setMessage={setMessage}
+                                socket={socket} name={userData?.users[0]?.name}
+                                currentUserid={authState?.user?.id}
+                                message={message}
+                            />
+                        </div>
+                        <UploadFile isShowUploadForm={Boolean(isFormUploadFile && !isPublicKeyLoading && encFile)}
+                            file={file} fileSrc={fileSrc}
+                            publicKeys={publicKeysData?.publicKeys}
+                            isFormUploadFade={isFormUploadFade}
+                            setIsFormUploadFade={setIsFormUploadFade} isFormUploadFile={isFormUploadFile}
+                            setIsFormUploadFile={setIsFormUploadFile} socket={socket}
+                            authState={authState} encFile={encFile} />
+                    </>
+                )}
+            </div>
+        </Suspense>
     )
 }
 

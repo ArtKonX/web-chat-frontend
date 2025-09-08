@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import Error404Page from "@/pages/Error404Page/Error404Page"
+import Error404Page from "@/pages-components/Error404Page/Error404Page"
 import { Metadata } from "next";
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
     title: "Ошибка 404",
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 const Error404 = () => {
 
     return (
-        <Error404Page />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <Error404Page />
+        </Suspense>
     )
 }
 

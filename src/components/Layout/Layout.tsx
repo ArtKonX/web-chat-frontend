@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { ChangeEvent, ReactNode, useEffect, useState } from "react"
 import Header from "../Header/Header"
@@ -18,6 +18,7 @@ import { base64ToArrayBuffer } from "@/utils/base64ToArrayBuffer";
 import { decryptText } from "@/utils/encryption/decryptText";
 import { getPrivateKeyFromIndexedDB } from "@/utils/encryption/indexedDB/getPrivateKeyFromIndexedDB";
 import { PrivatKey } from "@/interfaces/encryption";
+import Loader from '../ui/Loader/Loader';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -160,26 +161,28 @@ const Layout = (
     }, [searchParams?.get('tab')])
 
     return (
-        <div className="max-w-full w-full">
-            <Header isDemoHeader={isDemoHeader || !authState?.id}
-                isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !authState?.id} />
-            <div className="w-full h-screen pt-[66px] flex">
-                {sideBarState.isShow && !isDemoHeader && authState?.id && (
-                    <SideBar
-                        findUsers={findUsers?.users || []}
-                        dialoguesData={listDialogues || []}
-                        onSearchUsers={onSearchUsers}
-                        searchUsers={searchUsers}
-                    />
-                )}
-                {children}
-            </div>
-            {!authState?.id && (
-                <div className="relative bottom-[42px] max-lg:bottom-0">
-                    <Footer />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <div className="max-w-full w-full">
+                <Header isDemoHeader={isDemoHeader || !authState?.id}
+                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !authState?.id} />
+                <div className="w-full h-screen pt-[66px] flex">
+                    {sideBarState.isShow && !isDemoHeader && authState?.id && (
+                        <SideBar
+                            findUsers={findUsers?.users || []}
+                            dialoguesData={listDialogues || []}
+                            onSearchUsers={onSearchUsers}
+                            searchUsers={searchUsers}
+                        />
+                    )}
+                    {children}
                 </div>
-            )}
-        </div>
+                {!authState?.id && (
+                    <div className="relative bottom-[42px] max-lg:bottom-0">
+                        <Footer />
+                    </div>
+                )}
+            </div>
+        </Suspense>
     )
 }
 

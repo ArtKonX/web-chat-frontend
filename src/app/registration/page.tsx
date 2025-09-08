@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import RegistrationPage from "@/pages/RegistarationPage/RegistarationPage"
+import RegistrationPage from "@/pages-components/RegistarationPage/RegistarationPage"
 import { Metadata } from "next";
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
     title: "Регистрация",
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 const Registaration = () => {
 
     return (
-        <RegistrationPage />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <RegistrationPage />
+        </Suspense>
     )
 }
 

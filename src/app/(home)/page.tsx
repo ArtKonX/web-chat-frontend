@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import HomePage from "@/pages/HomePage/HomePage"
+import HomePage from "@/pages-components/HomePage/HomePage"
 import { Metadata } from "next";
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
   title: "Главная",
@@ -10,9 +11,11 @@ export const metadata: Metadata = {
 
 const Home = () => {
 
-    return (
-        <HomePage />
-    )
+  return (
+    <Suspense fallback={<Loader isFade={true} />}>
+      <HomePage />
+    </Suspense>
+  )
 }
 
 export default Home

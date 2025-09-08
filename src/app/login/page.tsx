@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import LoginPage from "@/pages/LoginPage/LoginPage"
+import LoginPage from "@/pages-components/LoginPage/LoginPage"
 import { Metadata } from "next";
-
-export const dynamic = 'force-dynamic';
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
     title: "Вход",
@@ -13,7 +12,9 @@ export const metadata: Metadata = {
 const Login = () => {
 
     return (
-        <LoginPage />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <LoginPage />
+        </Suspense>
     )
 }
 

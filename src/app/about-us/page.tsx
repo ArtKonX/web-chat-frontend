@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import AboutUsPage from "@/pages/AboutUsPage/AboutUsPage";
+import AboutUsPage from "@/pages-components/AboutUsPage/AboutUsPage";
 import { Metadata } from "next";
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
     title: "О K-Чат",
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 const AboutUs = () => {
 
     return (
-        <AboutUsPage />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <AboutUsPage />
+        </Suspense>
     )
 }
 

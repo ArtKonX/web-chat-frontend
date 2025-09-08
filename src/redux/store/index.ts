@@ -28,9 +28,12 @@ export const store = configureStore({
                     ignoredActions: ['persist/PERSIST'],
                     ignoredPaths: ['persist.register']
                 }
-            }).concat(authApi.middleware, usersApi.middleware, messagesApi.middleware, citiesApi.middleware),
+            }).concat(authApi.middleware, usersApi.middleware,
+                messagesApi.middleware, citiesApi.middleware),
 });
 
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export default store;

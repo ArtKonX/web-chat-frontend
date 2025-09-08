@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 
 import CloseBtn from "@/components/ui/CloseBtn/CloseBtn"

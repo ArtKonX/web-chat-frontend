@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import CheckPinPage from "@/pages/CheckPinPage/CheckPinPage"
+import CheckPinPage from "@/pages-components/CheckPinPage/CheckPinPage"
 import { Metadata } from "next";
+import Loader from '@/components/ui/Loader/Loader';
 
 export const metadata: Metadata = {
     title: "Пин-код",
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 const CheckPin = () => {
 
     return (
-        <CheckPinPage />
+        <Suspense fallback={<Loader isFade={true} />}>
+            <CheckPinPage />
+        </Suspense>
     )
 }
 

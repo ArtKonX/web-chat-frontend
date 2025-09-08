@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import "./globals.css";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import Layout from "@/components/Layout/Layout";
-import { Provider } from "react-redux";
-import { store } from "@/redux/store";
+import { Provider } from "react-redux"
+import store from "@/redux/store";
+import Loader from '@/components/ui/Loader/Loader';
 
 export default function RootLayout({
   children,
@@ -16,15 +17,17 @@ export default function RootLayout({
 
   return (
     <html lang="ru">
-      <Provider store={store}>
-        <body>
+      <body>
+        <Provider store={store}>
           <AuthGuard>
-            <Layout>
-              {children}
-            </Layout>
+            <Suspense fallback={<Loader isFade={true} />}>
+              <Layout>
+                {children}
+              </Layout>
+            </Suspense>
           </AuthGuard>
-        </body>
-      </Provider>
+        </Provider>
+      </body>
     </html>
   );
 }
