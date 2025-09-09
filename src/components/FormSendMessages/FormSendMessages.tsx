@@ -94,7 +94,6 @@ const FormSendMessages = (
         }
 
         if (isSubmit) {
-            console.log(JSON.stringify(encMessage))
             submitForm()
         }
     }, [isSubmit, encMessage])

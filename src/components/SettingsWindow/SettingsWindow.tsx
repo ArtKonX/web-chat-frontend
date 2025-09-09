@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useRef } from 'react';
 
 import HeadingWithTitle from "../ui/HeadingWithTitle/HeadingWithTitle"
 
@@ -31,6 +31,27 @@ const SettingsWindow = (
     const router = useRouter();
 
     const dispatch = useDispatch();
+
+    const refForm = useRef<HTMLFormElement | null>(null);
+    const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (refForm.current && closeBtnBlockRef.current) {
+            const imgRect = refForm.current.getBoundingClientRect();
+            const btnRect = closeBtnBlockRef.current.getBoundingClientRect();
+            closeBtnBlockRef.current.style.top = `${imgRect.top - (btnRect.height / 2)}px`;
+            closeBtnBlockRef.current.style.left = `${imgRect.right - (btnRect.width / 2)}px`;
+        }
+    }, [url]);
+
+    useEffect(() => {
+        const divBgView = document.querySelector('.bg-view') as HTMLElement | null;
+
+        if (divBgView) {
+            divBgView.style.background = `linear-gradient(135deg, ${hex}, rgba(0, 0, 255, 0.3))`;
+        }
+
+    }, [hex])
 
     const onChangeColor = (e: ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
@@ -89,22 +110,13 @@ const SettingsWindow = (
         }
     }
 
-    useEffect(() => {
-        const divBgView = document.querySelector('.bg-view') as HTMLElement | null;
-
-        if (divBgView) {
-            divBgView.style.background = `linear-gradient(135deg, ${hex}, rgba(0, 0, 255, 0.3))`;
-        }
-
-    }, [hex])
-
     return (
         <div className={`z-60 flex justify-center items-center fixed top-0 left-0 w-full
         h-full bg-black/60 transition-all duration-200 ease-out
         ${isFade ? 'opacity-100 scale-100 translate-y-0 flex-col' :
-                'opacity-0 scale-95 -translate-y-2'}`}>
-            <form className="flex p-5 bg-white rounded-2xl relative" onSubmit={onSubmit}>
-                <div className="absolute right-3 -top-1">
+                'opacity-0 scale-95 -translate-y-2 relative'}`}>
+            <form ref={refForm} className="flex p-5 bg-white rounded-2xl" onSubmit={onSubmit}>
+                <div ref={closeBtnBlockRef} className="absolute">
                     <CloseBtn onClose={onClose} />
                 </div>
                 <HeadingWithTitle text="Цвет фона:">

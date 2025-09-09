@@ -69,7 +69,7 @@ const ChoosingCities = (
         <div className="bg-white py-6 px-9 rounded-2xl
         max-w-3/7 max-lg:max-w-9/11 max-sm:max-w-9/10
         w-full relative">
-            <div className="absolute right-5 top-2">
+            <div className="absolute right-0 top-0">
                 <CloseBtn onClose={onClose} />
             </div>
             <HeadingWithTitle text='Выберите город'>
@@ -80,8 +80,10 @@ const ChoosingCities = (
                 <span className="border-t-2 border-gray-400 mt-4 mb-2"></span>
                 {cities && cities?.length > 0 && <ChoosingCitiesList cities={cities}
                     onChooseCity={onChooseCity} />}
-                <div className="absolute bottom-0 right-0 max-lg:relative max-lg:-right-[45%] max-sm:relative max-sm:-right-[45%]">
-                    <Btn type='button' text="Перейти на карту" onAction={onAction} />
+                <div className="relative w-full">
+                    <div className='flex justify-end'>
+                        <Btn type='button' text="Перейти на карту" onAction={onAction} />
+                    </div>
                 </div>
             </HeadingWithTitle>
         </div>

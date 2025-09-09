@@ -19,15 +19,17 @@ import { fromLonLat, transform } from 'ol/proj';
 import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import { useSearchParams, useRouter } from "next/navigation";
 import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
+import useUrl from '@/hooks/useUrl';
 
 const ChoosingCitiesOnMap = (
     { position, mapCity, setMapCity, setSelectedCity }: СhoosingCitiesOnMapProps
 ) => {
     const mapRef = useRef<HTMLDivElement | null>(null);
+
     const [newPosition, setNewPosition] = useState<Coordinates | null>(null);
 
     const searchParams = useSearchParams();
-    const url = new URL(window?.location?.href);
+    const { url } = useUrl();
 
     const router = useRouter();
 
@@ -138,7 +140,7 @@ const ChoosingCitiesOnMap = (
         <div className="bg-white py-6 px-9 rounded-2xl
                                     max-w-3/6 max-lg:max-w-9/11 max-sm:max-w-9/10 w-full flex
                                     flex-col items-center justify-center relative">
-            <div className="absolute right-3 -top-1">
+            <div className="absolute flex right-0 top-0">
                 <CloseBtn onClose={onClose} />
             </div>
             <form onSubmit={onChooseСityOnMap}>

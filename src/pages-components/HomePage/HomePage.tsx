@@ -198,13 +198,12 @@ const HomePage = () => {
     }, [searchParams?.get('offset'), authState?.user?.id])
 
     useEffect(() => {
-        if (searchParams?.get('user') && url) {
+        if (searchParams.get('tab') === 'chats' && searchParams?.get('user') && url) {
             url?.searchParams.set('offset', '0')
             url?.searchParams.set('user', String(searchParams?.get('user')));
             setCurrentOffSet('0')
             setWsMessages([])
             setMessages([])
-            router.push(url?.href)
             if (searchParams?.get('user') && authState?.user?.id) {
                 getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: currentOffSet })
             }
@@ -264,18 +263,38 @@ const HomePage = () => {
 
                                 let decMessage;
 
-                                try {
-                                    const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
+                                if (messageList.length === 2) {
+
+                                    try {
+                                        const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
+                                        decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                    } catch (err) {
+                                        console.log(err);
+                                        decMessage = messageList[1].trim();
+                                    }
+
+                                } else {
+                                    const arrBufferMessage = base64ToArrayBuffer(JSON.parse(message.message));
                                     decMessage = await decryptText(arrBufferMessage, privatKey.data)
-                                } catch (err) {
-                                    console.log(err);
-                                    decMessage = messageList[1].trim();
                                 }
-                                if (decMessage) {
+
+                                if (messageList.length === 2) {
                                     const allMessage = messageList[0].trim() + ' \n ' + decMessage;
                                     return {
                                         ...message,
                                         message: allMessage,
+                                        file_url: url,
+                                        file: {
+                                            originalName: message.file_name,
+                                            file_url: url,
+                                            type: message.file_type,
+                                            size: message.file_size
+                                        }
+                                    };
+                                } else {
+                                    return {
+                                        ...message,
+                                        message: decMessage,
                                         file_url: url,
                                         file: {
                                             originalName: message.file_name,

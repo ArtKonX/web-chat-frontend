@@ -183,8 +183,15 @@ const WebSocketConnection = () => {
                         }
 
                         if (newMessage.type === 'info-about-chat' && privatKey) {
-                            const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
-                            const decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                            let decMessage;
+
+                            try {
+                                const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
+                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                            } catch (err) {
+                                console.log(err);
+                                decMessage = newMessage.lastMessage
+                            }
 
                             if (decMessage) {
                                 setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
