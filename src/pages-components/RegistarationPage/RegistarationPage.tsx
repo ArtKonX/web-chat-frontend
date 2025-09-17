@@ -5,12 +5,12 @@ import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect } from 'react';
 import FormRegistrationOrLogin from '@/components/FormRegistarationOrLogin/FormRegistarationOrLogin';
-import { useRegistarationMutation, useUpdateCityMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useRegistarationMutation, useUpdateCityMutation } from "@/redux/services/authApi";
 import validateEmail from "@/utils/validateEmail";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { useSelector } from '@/hooks/useTypedSelector';
-import { selectUser } from '@/selectors/selectors';
+import { selectTokenState } from '@/selectors/selectors';
 import Loader from '@/components/ui/Loader/Loader';
 import { generateKeyPair } from '@/utils/encryption/generateKeyPair';
 import { savePrivateKeyToIndexedDB } from '@/utils/encryption/indexedDB/savePrivateKeyToIndexedDB';
@@ -18,6 +18,8 @@ import { JWK } from '@/interfaces/encryption';
 import getGeoCoors from '@/utils/getGeoCoors';
 import { Coordinates } from '@/interfaces/position';
 import fetchCityFromCoors from '@/utils/fetchCityFromCoors';
+import { useDispatch } from 'react-redux';
+import { addToken } from '@/redux/slices/tokenSlice';
 
 interface Errors {
     name: boolean;
@@ -31,7 +33,10 @@ const RegistrationPage = () => {
     const id = uuidv4();
     const router = useRouter();
     const [register, { data: dataRegister, isLoading: isLoadingRegister, error: registerError }] = useRegistarationMutation();
-    const authData = useSelector(selectUser)
+
+    const tokenState = useSelector(selectTokenState);
+
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const [successRegister, setSuccessRegister] = useState(false);
 
@@ -48,16 +53,19 @@ const RegistrationPage = () => {
         password: false, checkPassword: false
     });
 
+    const dispatch = useDispatch();
+
     const [updateCity, { data: updateCityData, isLoading: isLoadingUpdateCity }] = useUpdateCityMutation();
 
-    const [dataPosition, setDataPosition] = useState({ id: '', city: '' })
+    const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
 
     useEffect(() => {
         // Отправляем пользователя на главную страницу если успешная
         // регистрация или он уже входил
-        if (dataRegister?.status === 'ok' && !isLoadingRegister ||
-            (authData && authData?.city)) {
+        if (dataRegister?.status === 'ok' && dataRegister?.user?.token && !isLoadingRegister ||
+            (authData && authData?.user?.city)) {
+            dispatch(addToken({ token: JSON.stringify(dataRegister!.user!.token) }))
             setFormState({
                 name: '', email: '',
                 password: '', checkPassword: ''
@@ -163,7 +171,8 @@ const RegistrationPage = () => {
                 if (res) {
                     const dataPosition = {
                         id: dataRegister?.user.id,
-                        city: res
+                        city: res,
+                        token: tokenState.token
                     }
 
                     setDataPosition(dataPosition)

@@ -16,6 +16,9 @@ export interface FA2Data {
     error: {
         data: {
             attempt: number,
+            data: {
+                succesPinCode: string
+            }
         }
     }
 }

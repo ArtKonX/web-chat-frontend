@@ -7,22 +7,33 @@ import InputWithLabelAndInfo from "@/components/ui/InputWithLabelAndInfo/InputWi
 import { FA2Data, FormTurnOff2FAProps } from "@/interfaces/components/components-for-work-2fa";
 import { useTurnOff2FAMutation } from "@/redux/services/authApi";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useSelector } from '@/hooks/useTypedSelector';
+import { selectTokenState } from '@/selectors/selectors';
+import { useDispatch } from 'react-redux';
+import { removeToken } from '@/redux/slices/tokenSlice';
+import { useRouter } from 'next/navigation';
 
 const FormTurnOff2FA = (
     { userId, closeShowTornOff2FAForm, authDataRefetch }: FormTurnOff2FAProps) => {
 
+    const tokenState = useSelector(selectTokenState);
+
     const [turnOff2FA, { data: turnOff2FAData, isLoading: isLoadingTurnOff2FaLoading, error: errorTurnOff2FA }] = useTurnOff2FAMutation<FA2Data>();
+
+    const dispatch = useDispatch();
 
     const [savePin, setSavePin] = useState('');
     const [attempt, setAttempt] = useState<null | number>(null);
     const [isErrorTurnOff2FA, setIsErrorTurnOff2FA] = useState(false);
+
+    const router = useRouter();
 
     const onActionTurnOff2FA = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
             if (userId) {
-                turnOff2FA({ id: userId, pin: savePin });
+                turnOff2FA({ id: userId, pin: savePin, token: tokenState.token });
             }
         } catch (err) {
             console.error('Ошибка отключения 2FA ', err)
@@ -36,6 +47,18 @@ const FormTurnOff2FA = (
     }
 
     useEffect(() => {
+        if (!tokenState.token) {
+            router.push('/')
+        }
+    }, [tokenState.token])
+
+    useEffect(() => {
+
+        if (errorTurnOff2FA?.data?.data?.succesPinCode === 'error') {
+            dispatch(removeToken());
+            setSavePin('');
+            window.location.reload()
+        }
 
         if (turnOff2FAData?.status === 'ok') {
             closeShowTornOff2FAForm()

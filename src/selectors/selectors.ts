@@ -12,6 +12,14 @@ export const selectSideBarState = createSelector(
     })
 );
 
+export const selectTokenState = createSelector(
+    (state: RootState) => state.tokenState,
+
+    (tokenState) => ({
+        ...tokenState
+    })
+);
+
 export const selectbackgroundState = createSelector(
     (state: RootState) => state.backgroundState,
 

@@ -4,7 +4,7 @@
 import React from 'react';
 
 import { useCheckAuthQuery, useUpdateCityMutation } from "@/redux/services/authApi";
-import { selectbackgroundState } from "@/selectors/selectors";
+import { selectbackgroundState, selectTokenState } from "@/selectors/selectors";
 import { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -14,12 +14,14 @@ import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
-    const { data: authData, isLoading: isLoadingAuth, refetch: authRefetch } = useCheckAuthQuery({});
+    const tokenState = useSelector(selectTokenState);
+
+    const { data: authData, isLoading: isLoadingAuth, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
     const [updateCity, { data: updateCityData, isLoading: isLoadingUpdateCity }] = useUpdateCityMutation();
 
     const bgColor = useSelector(selectbackgroundState);
 
-    const [dataPosition, setDataPosition] = useState({ id: '', city: '' })
+    const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
 
     useEffect(() => {
@@ -31,7 +33,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         if (!isLoadingUpdateCity && updateCityData?.status === 'ok') {
             authRefetch()
         }
-    }, [updateCityData, isLoadingUpdateCity])
+    }, [updateCityData, isLoadingUpdateCity, tokenState])
 
     useEffect(() => {
         const body = document.querySelector('body');
@@ -44,6 +46,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     }, [bgColor, authData,])
 
     useEffect(() => {
+
         if (!isLoadingAuth && !authData?.user.city) {
             getGeoCoors().then(geoCoors => {
                 const coors = geoCoors as Coordinates;
@@ -59,7 +62,8 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
                 if (res) {
                     const dataPosition = {
                         id: authData?.user.id,
-                        city: res
+                        city: res,
+                        token: tokenState.token
                     }
 
                     setDataPosition(dataPosition)

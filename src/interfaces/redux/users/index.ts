@@ -6,5 +6,6 @@ export interface GetUsersResponse {
 
 export interface GetUsersData {
     q: string | number | boolean,
-    currentId: string | undefined
+    currentId: string | undefined,
+    token: string
 }

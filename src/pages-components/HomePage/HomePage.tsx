@@ -21,7 +21,7 @@ import HomeWelcomePage from "../HomeWelcomePage/HomeWelcomePage";
 import SettingsWindow from "@/components/SettingsWindow/SettingsWindow";
 import useUrl from "@/hooks/useUrl";
 import { useSelector } from "@/hooks/useTypedSelector";
-import { selectChangeMessageState, selectImageState } from "@/selectors/selectors";
+import { selectChangeMessageState, selectImageState, selectTokenState } from "@/selectors/selectors";
 import { encryptFile } from "@/utils/encryption/encryptFile";
 import UploadMenuWithButtonAction from "@/components/file-upload/UploadMenuWithButtonAction/UploadMenuWithButtonAction";
 import UploadFile from "@/components/file-upload/UploadFile/UploadFile";
@@ -65,22 +65,25 @@ const HomePage = () => {
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null);
     const [countFirstRender, setCountFirstRender] = useState(0);
 
+    const tokenState = useSelector(selectTokenState);
+
     // Получение данных авторизованного пользователя
-    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({});
+    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({token: tokenState.token});
 
     const [mapCity, setMapCity] = useState(authState?.user?.city);
 
     // Получение публичных ключей
-    const { data: publicKeysData, isLoading: isPublicKeyLoading } = useGetPublicKeysQuery({ recipientId: authState?.user?.id, senderId: searchParams?.get('user') })
+    const { data: publicKeysData, isLoading: isPublicKeyLoading } = useGetPublicKeysQuery({ recipientId: authState?.user?.id, senderId: searchParams?.get('user'), token: tokenState.token })
 
     // Получение юзеров
-    const { data: userData } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authState?.user?.id });
+    const { data: userData } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authState?.user?.id, token: tokenState.token });
 
     // Длина следующих сообщений
     const { data: dataNextLength } = useGetNextLengthMessagesQuery({
         nextOffset: Number(currentOffSet) + 10,
         senderId: authState?.user?.id,
-        recipientId: searchParams?.get('user')
+        recipientId: searchParams?.get('user'),
+        token: tokenState.token
     });
 
     // Хук для работы с url
@@ -114,7 +117,7 @@ const HomePage = () => {
         setMessages([])
         setCurrentOffSet('0')
         if (searchParams?.get('user') && authState?.user?.id) {
-            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: '0' })
+            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: '0', token: tokenState.token })
         }
 
     }, [searchParams?.get('user')])
@@ -163,7 +166,7 @@ const HomePage = () => {
     useEffect(() => {
         try {
             if (selectedCity.trim() && authState?.user?.id) {
-                updateCity({ id: authState?.user?.id, city: selectedCity })
+                updateCity({ id: authState?.user?.id, city: selectedCity, token: tokenState.token })
 
             }
         } catch (err) {
@@ -192,7 +195,7 @@ const HomePage = () => {
     useEffect(() => {
 
         if (searchParams?.get('user') && authState?.user?.id) {
-            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: currentOffSet })
+            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: currentOffSet, token: tokenState.token })
         }
 
     }, [searchParams?.get('offset'), authState?.user?.id])
@@ -205,7 +208,7 @@ const HomePage = () => {
             setWsMessages([])
             setMessages([])
             if (searchParams?.get('user') && authState?.user?.id) {
-                getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: currentOffSet })
+                getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: currentOffSet, token: tokenState.token })
             }
         }
 

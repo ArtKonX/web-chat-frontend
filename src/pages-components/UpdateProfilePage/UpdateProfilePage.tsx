@@ -6,9 +6,9 @@ import Btn from "@/components/ui/Btn/Btn"
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"
 import InputWithLabelAndInfo from "@/components/ui/InputWithLabelAndInfo/InputWithLabelAndInfo"
 import { useSelector } from "@/hooks/useTypedSelector";
-import { useUpdateUserMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useUpdateUserMutation } from "@/redux/services/authApi";
 import { addDataAuth } from "@/redux/slices/authSlice";
-import { selectUser } from "@/selectors/selectors";
+import { selectTokenState } from "@/selectors/selectors";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -39,7 +39,10 @@ interface UpdateMutation {
 
 const UpdateProfilePage = () => {
 
-    const authData = useSelector(selectUser);
+    const tokenState = useSelector(selectTokenState);
+
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+
     const router = useRouter();
 
     const dispatch = useDispatch();
@@ -57,8 +60,8 @@ const UpdateProfilePage = () => {
     });
 
     useEffect(() => {
-        if (authData?.name) {
-            setFormState({ ...formState, name: authData?.name })
+        if (authData?.user?.name) {
+            setFormState({ ...formState, name: authData?.user?.name })
         }
     }, [authData])
 
@@ -100,9 +103,10 @@ const UpdateProfilePage = () => {
         if (!Object.values(errors).some(Boolean)) {
             try {
                 const updateData = {
-                    id: authData?.id,
+                    id: authData?.user?.id,
                     name: formState.name,
-                    password: formState.password
+                    password: formState.password,
+                    token: tokenState.token
                 }
 
                 updateUser(updateData);
@@ -117,7 +121,7 @@ const UpdateProfilePage = () => {
             if (updateData?.status === 'ok') {
                 router.push('/profile');
             } else if (errorUpdate?.data?.status === 'not-pin-code') {
-                dispatch(addDataAuth({ id: authData?.id, type: 'update', name: formState.name, password: formState.password }))
+                dispatch(addDataAuth({ id: authData?.user?.id, type: 'update', name: formState.name, password: formState.password }))
                 router.push('/check-pin?action=update')
             }
         }

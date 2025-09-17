@@ -6,12 +6,13 @@ import { useSelector } from "@/hooks/useTypedSelector";
 import { FormSendMessageProps } from "@/interfaces/components/form-send-messages";
 import { useSendMessageMutation, useSendMessageToBotMutation, useUpdateMessageMutation } from "@/redux/services/messagesApi";
 import { resetDataChangeMessage } from "@/redux/slices/changeMessageSlice";
-import { selectChangeMessageState, selectUser } from "@/selectors/selectors";
+import { selectChangeMessageState, selectTokenState } from "@/selectors/selectors";
 import { encryptText } from "@/utils/encryption/encryptText";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
+import { useCheckAuthQuery } from '@/redux/services/authApi';
 
 const FormSendMessages = (
     { message, socket, name,
@@ -19,8 +20,11 @@ const FormSendMessages = (
         publicKeys }:
         FormSendMessageProps) => {
 
+    const tokenState = useSelector(selectTokenState);
+
     const searchParams = useSearchParams();
-    const authData = useSelector(selectUser)
+
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const updateMessageState = useSelector(selectChangeMessageState);
 
@@ -47,7 +51,7 @@ const FormSendMessages = (
                 const formData = new FormData();
 
                 if (updateMessageState.isChange && publicKeys) {
-                    updateMessage({ messageId: messageId, userId: authData?.id, data: { message: JSON.stringify(base64Message) } });
+                    updateMessage({ messageId: messageId, userId: authData?.user?.id, data: { message: JSON.stringify(base64Message) }, token: tokenState.token });
                     setMessage('')
                     setIsSubmit(false)
                     setEncMessage(null)
@@ -71,7 +75,8 @@ const FormSendMessages = (
                             sendMessageToBot({
                                 userId,
                                 currentUserId: currentUserid,
-                                data: formData
+                                data: formData,
+                                token: tokenState.token
                             })
                             // Убираем пользовательский ввод при отправке
                             setMessage('')
@@ -80,7 +85,8 @@ const FormSendMessages = (
                                 sendMessage({
                                     userId,
                                     currentUserId: currentUserid,
-                                    data: formData
+                                    data: formData,
+                                    token: tokenState.token
                                 });
 
                                 setMessage('')

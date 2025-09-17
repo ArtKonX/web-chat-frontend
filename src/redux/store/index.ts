@@ -4,7 +4,7 @@ import authApi from '../services/authApi';
 import usersApi from '../services/usersApi';
 import messagesApi from '../services/messagesApi';
 import citiesApi from '../services/citiesApi';
-import { persistbackgroundReducer, persistSideBarReducer } from '../persist/persistSideBarReducer';
+import { persistbackgroundReducer, persistSideBarReducer, persistTokenReducer } from '../persist/persistSideBarReducer';
 import authSlice from '../slices/authSlice';
 import changeMessageSlice from '../slices/changeMessageSlice';
 import imageSlice from '../slices/imageSlice';
@@ -17,6 +17,7 @@ export const store = configureStore({
         [citiesApi.reducerPath]: citiesApi.reducer,
         sideBarState: persistSideBarReducer,
         backgroundState: persistbackgroundReducer,
+        tokenState: persistTokenReducer,
         authState: authSlice,
         changeMessageSlice: changeMessageSlice,
         imageSlice: imageSlice

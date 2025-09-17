@@ -9,25 +9,27 @@ import { useDispatch } from "react-redux"
 import { toggleSideBar } from "@/redux/slices/sideBarSlice"
 import HeaderLogo from "./HeaderLogo/HeaderLogo"
 import { useSelector } from "@/hooks/useTypedSelector"
-import { selectUser } from "@/selectors/selectors"
+import { selectTokenState } from "@/selectors/selectors"
 import { useRouter, useSearchParams } from "next/navigation"
 import HeaderMenu from "./HeaderMenu/HeaderMenu"
 
 import dataMenu from '../../data/data-menu.json';
 import HeaderMenuItem from "./HeaderMenu/HeaderMenuItem/HeaderMenuItem"
-import { useGetUsersQuery } from "@/redux/services/usersApi"
 import { HeaderProps } from "@/interfaces/components/header"
 import useUrl from '@/hooks/useUrl'
+import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { useGetUsersQuery } from '@/redux/services/usersApi';
 
 const Header = (
     { isDemoHeader, isWelcomePage }: HeaderProps
 ) => {
     const dispatch = useDispatch();
-    const authData = useSelector(selectUser)
+    const tokenState = useSelector(selectTokenState)
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const { data: userData, isLoading: userIsLoading } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authData?.id })
+    const { data: authData, isLoading: isLoadingAuth } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: userData, isLoading: userIsLoading } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authData?.user?.id, token: tokenState.token })
 
     const { url } = useUrl()
 
@@ -40,23 +42,20 @@ const Header = (
     })
 
     useEffect(() => {
-
-    }, [searchParams.get('tab'),])
-
-    useEffect(() => {
         if (!userIsLoading && searchParams?.get('user')) {
-            setUserName(userData?.users[0]?.name)
+            setUserName(userData?.users[0].name)
         } else {
             setUserName(null)
         }
-    }, [userIsLoading, userData, searchParams?.get('user')])
+    }, [isLoadingAuth, userData, searchParams?.get('user')])
 
     useEffect(() => {
+        console.log(authData)
         if (authData) {
             setDataUser({
-                city: authData?.city,
-                colorBackgroundIcon: authData?.color_profile,
-                userName: authData?.name
+                city: authData?.user?.city,
+                colorBackgroundIcon: authData?.user?.color_profile,
+                userName: authData?.user?.name
             })
         }
     }, [authData])

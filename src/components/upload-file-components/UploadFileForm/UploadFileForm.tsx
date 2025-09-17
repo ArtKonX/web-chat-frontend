@@ -10,6 +10,8 @@ import { encryptText } from "@/utils/encryption/encryptText";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { v4 as uuidv4 } from 'uuid';
+import { selectTokenState } from '@/selectors/selectors';
+import { useSelector } from '@/hooks/useTypedSelector';
 
 const UploadFileForm = (
     { closeFileForm, typeFile, fileSrc,
@@ -23,6 +25,8 @@ const UploadFileForm = (
     const [encMessage, setEncMessage] = useState<ArrayBuffer | null>(null);
     const [isSubmit, setIsSubmit] = useState(false)
     const searchParams = useSearchParams();
+
+    const tokenState = useSelector(selectTokenState);
 
     useEffect(() => {
         setDataUploadFile(dataUploadFile)
@@ -50,7 +54,8 @@ const UploadFileForm = (
                             uploadFileWithMess({
                                 userId,
                                 currentUserId: authState?.user.id,
-                                data: formData
+                                data: formData,
+                                token: tokenState.token
                             })
                         }
                     }

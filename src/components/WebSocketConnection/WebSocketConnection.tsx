@@ -9,7 +9,7 @@ import { PrivatKey } from "@/interfaces/encryption";
 import { MessageInfo } from "@/interfaces/message";
 import { UserStatus } from "@/interfaces/users";
 import { useCheckAuthQuery } from "@/redux/services/authApi";
-import { selectUser } from "@/selectors/selectors";
+import { selectTokenState } from "@/selectors/selectors";
 import { base64ToArrayBuffer } from "@/utils/base64ToArrayBuffer";
 import { decryptFile } from "@/utils/encryption/decryptFile";
 import { decryptText } from "@/utils/encryption/decryptText";
@@ -24,7 +24,8 @@ const WebSocketConnection = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [wsMessages, setWsMessages] = useState<MessageInfo[]>([]);
     const searchParams = useSearchParams();
-    const authData = useSelector(selectUser);
+    const tokenState = useSelector(selectTokenState);
+    const { data: authState } = useCheckAuthQuery({ token: tokenState.token });
     const [wsInfoDialogues, setWsInfoDialogues] = useState<WSDialogueData | null>(null);
     const userRef = useRef(searchParams?.get('user'));
     const [deleteMessageId, setDeleteMessageId] = useState<string | null>(null);
@@ -33,7 +34,7 @@ const WebSocketConnection = () => {
 
     const [userId, setUserId] = useState<string | null>(null)
 
-    const { data: dataAuth, isLoading: isAuthLoading, refetch: authRefetch } = useCheckAuthQuery({});
+    const { data: dataAuth, isLoading: isAuthLoading, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
 
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
 
@@ -67,7 +68,7 @@ const WebSocketConnection = () => {
                 // Отправляем свой userId при подключении
                 currentSocket.send(JSON.stringify({
                     type: 'connect',
-                    userId: authData?.id
+                    userId: dataAuth?.user?.id
                 }));
             };
 
@@ -75,11 +76,12 @@ const WebSocketConnection = () => {
             currentSocket.onmessage = async (event) => {
                 try {
                     const newMessage = JSON.parse(event.data);
+                    console.log('newMessage', newMessage)
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if ((newMessage.sender_id === searchParams?.get('user')
-                        && newMessage.recipient_id === authData?.id) ||
-                        (newMessage.sender_id === authData?.id
+                        && newMessage.recipient_id === authState?.user?.id) ||
+                        (newMessage.sender_id === authState?.user?.id
                             && newMessage.recipient_id === searchParams?.get('user'))) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
@@ -212,23 +214,16 @@ const WebSocketConnection = () => {
         if (userId) {
             initWebSocket();
         }
-    }, [userId, userRef.current, privatKey]);
+    }, [userId, authState?.user, dataAuth?.user?.id, userRef.current, privatKey]);
 
     useEffect(() => {
 
-        if (authData?.id) {
-            setUserId(authData?.id)
+        if (!isAuthLoading && dataAuth?.user?.id) {
+            setUserId(dataAuth?.user?.id)
         } else {
             authRefetch();
         }
-    }, [authData?.id])
-
-    useEffect(() => {
-
-        if (!isAuthLoading && dataAuth) {
-            setUserId(dataAuth?.user?.id)
-        }
-    }, [isAuthLoading, dataAuth])
+    }, [isAuthLoading, authState?.user])
 
     return {
         socket, wsMessages,

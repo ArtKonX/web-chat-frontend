@@ -13,7 +13,8 @@ export interface GetMessagesResponse {
 export interface GetMessagesData {
     currentUserId: string | null,
     userId: string | null,
-    offset: string | null
+    offset: string | null,
+    token: string
 }
 
 export interface SendMessageResponse {
@@ -24,7 +25,8 @@ export interface SendMessageResponse {
 export interface SendMessageData {
     userId: string;
     currentUserId: string;
-    data?: FormData
+    data?: FormData,
+    token: string
 };
 
 export interface SendMessageToBotResponse {
@@ -41,7 +43,8 @@ export interface GetInfoDialoguesResponse {
     data: DialogueData[]
 }
 export interface GetInfoDialoguesData {
-    userId?: string
+    userId?: string,
+    token: string
 }
 
 export interface UpdateMessageResponse {
@@ -53,7 +56,8 @@ export interface UpdateMessageData {
     userId?: string,
     data: {
         message: string
-    }
+    },
+    token: string
 }
 
 export interface DeleteMessageResponse {
@@ -61,7 +65,8 @@ export interface DeleteMessageResponse {
 }
 export interface DeleteMessageData {
     messageId?: string,
-    userId?: string
+    userId?: string,
+    token: string
 }
 
 export interface GetNextLengthMessagesResponse {
@@ -71,5 +76,6 @@ export interface GetNextLengthMessagesResponse {
 export interface GetNextLengthMessagesData {
     nextOffset: number,
     senderId?: string,
-    recipientId: string | null | undefined
+    recipientId: string | null | undefined,
+    token: string
 }

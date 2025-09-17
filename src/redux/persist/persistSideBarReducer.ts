@@ -3,6 +3,7 @@ import { persistReducer } from 'redux-persist';
 
 import SideBarSlice from '../slices/sideBarSlice'
 import BackgroundSlice from '../slices/backgroundSlice';
+import TokenSlice from '../slices/tokenSlice';
 
 const sideBarDataConfig = {
     key: 'sideBarState',
@@ -19,3 +20,11 @@ const backgroundConfig = {
 
 export const persistbackgroundReducer =
     persistReducer(backgroundConfig, BackgroundSlice);
+
+const tokenConfig = {
+    key: 'tokenState',
+    storage,
+}
+
+export const persistTokenReducer =
+    persistReducer(tokenConfig, TokenSlice);

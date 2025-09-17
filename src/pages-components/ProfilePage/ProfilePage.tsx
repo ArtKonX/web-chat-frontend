@@ -11,6 +11,10 @@ import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { useCheckAuthQuery, useLogoutMutation, useTurnOn2FAMutation } from "@/redux/services/authApi";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { removeToken } from '@/redux/slices/tokenSlice';
+import { useDispatch } from 'react-redux';
+import { useSelector } from '@/hooks/useTypedSelector';
+import { selectTokenState } from '@/selectors/selectors';
 
 interface ProfileDataState {
     name?: string,
@@ -23,7 +27,9 @@ interface ProfileDataState {
 
 const ProfilePage = () => {
 
-    const { data: authData, isLoading: isAuthDataLoading, error: errorAuthData, refetch: authDataRefetch } = useCheckAuthQuery({});
+    const tokenState = useSelector(selectTokenState);
+
+    const { data: authData, isLoading: isAuthDataLoading, error: errorAuthData, refetch: authDataRefetch } = useCheckAuthQuery({ token: tokenState.token });
     const [logout, { data: logoutData }] = useLogoutMutation();
     const [turnOn2FA, { data: turnOn2FAData, isLoading: isTurnOn2FALoading }] = useTurnOn2FAMutation();
     const path = usePathname();
@@ -42,6 +48,8 @@ const ProfilePage = () => {
     const [isShow2FAFade, setIsShow2FAFade] = useState(false);
     const [isShowTurnOff2FA, setIsShowTurnOff2FA] = useState(false);
     const [isShowTurnOff2FAFade, setIsTurnOff2FAFade] = useState(false);
+
+    const dispatch = useDispatch();
 
     const router = useRouter();
 
@@ -88,6 +96,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (logoutData?.status === 'ok') {
+            dispatch(removeToken())
             window.location.reload()
         }
     }, [logoutData])
@@ -103,7 +112,7 @@ const ProfilePage = () => {
 
         try {
             if (authData?.user?.id) {
-                turnOn2FA({ id: authData?.user?.id });
+                turnOn2FA({ id: authData?.user?.id, token: tokenState.token });
             }
         } catch (err) {
             console.error('Ошибка подключения 2FA ', err)

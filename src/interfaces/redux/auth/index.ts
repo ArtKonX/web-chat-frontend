@@ -4,7 +4,7 @@ interface UserSafe {
     email: string,
     name: string,
     city: string,
-    color_profile?: string,
+    color_profile: string,
     fa2_enabled?: boolean
 }
 
@@ -25,7 +25,8 @@ export interface RegistarationResponse {
     user: {
         id: string,
         name: string,
-        email: string
+        email: string,
+        token: string
     },
     status: string
 }
@@ -52,7 +53,8 @@ export interface UpdateUserData {
     name?: string | null,
     password?: string | null,
     id?: string | null,
-    pin?: string | null
+    pin?: string | null,
+    token: string
 }
 
 export interface CheckAuthResponse {
@@ -60,7 +62,8 @@ export interface CheckAuthResponse {
     status?: string
 };
 export interface CheckAuthData {
-    status?: string
+    status?: string,
+    token: string
 }
 
 export interface GetPublicKeysResponse {
@@ -68,13 +71,15 @@ export interface GetPublicKeysResponse {
 }
 export interface GetPublicKeysData {
     recipientId: string | null | undefined,
-    senderId: string | null | undefined
+    senderId: string | null | undefined,
+    token: string
 }
 
 export type UpdateCityResponse = CheckAuthResponse;
 export interface UpdateCityData {
     id: string,
-    city: string
+    city: string,
+    token: string
 }
 
 export interface TurnOn2FAResponse {
@@ -84,7 +89,8 @@ export interface TurnOn2FAResponse {
     }
 }
 export interface TurnOn2FAData {
-    id: string
+    id: string,
+    token: string
 }
 
 export interface TurnOff2FAResponse {
@@ -94,5 +100,6 @@ export interface TurnOff2FAResponse {
 }
 export interface TurnOff2FAData {
     id: string,
-    pin: string
+    pin: string,
+    token: string
 }

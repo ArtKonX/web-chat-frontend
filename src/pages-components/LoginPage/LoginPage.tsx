@@ -5,13 +5,14 @@ import React from 'react';
 import FormRegistrationOrLogin from "@/components/FormRegistarationOrLogin/FormRegistarationOrLogin";
 import Loader from "@/components/ui/Loader/Loader";
 import { useSelector } from "@/hooks/useTypedSelector";
-import { useLoginMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useLoginMutation } from "@/redux/services/authApi";
 import { addDataAuth } from "@/redux/slices/authSlice";
-import { selectUser } from "@/selectors/selectors";
 import validateEmail from "@/utils/validateEmail";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { addToken } from '@/redux/slices/tokenSlice';
+import { selectTokenState } from '@/selectors/selectors';
 
 interface Errors {
     email: boolean;
@@ -23,6 +24,9 @@ interface LoginMutation {
         status: string,
         data: {
             attempt: number
+        },
+        user: {
+            token: string
         }
     },
     error: {
@@ -39,8 +43,10 @@ interface LoginMutation {
 const LoginPage = () => {
 
     const router = useRouter()
+    const tokenState = useSelector(selectTokenState);
+    
     const [login, { data: dataLogin, isLoading: isDataLoading, error: errorLogin }] = useLoginMutation<LoginMutation>();
-    const authData = useSelector(selectUser);
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
     const dispatch = useDispatch();
 
     const [isSubmit, setIsSubmit] = useState(false);
@@ -53,8 +59,9 @@ const LoginPage = () => {
     });
 
     useEffect(() => {
-        if (dataLogin?.status === 'ok' ||
+        if ((dataLogin?.status === 'ok' && dataLogin?.user?.token) ||
             (authData)) {
+            dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
             router.push('/');
         } else if (errorLogin?.data?.status === 'not-pin-code') {
             dispatch(addDataAuth({ type: 'login', email: formState.email, password: formState.password }))

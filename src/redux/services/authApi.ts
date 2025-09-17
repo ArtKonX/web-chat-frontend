@@ -5,8 +5,7 @@ import { CheckAuthData, CheckAuthResponse, GetPublicKeysData, GetPublicKeysRespo
 const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: constsEnv.NEXT_BACKEND_URL,
-        credentials: 'include',
+        baseUrl: constsEnv.NEXT_BACKEND_URL
     }),
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginData>({
@@ -33,25 +32,29 @@ const authApi = createApi({
             query: (data) => ({
                 url: '/update-user',
                 method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${data.token}` },
                 body: data
             })
         }),
         checkAuth: builder.query<CheckAuthResponse, CheckAuthData>({
-            query: () => ({
+            query: ({ token }: { token: string }) => ({
                 url: '/get-user',
                 method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` },
             })
         }),
         getPublicKeys: builder.query<GetPublicKeysResponse, GetPublicKeysData>({
-            query: ({ recipientId, senderId }) => ({
+            query: ({ recipientId, senderId, token }) => ({
                 url: `/get-public-keys?recipientId=${recipientId}&senderId=${senderId}`,
                 method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` },
             })
         }),
         updateCity: builder.mutation<UpdateCityResponse, UpdateCityData>({
             query: (data) => ({
                 url: `/update-city`,
                 method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${data.token}` },
                 body: data
             })
         }),
@@ -59,6 +62,7 @@ const authApi = createApi({
             query: (data) => ({
                 url: `/2FA-on`,
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${data.token}` },
                 body: data
             })
         }),
@@ -66,6 +70,7 @@ const authApi = createApi({
             query: (data) => ({
                 url: `/2FA-disable`,
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${data.token}` },
                 body: data
             })
         })

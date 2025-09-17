@@ -5,19 +5,21 @@ import React from 'react';
 import UserItem from "../Dialogue/Dialogue"
 import { useSelector } from "@/hooks/useTypedSelector"
 import { DialoguesListProps } from "@/interfaces/components/side-bar"
-import { selectUser } from "@/selectors/selectors"
 import { useSearchParams } from "next/navigation"
+import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { selectTokenState } from '@/selectors/selectors';
 
 const DialoguesList = (
     { dialoguesData }: DialoguesListProps
 ) => {
 
-    const userData = useSelector(selectUser);
+    const tokenState = useSelector(selectTokenState);
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const searchParams = useSearchParams();
 
     const getUserrRecipient = (senderId: string, recipientId: string) => {
-        return senderId === userData?.id ? recipientId : senderId
+        return senderId === authData?.user?.id ? recipientId : senderId
     }
 
     return (

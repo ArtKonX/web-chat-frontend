@@ -5,7 +5,7 @@ import React, { Suspense } from 'react';
 import { ChangeEvent, ReactNode, useEffect, useState } from "react"
 import Header from "../Header/Header"
 import { usePathname, useSearchParams } from "next/navigation";
-import { selectSideBarState, selectUser } from "@/selectors/selectors";
+import { selectSideBarState, selectTokenState } from "@/selectors/selectors";
 import { useSelector } from "@/hooks/useTypedSelector";
 import SideBar from "../SideBar/SideBar";
 import useDebounce from "@/hooks/useDebounce";
@@ -19,6 +19,7 @@ import { decryptText } from "@/utils/encryption/decryptText";
 import { getPrivateKeyFromIndexedDB } from "@/utils/encryption/indexedDB/getPrivateKeyFromIndexedDB";
 import { PrivatKey } from "@/interfaces/encryption";
 import Loader from '../ui/Loader/Loader';
+import { useCheckAuthQuery } from '@/redux/services/authApi';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -27,14 +28,16 @@ const Layout = (
     const searchParams = useSearchParams();
 
     const sideBarState = useSelector(selectSideBarState);
-    const authState = useSelector(selectUser);
+    const tokenState = useSelector(selectTokenState)
+
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const pathname = usePathname();
     const [isDemoHeader, setIsDemoHeader] = useState(false);
     const [searchUsers, setSearchUsers] = useState('');
     const searchUsersDebounce = useDebounce(searchUsers, 400);
-    const { data: findUsers } = useGetUsersQuery({ q: searchUsersDebounce, currentId: authState?.id });
-    const { data: usersOnMessages, isLoading } = useGetInfoDialoguesQuery({ userId: authState?.id });
+    const { data: findUsers } = useGetUsersQuery({ q: searchUsersDebounce, currentId: authData?.user?.id, token: tokenState.token });
+    const { data: usersOnMessages, isLoading } = useGetInfoDialoguesQuery({ userId: authData?.user?.id, token: tokenState.token });
     const { socket, wsInfoDialogues, setWsInfoDialogues, userStatus, setUserStatus } = WebSocketConnection();
     const [listDialogues, setListDialogues] = useState<DialogueData[] | null>(null);
 
@@ -54,7 +57,7 @@ const Layout = (
 
     useEffect(() => {
         const fetchDialogues = async () => {
-            if (socket && authState?.id) {
+            if (socket && authData?.user?.id) {
                 let allListDialogues = [];
                 if (wsInfoDialogues && privatKey) {
 
@@ -163,10 +166,10 @@ const Layout = (
     return (
         <Suspense fallback={<Loader isFade={true} />}>
             <div className="max-w-full w-full">
-                <Header isDemoHeader={isDemoHeader || !authState?.id}
-                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !authState?.id} />
+                <Header isDemoHeader={isDemoHeader || !authData?.user?.id}
+                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !authData?.user?.id} />
                 <div className="w-full h-screen pt-[66px] flex">
-                    {sideBarState.isShow && !isDemoHeader && authState?.id && (
+                    {sideBarState.isShow && !isDemoHeader && authData?.user?.id && (
                         <SideBar
                             findUsers={findUsers?.users || []}
                             dialoguesData={listDialogues || []}
@@ -176,7 +179,7 @@ const Layout = (
                     )}
                     {children}
                 </div>
-                {!authState?.id && (
+                {!authData?.user?.id && (
                     <div className="relative bottom-[42px] max-lg:bottom-0">
                         <Footer />
                     </div>

@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addDataChangeMessage } from '@/redux/slices/changeMessageSlice';
 import { useSelector } from '@/hooks/useTypedSelector';
-import { selectChangeMessageState, selectUser } from '@/selectors/selectors';
+import { selectChangeMessageState, selectTokenState } from '@/selectors/selectors';
 import { useDeleteMessageMutation } from '@/redux/services/messagesApi';
 import { MessageItemProps, ShowActionMessage } from '@/interfaces/components/messages-components';
 import { addUrl } from '@/redux/slices/imageSlice';
 import { formattedDate } from '@/utils/formattedDate';
+import { useCheckAuthQuery } from '@/redux/services/authApi';
 
 const MessageItem = (
     { currentId, message,
@@ -19,12 +20,14 @@ const MessageItem = (
     const [showActionMessage, setShowActionMessage] = useState<ShowActionMessage | null>(null);
     const [isFade, setIsFade] = useState(false)
 
+    const tokenState = useSelector(selectTokenState);
+
     // для вычисления ширины сообщения
     const refMessageItem = useRef<HTMLDivElement | null>(null);
 
     const refActions = useRef<HTMLDivElement | null>(null);
 
-    const authData = useSelector(selectUser)
+    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const dispatch = useDispatch();
 
@@ -109,7 +112,7 @@ const MessageItem = (
     }
 
     const onDelete = (id?: string) => {
-        deleteMessage({ messageId: id, userId: authData?.id })
+        deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
     }
 
     const onChange = () => {

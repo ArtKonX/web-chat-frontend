@@ -9,16 +9,20 @@ import Loader from "@/components/ui/Loader/Loader"
 import { useSelector } from "@/hooks/useTypedSelector"
 import { useLoginMutation, useUpdateUserMutation } from "@/redux/services/authApi"
 import { resetDataAuth } from "@/redux/slices/authSlice"
-import { selectAuthState } from "@/selectors/selectors"
+import { selectAuthState, selectTokenState } from "@/selectors/selectors"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
+import { addToken, removeToken } from '@/redux/slices/tokenSlice';
 
 interface LoginMutation {
     data: {
         status: string,
         data: {
             attempt: number
+        },
+        user: {
+            token: string
         }
     },
     isLoading: boolean,
@@ -44,7 +48,8 @@ interface UpdateMutation {
         data: {
             status: string,
             data: {
-                attempt: number
+                attempt: number,
+                succesPinCode?: string
             }
         }
     }
@@ -53,6 +58,7 @@ interface UpdateMutation {
 const CheckPinPage = () => {
 
     const auth = useSelector(selectAuthState);
+    const tokenState = useSelector(selectTokenState);
 
     const [login, { data: dataLogin, isLoading: isLoginLoading, error: loginError }] = useLoginMutation<LoginMutation>();
     const [updateUser, { data: updateData, isLoading: isUpdateLoading, error: updateError }] = useUpdateUserMutation<UpdateMutation>();
@@ -80,7 +86,8 @@ const CheckPinPage = () => {
                 id: auth.id,
                 name: auth.name ? auth.name : null,
                 password: auth.password ? auth.password : null,
-                pin: pin
+                pin: pin,
+                token: tokenState.token
             })
         }
     }
@@ -92,9 +99,16 @@ const CheckPinPage = () => {
     }
 
     useEffect(() => {
+        if (!auth.id) {
+            router.push('/')
+        }
+    }, [auth])
+
+    useEffect(() => {
         if (loginError?.data?.status === 'error') {
             setAttempt(loginError?.data?.data?.attempt)
-        } else if (dataLogin?.status === 'ok') {
+        } else if (dataLogin?.status === 'ok' && dataLogin?.user?.token) {
+            dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
             dispatch(resetDataAuth())
             window.location.reload();
             router.push('/')
@@ -103,6 +117,10 @@ const CheckPinPage = () => {
 
     useEffect(() => {
         if (updateError?.data?.status === 'error') {
+            if (updateError?.data?.data?.succesPinCode === 'error') {
+                dispatch(removeToken());
+                window.location.reload()
+            }
             setAttempt(updateError?.data?.data?.attempt)
         } else if (updateData?.status === 'ok') {
             dispatch(resetDataAuth())
