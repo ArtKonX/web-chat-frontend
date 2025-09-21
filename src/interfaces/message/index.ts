@@ -1,4 +1,5 @@
 export interface MessageInfo {
+    userId?: string,
     id?: string,
     message: string,
     date?: Date,

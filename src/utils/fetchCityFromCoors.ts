@@ -17,8 +17,6 @@ const fetchCityFromCoors = async (
 
             const dataPlace = await response.json();
 
-            console.log('dataPlace', dataPlace)
-
             // Возвращаем только город или населенный пункт
             return dataPlace.dataForCoors.address.town || dataPlace.dataForCoors.address.city
         }

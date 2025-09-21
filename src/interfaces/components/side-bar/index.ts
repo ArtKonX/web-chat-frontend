@@ -14,14 +14,16 @@ export interface SideBarProps {
     findUsers: UserData[],
     onSearchUsers: (e: ChangeEvent<HTMLInputElement>) => void,
     searchUsers: string,
-    dialoguesData: DialogueData[]
+    dialoguesData: DialogueData[],
+    isDisableFindUsers?: boolean
 }
 
 export interface SideBarActionLinkProps {
     icon: string,
     alt: string,
     href: string,
-    isActive: boolean
+    isActive: boolean,
+    isDisable?: boolean
 }
 
 export interface SideBarInputSearchProps {

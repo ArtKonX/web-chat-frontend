@@ -46,7 +46,6 @@ const ChoosingCitiesOnMap = (
             // IIFE
             (async function () {
                 const newPlace = await fetchCityFromCoors({ position: newPosition });
-                console.log('newPlace', newPlace)
                 setMapCity(newPlace)
             })()
         }
@@ -138,8 +137,8 @@ const ChoosingCitiesOnMap = (
 
     return (
         <div className="bg-white py-6 px-9 rounded-2xl
-                                    max-w-3/6 max-lg:max-w-9/11 max-sm:max-w-9/10 w-full flex
-                                    flex-col items-center justify-center relative">
+                                    max-w-[650px] max-lg:max-w-13/14 max-sm:max-w-9/10 w-full flex
+                                    flex-col items-center justify-center relative max-h-[97%]">
             <div className="absolute flex right-0 top-0">
                 <CloseBtn onClose={onClose} />
             </div>
@@ -157,14 +156,14 @@ const ChoosingCitiesOnMap = (
                             )}
                         </div>
                         {/* Отображаем саму карту */}
-                        <div className='shadow-lg shadow-gray-700 hover:cursor-grab
+                        <div className='shadow-lg shadow-gray-700 object-contain hover:cursor-grab
                     active:cursor-grabbing'
                             ref={mapRef}
                             style={{
                                 maxWidth: '500px',
                                 maxHeight: '500px',
-                                height: '50vw',
-                                width: '50vw',
+                                height: '70vw',
+                                width: '70vw',
                             }}
                         />
                     </div>

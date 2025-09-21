@@ -5,10 +5,10 @@ import Image from "next/image"
 import Link from "next/link"
 
 const SideBarActionLink = (
-    { icon, alt, href, isActive }: SideBarActionLinkProps) => {
+    { icon, alt, href, isActive, isDisable }: SideBarActionLinkProps) => {
 
     return (
-        <Link className={`hover:opacity-45 transition-opacity duration-700 ${isActive && 'opacity-30'}`} href={href}>
+        <Link className={`hover:opacity-45 transition-opacity duration-700 ${isActive && 'opacity-30'} ${isDisable && 'pointer-events-none opacity-30'}`} href={href}>
             <Image src={icon} alt={alt} width={40} />
         </Link>
     )

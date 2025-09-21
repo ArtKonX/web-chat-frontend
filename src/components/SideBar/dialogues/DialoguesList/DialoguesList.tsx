@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import UserItem from "../Dialogue/Dialogue"
 import { useSelector } from "@/hooks/useTypedSelector"
@@ -8,6 +8,8 @@ import { DialoguesListProps } from "@/interfaces/components/side-bar"
 import { useSearchParams } from "next/navigation"
 import { useCheckAuthQuery } from '@/redux/services/authApi';
 import { selectTokenState } from '@/selectors/selectors';
+import { UserData } from '@/interfaces/users';
+import { getCachedUser } from '@/cashe/userCache';
 
 const DialoguesList = (
     { dialoguesData }: DialoguesListProps
@@ -18,8 +20,28 @@ const DialoguesList = (
 
     const searchParams = useSearchParams();
 
-    const getUserrRecipient = (senderId: string, recipientId: string) => {
-        return senderId === authData?.user?.id ? recipientId : senderId
+    const [userInfo, setUserInfo] = useState<UserData | null>(null)
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const userData = await getCachedUser();
+
+                if (userData) {
+                    setUserInfo(userData[0])
+                } else {
+                    setUserInfo(authData!.user)
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        })()
+    }, [authData?.user,])
+
+    const getUserRecipient = (senderId: string, recipientId: string) => {
+        const userSuccessData = authData?.user.id || userInfo?.id;
+
+        return senderId === userSuccessData ? recipientId : senderId
     }
 
     return (
@@ -27,9 +49,9 @@ const DialoguesList = (
             {
                 dialoguesData?.map((dialogue) => (
                     <li key={dialogue.userId}>
-                        <UserItem id={getUserrRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
+                        <UserItem id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
                             quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
-                            isActiveUser={getUserrRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
+                            isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
                             status={dialogue.status} profileColor={dialogue.colorProfile} />
                     </li>
                 ))

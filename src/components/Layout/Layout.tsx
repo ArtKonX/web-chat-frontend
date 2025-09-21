@@ -20,6 +20,9 @@ import { getPrivateKeyFromIndexedDB } from "@/utils/encryption/indexedDB/getPriv
 import { PrivatKey } from "@/interfaces/encryption";
 import Loader from '../ui/Loader/Loader';
 import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { cacheDialogue, getCachedDialogues } from '@/cashe/dialoguesCache';
+import { UserData } from '@/interfaces/users';
+import { getCachedUser } from '@/cashe/userCache';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -42,6 +45,26 @@ const Layout = (
     const [listDialogues, setListDialogues] = useState<DialogueData[] | null>(null);
 
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
+
+    const [userInfo, setUserInfo] = useState<UserData | null>(null)
+
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const userData = await getCachedUser();
+
+                if (userData) {
+                    setUserInfo(userData[0])
+                } else {
+                    setUserInfo(authData!.user)
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        })()
+    }, [authData?.user,])
 
     useEffect(() => {
         const getPrivatKey = async () => {
@@ -72,6 +95,7 @@ const Layout = (
                         (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.recipient_id))
                         || (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.sender_id))) as DialogueData[]
                     filteredAllListDialogues.unshift(wsInfoDialogues)
+
                     setListDialogues(filteredAllListDialogues)
                 }
             }
@@ -136,14 +160,41 @@ const Layout = (
                     }
                 })) as DialogueData[]
 
-                if (decListDialogues) {
-                    setListDialogues(decListDialogues)
+                const userId = searchParams.get('user');
+
+                try {
+                    if (userId) {
+
+                        await Promise.all(decListDialogues.map(async (dialogue) => {
+                            await cacheDialogue(dialogue);
+                        }))
+
+                        console.log('Диалоги успешно сохранены в кеш', decListDialogues);
+                    }
+                } catch (error) {
+                    console.error('Ошибка при сохранении в кеш:', error);
                 }
+                setListDialogues(decListDialogues)
             }
 
             fetchDialogues()
         }
-    }, [usersOnMessages?.data?.length, isLoading])
+    }, [usersOnMessages?.data?.length, isLoading,])
+
+    useEffect(() => {
+        const userId = searchParams.get('user');
+
+        (async () => {
+            if (userId) {
+
+                const cached = await getCachedDialogues();
+
+                if (cached.length > 0) {
+                    setListDialogues(cached)
+                }
+            }
+        })()
+    }, [searchParams.get('user'),])
 
     useEffect(() => {
         if (pathname) {
@@ -163,14 +214,28 @@ const Layout = (
         setSearchUsers('')
     }, [searchParams?.get('tab')])
 
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, [])
+
     return (
         <Suspense fallback={<Loader isFade={true} />}>
             <div className="max-w-full w-full">
-                <Header isDemoHeader={isDemoHeader || !authData?.user?.id}
-                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !authData?.user?.id} />
-                <div className="w-full h-screen pt-[66px] flex">
-                    {sideBarState.isShow && !isDemoHeader && authData?.user?.id && (
+                <Header isDemoHeader={isDemoHeader || !userInfo?.id}
+                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !userInfo?.id} />
+                <div className="w-full h-screen pt-[66px] flex max-lg:pt-[0px]">
+                    {sideBarState.isShow && !isDemoHeader && userInfo?.id && (
                         <SideBar
+                            isDisableFindUsers={!isOnline}
                             findUsers={findUsers?.users || []}
                             dialoguesData={listDialogues || []}
                             onSearchUsers={onSearchUsers}
@@ -179,8 +244,8 @@ const Layout = (
                     )}
                     {children}
                 </div>
-                {!authData?.user?.id && (
-                    <div className="relative bottom-[42px] max-lg:bottom-0">
+                {!authData?.user?.id && !userInfo?.id && (
+                    <div className="relative bottom-[41px]">
                         <Footer />
                     </div>
                 )}

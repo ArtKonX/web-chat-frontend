@@ -13,14 +13,14 @@ import { SideBarProps } from "@/interfaces/components/side-bar"
 import Loader from '../ui/Loader/Loader';
 
 const SideBar = (
-    { findUsers, dialoguesData, onSearchUsers, searchUsers }: SideBarProps
+    { findUsers, dialoguesData, onSearchUsers, searchUsers, isDisableFindUsers }: SideBarProps
 ) => {
 
     const searchParams = useSearchParams()
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div className="w-2/7 max-sm:w-full bg-white h-full max-lg:min-w-[220px] px-5 border-r-2">
+            <div className="w-2/7 max-sm:pt-[66px] max-lg:pt-[66px] max-sm:w-full bg-white h-full max-lg:min-w-[220px] px-5 border-r-2">
                 <div className="w-full h-full pt-10 relative">
                     <h3 className="text-center text-lg font-bold max-sm:text-[20px]">
                         {searchParams!.get('tab') == 'chats' ?
@@ -44,7 +44,7 @@ const SideBar = (
                     ) : searchParams!.get('tab') === 'users' ? null : <span className="w-full flex justify-center mt-5 font-bold max-sm:text-[18px] max-sm:text-center">У вас нет сообщений(</span>}
                     <div className="w-full absolute bottom-0 pb-1 pt-2 flex justify-around border-t-2">
                         <SideBarActionLink isActive={searchParams!.get('tab') === 'chats'} icon={messageIcon} alt='сообщения' href='/?tab=chats' />
-                        <SideBarActionLink isActive={searchParams!.get('tab') === 'users'} icon={usersIcon} alt='пользователи' href='/?tab=users&q=' />
+                        <SideBarActionLink isDisable={isDisableFindUsers} isActive={searchParams!.get('tab') === 'users'} icon={usersIcon} alt='пользователи' href='/?tab=users&q=' />
                     </div>
                 </div>
             </div>

@@ -45,13 +45,11 @@ const MessageList = (
                 url.searchParams.set('user', userId)
                 url?.searchParams.set('offset', String(Number(offSet) + 10))
 
-                console.log(offSet, url)
                 router.push(url.href);
                 setCurrentOffSet(String(Number(offSet) + 10))
             } else {
                 url.searchParams.set('user', userId)
                 url?.searchParams.set('offset', '10')
-                console.log(offSet, url)
                 router.push(url.href);
                 setCurrentOffSet('10')
             }

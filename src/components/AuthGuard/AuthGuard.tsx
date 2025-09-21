@@ -12,6 +12,7 @@ import urlBg from '../../../public/backgrounds/background.svg'
 import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
+import { cacheUser, getCachedUser } from '@/cashe/userCache';
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
     const tokenState = useSelector(selectTokenState);
@@ -54,10 +55,27 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
                 setPosition(coors);
             })
         }
+
+        (async () => {
+            const user = authData?.user;
+
+            try {
+                if (user) {
+                    const cached = await getCachedUser();
+
+                    if (!cached.length) {
+                        await cacheUser(user);
+                        console.log('Данные пользователя сохранены в кеш');
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка при сохранении в кеш:', error);
+            }
+        })()
     }, [authData])
 
     useEffect(() => {
-        if (position && !isLoadingAuth && !authData?.user.city && authData?.user.id) {
+        if (position && !isLoadingAuth && !authData?.user.city && authData?.user.id && tokenState.token) {
             fetchCityFromCoors({ position }).then(res => {
                 if (res) {
                     const dataPosition = {
@@ -70,7 +88,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
                 }
             })
         }
-    }, [position])
+    }, [position, tokenState.token])
 
     useEffect(() => {
         if (!isLoadingAuth && !authData?.user.city) {

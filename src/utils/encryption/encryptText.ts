@@ -7,7 +7,6 @@ export async function encryptText(
 ): Promise<ArrayBuffer> {
     // публичные ключи отправителя и получателя в формате JSON
     const [publicKeyRecipient, publicKeySender] = keys;
-    console.log(keys)
 
     // Преобразуем в объект js
     const publicKeyRecipientParse = JSON.parse(publicKeyRecipient);

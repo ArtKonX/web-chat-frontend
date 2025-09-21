@@ -35,6 +35,9 @@ import { Coordinates } from "@/interfaces/position";
 import { decryptText } from "@/utils/encryption/decryptText";
 import { base64ToArrayBuffer } from "@/utils/base64ToArrayBuffer";
 import ImageWindow from "@/components/ImageWindow/ImageWindow";
+import { cacheMessages, getCachedMessages } from '@/cashe/messageCache';
+import { getCachedUser } from '@/cashe/userCache';
+import { UserData } from '@/interfaces/users';
 
 const HomePage = () => {
     // Для работы вебсокета
@@ -51,6 +54,8 @@ const HomePage = () => {
     const [currentOffSet, setCurrentOffSet] = useState<string | null>('0');
     const [position, setPosition] = useState<Coordinates | null>(null);
 
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
     // Для анимации перехода выбора файлов
     const [isFormUploadFade, setIsFormUploadFade] = useState(false);
 
@@ -65,12 +70,16 @@ const HomePage = () => {
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null);
     const [countFirstRender, setCountFirstRender] = useState(0);
 
+    const [isReloaded, setIsReloaded] = useState(false);
+
     const tokenState = useSelector(selectTokenState);
 
     // Получение данных авторизованного пользователя
-    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({token: tokenState.token});
+    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({ token: tokenState.token });
 
     const [mapCity, setMapCity] = useState(authState?.user?.city);
+
+    const [userInfo, setUserInfo] = useState<UserData | null>(null)
 
     // Получение публичных ключей
     const { data: publicKeysData, isLoading: isPublicKeyLoading } = useGetPublicKeysQuery({ recipientId: authState?.user?.id, senderId: searchParams?.get('user'), token: tokenState.token })
@@ -104,6 +113,13 @@ const HomePage = () => {
     }, [searchParams?.get('offset')])
 
     useEffect(() => {
+        if (!isOnline) {
+            setMessages([])
+            setWsMessages([])
+        }
+    }, [isOnline])
+
+    useEffect(() => {
         const messagesUpdated = messages.filter(message => message.id !== deleteMessageId);
         const messagesWSUpdated = wsMessages.filter(message => message.id !== deleteMessageId);
         setWsMessages(messagesWSUpdated)
@@ -111,6 +127,18 @@ const HomePage = () => {
         setDeleteMessageId(null)
     }, [deleteMessageId, setDeleteMessageId])
 
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, [])
 
     useEffect(() => {
         setWsMessages([])
@@ -337,11 +365,64 @@ const HomePage = () => {
                     return 0
                 });
 
-                setMessages([...messagesSort, ...messages]);
+                try {
+                    if ([...messagesSort, ...messages].length) {
+                        await cacheMessages([...messagesSort, ...messages], searchParams.get('user')!);
+                        console.log('Сообщения успешно сохранены в кеш');
+                    }
+                } catch (error) {
+                    console.error('Ошибка при сохранении в кеш:', error);
+                }
+
+                const userId = searchParams.get('user');
+
+                if (userId) {
+
+                    const cached = await getCachedMessages(userId);
+                    if (cached.length > 0) {
+                        const allMessagesLen = [...messagesSort, ...messages].length;
+                        if (cached.length < [...messagesSort, ...messages].length) {
+
+                            const allMessages = [...cached, ...[...messagesSort, ...messages].slice(allMessagesLen)]
+                            const sortedMessages = allMessages.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+
+                            setMessages(sortedMessages);
+                            console.log('Загружены сообщения из кеша с новыми сообщениями:', cached.length);
+                        } else {
+                            const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+
+                            setMessages(sortedMessagesCashed);
+                            console.log('Загружены сообщения из кеша:', cached.length);
+                        }
+                    } else {
+                        setMessages([...messagesSort, ...messages]);
+                    }
+                }
             })()
 
         }
     }, [messagesData?.messages, isLoadingMessages, privatKey])
+
+    useEffect(() => {
+        setIsReloaded(false);
+
+        (async () => {
+            if (!isOnline && searchParams?.get('user')) {
+                const cached = await getCachedMessages(String(searchParams.get('user')));
+                if (cached.length > 0) {
+                    const sortedMessages = cached.toSorted((a, b) => new Date(String(a.created_at)).getTime() - new Date(String(b.created_at)).getTime())
+                    setMessages(sortedMessages);
+                }
+
+                setIsReloaded(true)
+            }
+        })()
+
+        if (isReloaded && isOnline) {
+            window.location.reload()
+            setIsReloaded(false)
+        }
+    }, [isOnline, searchParams.get('user')])
 
     useEffect(() => {
         if (file && publicKeysData?.publicKeys.length) {
@@ -365,74 +446,98 @@ const HomePage = () => {
         }
     }, [citiesData]);
 
+    useEffect(() => {
+        (async () => {
+            try {
+                const userData = await getCachedUser();
+
+                if (userData) {
+                    setUserInfo(userData[0])
+                } else {
+                    setUserInfo(authState!.user)
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        })()
+    }, [authState?.user,])
+
     if (isLoadingAuth) return <Loader isFade={true} />
 
-    if (!isLoadingAuth && !authState?.user?.id) return <HomeWelcomePage />
+    if (isOnline && !isLoadingAuth && (!authState?.user?.id && !userInfo)) {
+        return <HomeWelcomePage />
+    } else if ((!isOnline || isOnline) && !isLoadingAuth && (authState?.user?.id || userInfo)) {
 
-    return (
-        <Suspense fallback={<Loader isFade={true} />}>
-            <div className={`h-full flex flex-col justify-end w-full relative`}>
-                {imageUrlState.isShowImage && imageUrlState.url ?
-                    <ImageWindow url={imageUrlState.url} /> :
-                    null}
-                {searchParams?.get('settings') && (
-                    <SettingsWindow isFade={true} />
-                )}
+        return (
+            <Suspense fallback={<Loader isFade={true} />}>
+                <div className={`h-full flex flex-col justify-end w-full relative`}>
+                    {imageUrlState.isShowImage && imageUrlState.url ?
+                        <ImageWindow url={imageUrlState.url} /> :
+                        null}
+                    {searchParams?.get('settings') && (
+                        <SettingsWindow isFade={true} />
+                    )}
 
-                {searchParams?.get('showSelectedCities') && authState?.user?.city && (
-                    <WrapperChoosingCities >
-                        <ChoosingCities setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
-                            cities={citiesData?.cities} cityFromServer={authState?.user?.city} />
-                    </WrapperChoosingCities>
-                )}
-                {searchParams?.get('showMapCities') && authState?.user.city && (
-                    <WrapperChoosingCities >
-                        <ChoosingCitiesOnMap setSelectedCity={setSelectedCity} position={position}
-                            setMapCity={setMapCity} mapCity={mapCity} />
-                    </WrapperChoosingCities>
-                )}
-                {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
-                    <>
-                        {(!isLoadingMessages &&
-                            !messagesData?.messages.length && !wsMessages.length) ? (
-                            <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
-                        ) : null}
-                        <MessageList
-                            userId={searchParams?.get('user')}
-                            wsMessages={wsMessages}
-                            setCurrentOffSet={setCurrentOffSet}
-                            messages={[...messages || [], ...wsMessages]}
-                            currentUser={authState?.user}
-                            anotherAuthorName={userData && userData?.users[0]}
-                            dataNextLength={dataNextLength}
-                            isLoadingMessages={isLoadingMessages}
-                        />
-                        <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
-                            <UploadMenuWithButtonAction
-                                setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
-                                setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}
-                                setIsFormUploadFile={setIsFormUploadFile} />
-                            <FormSendMessages
-                                publicKeys={publicKeysData?.publicKeys}
-                                messageId={changeMessageState.id}
-                                setMessage={setMessage}
-                                socket={socket} name={userData?.users[0]?.name}
-                                currentUserid={authState?.user?.id}
-                                message={message}
+                    {searchParams?.get('showSelectedCities') && authState?.user?.city && (
+                        <WrapperChoosingCities >
+                            <ChoosingCities setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
+                                cities={citiesData?.cities} cityFromServer={authState?.user?.city} />
+                        </WrapperChoosingCities>
+                    )}
+                    {searchParams?.get('showMapCities') && authState?.user.city && (
+                        <WrapperChoosingCities >
+                            <ChoosingCitiesOnMap setSelectedCity={setSelectedCity} position={position}
+                                setMapCity={setMapCity} mapCity={mapCity} />
+                        </WrapperChoosingCities>
+                    )}
+                    {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
+                        <>
+                            {(!isLoadingMessages &&
+                                !messagesData?.messages.length && !wsMessages.length && !messages.length) ? (
+                                <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
+                            ) : null}
+                            <MessageList
+                                userId={searchParams?.get('user')}
+                                wsMessages={wsMessages}
+                                setCurrentOffSet={setCurrentOffSet}
+                                messages={[...messages || [], ...wsMessages]}
+                                currentUser={authState?.user || userInfo}
+                                anotherAuthorName={userData && userData?.users[0]}
+                                dataNextLength={dataNextLength}
+                                isLoadingMessages={isLoadingMessages}
                             />
-                        </div>
-                        <UploadFile isShowUploadForm={Boolean(isFormUploadFile && !isPublicKeyLoading && encFile)}
-                            file={file} fileSrc={fileSrc}
-                            publicKeys={publicKeysData?.publicKeys}
-                            isFormUploadFade={isFormUploadFade}
-                            setIsFormUploadFade={setIsFormUploadFade} isFormUploadFile={isFormUploadFile}
-                            setIsFormUploadFile={setIsFormUploadFile} socket={socket}
-                            authState={authState} encFile={encFile} />
-                    </>
-                )}
-            </div>
-        </Suspense>
-    )
+                            {isOnline ? (
+                                <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
+                                    <UploadMenuWithButtonAction
+                                        setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
+                                        setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}
+                                        setIsFormUploadFile={setIsFormUploadFile} />
+                                    <FormSendMessages
+                                        publicKeys={publicKeysData?.publicKeys}
+                                        messageId={changeMessageState.id}
+                                        setMessage={setMessage}
+                                        socket={socket} name={userData?.users[0]?.name}
+                                        currentUserid={authState?.user?.id}
+                                        message={message}
+                                    />
+                                </div>) : null}
+                            <UploadFile isShowUploadForm={Boolean(isFormUploadFile && !isPublicKeyLoading && encFile)}
+                                file={file} fileSrc={fileSrc}
+                                publicKeys={publicKeysData?.publicKeys}
+                                isFormUploadFade={isFormUploadFade}
+                                setIsFormUploadFade={setIsFormUploadFade} isFormUploadFile={isFormUploadFile}
+                                setIsFormUploadFile={setIsFormUploadFile} socket={socket}
+                                authState={authState} encFile={encFile} />
+                        </>
+                    )}
+                </div>
+            </Suspense>
+        )
+    } else if (!isOnline && !isLoadingAuth && !userInfo) {
+        return (
+            <HomeWelcomePage />
+        )
+    }
 }
 
 export default HomePage

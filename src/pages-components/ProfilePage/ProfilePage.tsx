@@ -15,6 +15,9 @@ import { removeToken } from '@/redux/slices/tokenSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from '@/hooks/useTypedSelector';
 import { selectTokenState } from '@/selectors/selectors';
+import { clearCachedDialogues } from '@/cashe/dialoguesCache';
+import { clearCachedMessages } from '@/cashe/messageCache';
+import { clearCachedUser } from '@/cashe/userCache';
 
 interface ProfileDataState {
     name?: string,
@@ -97,6 +100,9 @@ const ProfilePage = () => {
     useEffect(() => {
         if (logoutData?.status === 'ok') {
             dispatch(removeToken())
+            clearCachedDialogues()
+            clearCachedMessages()
+            clearCachedUser()
             window.location.reload()
         }
     }, [logoutData])

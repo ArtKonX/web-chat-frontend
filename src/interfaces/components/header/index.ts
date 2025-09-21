@@ -6,7 +6,8 @@ export interface HeaderProps {
 export interface HeaderUserLinksProps {
     city: string,
     userName: string,
-    colorBackgroundIcon: string
+    colorBackgroundIcon: string,
+    isDisable?: boolean
 }
 
 export interface HeaderMenuItemProps {

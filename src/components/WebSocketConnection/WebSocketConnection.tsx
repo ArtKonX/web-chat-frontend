@@ -19,6 +19,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import constsEnv from '@/environment/environment';
+import { cacheDeleteMessage, cacheMessage, cacheUpdateMessage } from '@/cashe/messageCache';
+import { cacheDialogue } from '@/cashe/dialoguesCache';
 
 const WebSocketConnection = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -76,7 +78,6 @@ const WebSocketConnection = () => {
             currentSocket.onmessage = async (event) => {
                 try {
                     const newMessage = JSON.parse(event.data);
-                    console.log('newMessage', newMessage)
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if ((newMessage.sender_id === searchParams?.get('user')
@@ -128,6 +129,10 @@ const WebSocketConnection = () => {
                                                         }
                                                     };
 
+                                                    if (searchParams.get('user')) {
+
+                                                        await cacheMessage(updatedMessage, String(searchParams.get('user')))
+                                                    }
                                                     // Добавляем обновленное сообщение в список
                                                     setWsMessages(prev =>
                                                         [...prev.filter(elem => elem.id !== newMessage.id),
@@ -155,6 +160,12 @@ const WebSocketConnection = () => {
 
                                             if (message) {
                                                 const newMessageDec = { ...newMessage, message };
+
+                                                if (searchParams.get('user')) {
+
+                                                    await cacheMessage(newMessageDec, String(searchParams.get('user')))
+                                                }
+
                                                 setTimeout(() => {
                                                     setWsMessages(prev => [...prev.filter(elem => elem.id !== newMessageDec.id), newMessageDec]);
                                                 }, 400)
@@ -171,6 +182,7 @@ const WebSocketConnection = () => {
                         // Если сообщение удалено
                         if (newMessage.type === 'delete-message') {
 
+                            await cacheDeleteMessage(newMessage.idMessage)
                             setDeleteMessageId(newMessage.idMessage)
                         }
 
@@ -180,6 +192,7 @@ const WebSocketConnection = () => {
                             const decMessage = await decryptText(arrBufferMessage, privatKey.data)
 
                             if (decMessage) {
+                                await cacheUpdateMessage(decMessage, newMessage.idMessage)
                                 setUpdatedMessage({ idMessage: newMessage.idMessage, message: decMessage })
                             }
                         }
@@ -196,6 +209,7 @@ const WebSocketConnection = () => {
                             }
 
                             if (decMessage) {
+                                await cacheDialogue({ ...newMessage, lastMessage: decMessage })
                                 setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
                             }
                         }
@@ -214,7 +228,7 @@ const WebSocketConnection = () => {
         if (userId) {
             initWebSocket();
         }
-    }, [userId, authState?.user, dataAuth?.user?.id, userRef.current, privatKey]);
+    }, [userId, authState?.user, dataAuth?.user?.id, userRef.current, privatKey, searchParams.get('user')]);
 
     useEffect(() => {
 

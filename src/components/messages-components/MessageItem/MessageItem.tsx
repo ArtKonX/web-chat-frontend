@@ -127,7 +127,7 @@ const MessageItem = (
                 return (
                     <button className="relative w-full h-60 hover:opacity-80
                     duration-300 transition-opacity cursor-pointer" onClick={() => onShowImage(url)}>
-                        <img className='w-160 h-60 object-cover' src={url} alt={url} />
+                        <img className='w-160 h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
                         <a href={url} download={message.file_name} className="text-3xl absolute right-1 bottom-1 border-2 rounded-lg h-9 bg-white hover:opacity-80 transition-opacity duration-200">
                             ⬇
                         </a>

@@ -1,4 +1,5 @@
 export interface DialogueData {
+    id?: string,
     recipient_id: string,
     sender_id: string,
     userId: string,

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import "./globals.css";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
@@ -14,6 +14,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.ts')
+          .then(registration => {
+            console.log('ServiceWorker зарегистрирован:', registration);
+          })
+          .catch(error => {
+            console.error('Ошибка регистрации ServiceWorker:', error);
+          });
+      });
+    }
+  }, []);
 
   return (
     <html lang="ru">

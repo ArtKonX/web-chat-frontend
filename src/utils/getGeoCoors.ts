@@ -12,7 +12,6 @@ const getGeoCoors = async () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                console.log('latitude, longitude', latitude, longitude)
                 resolve({ latitude, longitude });
             },
             (err) => {

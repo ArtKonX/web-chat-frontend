@@ -41,7 +41,7 @@ const HomeWelcomePage = () => {
 
     return (
         <div className="w-full">
-            <div className="bg-[#F6F7F8] w-full h-[calc(100%-42px)] max-lg:h-full flex flex-col justify-center items-center px-4">
+            <div className="bg-[#F6F7F8] w-full h-[calc(100%-42px)] flex flex-col justify-center items-center px-4">
                 <div className="flex items-center max-sm:flex max-sm:flex-col max-sm:text-center">
                     <h1 className='text-3xl font-bold mr-3 max-sm:mr-0 max-sm:text-2xl max-sm:mb-5'>
                         Лучший чат для <span className={`opacity-${isFadeTitle} transition-opacity duration-500`}>{dataInfoChat[titleTextCount].text}</span> <span className="max-sm:whitespace-pre max-sm:flex max-sm:justify-center">- это K-Чат</span>
@@ -51,7 +51,7 @@ const HomeWelcomePage = () => {
                     </div>
                 </div>
                 <div className="mt-14 flex items-center justify-center max-sm:flex-col">
-                    <p className="font-bold text-xl mt-3 mr-3">Не трать время впустую,</p>
+                    <p className="font-bold text-xl mt-3 mr-3 max-sm:mr-0">Не трать время впустую,</p>
                     <LinkNavigate path="/registration" text='Зарегистрируйся!' />
                 </div>
             </div>
