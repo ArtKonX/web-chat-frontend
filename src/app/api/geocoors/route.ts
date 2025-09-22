@@ -38,9 +38,8 @@ export async function GET(request: Request) {
         })
 
     } catch (err) {
-        console.error(err);
         return NextResponse.json(
-            { error: 'Ошибка при запросе на получение местоположения' },
+            { error: `Ошибка при запросе на получение местоположения ${err}` },
             { status: 500 }
         );
     }

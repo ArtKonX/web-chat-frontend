@@ -365,16 +365,16 @@ const HomePage = () => {
                     return 0
                 });
 
+                const userId = searchParams.get('user');
+
                 try {
-                    if ([...messagesSort, ...messages].length) {
+                    if ([...messagesSort, ...messages].length && userId) {
                         await cacheMessages([...messagesSort, ...messages], searchParams.get('user')!);
                         console.log('Сообщения успешно сохранены в кеш');
                     }
                 } catch (error) {
                     console.error('Ошибка при сохранении в кеш:', error);
                 }
-
-                const userId = searchParams.get('user');
 
                 if (userId) {
 

@@ -1,15 +1,39 @@
 import { MessageInfo } from "@/interfaces/message";
-import initDB from "./db/initDB";
 
 const DB_NAME = 'MessagesCache';
 const STORE_NAME = 'messages';
 const MAX_MESSAGES_PER_USER = 100;
 
+const initDB = (dbName: string, storeName: string): Promise<IDBDatabase> => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 3);
+
+        request.onupgradeneeded = (event) => {
+            const db = (event.target as IDBOpenDBRequest).result;
+
+            // Проверяем существование хранилища
+            if (!db.objectStoreNames.contains(storeName)) {
+                // Создаем хранилище с ключом id
+                const store = db.createObjectStore(storeName, { keyPath: 'id' });
+
+                // Создаем индекс для userId
+                store.createIndex('userId', 'userId', {
+                    unique: false, // индекс не уникальный
+                    multiEntry: false
+                });
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+};
+
 const convertToCached = (message: MessageInfo, userId: string): MessageInfo => {
     return {
+        ...message,
         userId,
         id: message.id || message.idMessage || Date.now().toString(),
-        ...message
     };
 };
 
@@ -92,8 +116,7 @@ export const cacheMessage = async (messageInfo: MessageInfo, userId: string) => 
 
     // Очистка старых сообщений для пользователя
     const userMessages = await new Promise<MessageInfo[]>(resolve => {
-        const index = store.index('userId');
-        const request = index.getAll(userId);
+        const request = store.getAll();
         request.onsuccess = () => resolve(request.result || []);
     });
 
@@ -121,8 +144,7 @@ export const cacheMessages = async (messages: MessageInfo[], userId: string) => 
 
     // Очищаем старые сообщения
     const userMessages = await new Promise<MessageInfo[]>(resolve => {
-        const index = store.index('userId');
-        const request = index.getAll(userId);
+        const request = store.getAll();
         request.onsuccess = () => resolve(request.result || []);
     });
 

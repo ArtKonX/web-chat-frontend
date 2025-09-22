@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
 import { Agent } from 'https';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const fileUrl = url.searchParams.get('fileUrl');
@@ -29,7 +29,6 @@ export async function GET(request: Request) {
         });
 
     } catch (err) {
-        console.error('Ошибка при загрузке файла:', err);
         return NextResponse.json(
             { error: `Произошла ошибка при загрузке файла: ${err}` },
             { status: 500 }

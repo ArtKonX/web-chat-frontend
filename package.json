@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:quick": "jest --silent"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -34,13 +37,19 @@
     "@babel/register": "^7.28.3",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "babel-jest": "^30.1.2",
     "babel-plugin-styled-components": "^2.1.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
+    "jest": "^30.1.3",
+    "jest-environment-jsdom": "^30.1.2",
+    "node-fetch": "^3.3.2",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.4",
     "typescript": "^5"
   },
   "main": "index.js",
