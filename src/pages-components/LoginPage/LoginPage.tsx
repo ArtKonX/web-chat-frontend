@@ -59,6 +59,12 @@ const LoginPage = () => {
     });
 
     useEffect(() => {
+        if (authData?.user?.id) {
+            router.push('/')
+        }
+    }, [authData])
+
+    useEffect(() => {
         if ((dataLogin?.status === 'ok' && dataLogin?.user?.token) ||
             (authData)) {
             dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
