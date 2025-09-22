@@ -44,7 +44,7 @@ const LoginPage = () => {
 
     const router = useRouter()
     const tokenState = useSelector(selectTokenState);
-    
+
     const [login, { data: dataLogin, isLoading: isDataLoading, error: errorLogin }] = useLoginMutation<LoginMutation>();
     const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
     const dispatch = useDispatch();
@@ -62,7 +62,7 @@ const LoginPage = () => {
         if ((dataLogin?.status === 'ok' && dataLogin?.user?.token) ||
             (authData)) {
             dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
-            router.push('/');
+            location.reload()
         } else if (errorLogin?.data?.status === 'not-pin-code') {
             dispatch(addDataAuth({ type: 'login', email: formState.email, password: formState.password }))
             router.push('/check-pin?action=login')
