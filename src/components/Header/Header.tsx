@@ -51,16 +51,16 @@ const Header = (
             try {
                 const userData = await getCachedUser();
 
-                if (authData?.user) {
+                if (authData?.user?.id) {
                     setUserInfo(authData!.user)
-                } else if (userData) {
+                } else if (userData[0].id) {
                     setUserInfo(userData[0])
                 }
             } catch (err) {
                 console.log(err)
             }
         })()
-    }, [authData?.user,])
+    }, [authData?.user])
 
     useEffect(() => {
         if (!userIsLoading && searchParams?.get('user')) {
@@ -123,7 +123,7 @@ const Header = (
     }
 
     return (
-        <div className="w-full bg-white p-2 px-10 max-sm:px-4 border-b-2 box-content fixed z-50">
+        <div data-testid="header" className="w-full bg-white p-2 px-10 max-sm:px-4 border-b-2 box-content fixed z-50">
             <div className="w-full m-auto flex justify-between
             items-center"
             >
@@ -137,7 +137,7 @@ const Header = (
                         : null}
                     <HeaderLogo />
                 </div>
-                {isWelcomePage && (
+                {(!userInfo?.id && isWelcomePage) && (
                     <div className="w-full flex justify-between overflow-x-auto ml-[50px] px-1 mr-30 max-sm:mr-9 max-sm:ml-[20px]">
                         <div className="w-full max-sm:max-w-full">
                             <HeaderMenu dataMenu={dataMenu} />
@@ -145,7 +145,7 @@ const Header = (
                     </div>
                 )}
                 {userName && (<span className={`text-[18px] font-bold ${!isOnline && 'text-red-600/90'} max-sm:absolute max-sm:w-full max-sm:flex max-sm:justify-center max-sm:-bottom-[29px] max-sm:left-0 max-sm:bg-amber-100 $`}>{!isOnline ? 'Нет соединения с интернетом(' : userName}</span>)}
-                {!isDemoHeader && !isWelcomePage && (
+                {(userInfo?.id || (!isDemoHeader && !isWelcomePage)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
                         <HeaderUserLinks isDisable={!isOnline} city={dataUser.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
                         <button onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
