@@ -41,7 +41,7 @@ const UpdateProfilePage = () => {
 
     const tokenState = useSelector(selectTokenState);
 
-    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData } = useCheckAuthQuery({ token: tokenState?.token });
 
     const router = useRouter();
 
@@ -74,6 +74,14 @@ const UpdateProfilePage = () => {
                 .map((key) => key, true)
         );
 
+        if (formState.name.trim() === '') {
+            setErrors({
+                ...errors,
+                ...errorsInputs,
+                name: true,
+            });
+        }
+
         if (
             formState.password !== formState.checkPassword
         ) {
@@ -82,14 +90,6 @@ const UpdateProfilePage = () => {
                 ...errorsInputs,
                 password: true,
                 checkPassword: true
-            });
-        }
-
-        if (formState.name.trim() === '') {
-            setErrors({
-                ...errors,
-                ...errorsInputs,
-                name: true,
             });
         }
 
@@ -137,7 +137,7 @@ const UpdateProfilePage = () => {
         <div className="w-full min-h-[calc(100vh-82px)] flex items-center justify-center">
             <div className="my-2 w-full flex-1 items-center flex flex-col">
                 <div className="bg-white py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-10/11 w-full flex flex-col items-center">
-                    <form noValidate className="w-full" onSubmit={onSubmit}>
+                    <form data-testid="form" noValidate className="w-full" onSubmit={onSubmit}>
                         <HeadingWithTitle text='Обновление данных'>
                             <InputWithLabelAndInfo text='Имя' type='text'
                                 onChange={onChange}

@@ -7,7 +7,7 @@ const SideBarInputSearch = (
 ) => {
 
     return (
-        <input className={`w-full mt-5 p-1.5 rounded-xl px-3 outline-0 border-2
+        <input data-testid="search-input" className={`w-full mt-5 p-1.5 rounded-xl px-3 outline-0 border-2
             focus:border-amber-400/50 hover:border-amber-400/50
             transition-all duration-400`}
             type="text" onChange={onSearchUsers} value={searchUsers}

@@ -16,7 +16,7 @@ const DialoguesList = (
 ) => {
 
     const tokenState = useSelector(selectTokenState);
-    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData } = useCheckAuthQuery({ token: tokenState?.token });
 
     const searchParams = useSearchParams();
 
@@ -39,16 +39,16 @@ const DialoguesList = (
     }, [authData?.user,])
 
     const getUserRecipient = (senderId: string, recipientId: string) => {
-        const userSuccessData = authData?.user.id || userInfo?.id;
+        const userSuccessData = authData?.user?.id || userInfo?.id;
 
         return senderId === userSuccessData ? recipientId : senderId
     }
 
     return (
-        <ul>
+        <ul data-testid="dialogues-list">
             {
                 dialoguesData?.map((dialogue) => (
-                    <li key={dialogue.userId}>
+                    <li data-testid="dialogues-item" key={dialogue.userId}>
                         <UserItem id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
                             quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
                             isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}

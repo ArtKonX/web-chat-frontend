@@ -20,7 +20,7 @@ const Dialogue = (
                     String(name[0]) : ''}
                 colorBackgroundIcon={profileColor} />
             <div className='flex flex-col ml-4'>
-                <span className='font-bold'>
+                <span data-testid="user-name" className='font-bold'>
                     {name}
                 </span>
                 <p className="w-40 overflow-x-hidden text-nowrap overflow-ellipsis">

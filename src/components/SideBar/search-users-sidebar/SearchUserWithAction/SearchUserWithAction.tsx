@@ -10,7 +10,7 @@ const SearchUserWithAction = (
 
     return (
         <Link href={`/?tab=chats&user=${id}`} className='flex w-full justify-start items-center max-sm:items-end border-b-2 py-2 mb-5'>
-            <UserIcon nameFirstSymbol={name[0] && name[0]} colorBackgroundIcon={color_profile} />
+            <UserIcon nameFirstSymbol={name && name[0]} colorBackgroundIcon={color_profile} />
             <div className='flex flex-col max-sm:text-[15px] ml-4'>
                 <span>
                     {name}

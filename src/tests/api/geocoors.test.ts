@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';  // Добавь NextRequest
+import { NextRequest } from 'next/server'; 
 import { GET } from '../../app/api/geocoors/route';
 
 const fetchMock = jest.fn();

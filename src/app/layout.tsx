@@ -16,31 +16,43 @@ export default function RootLayout({
 }>) {
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+
+    const registerServiceWorker = () => {
+      if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-          .register('/sw.ts')
+          .register('/sw.js')
           .then(registration => {
             console.log('ServiceWorker зарегистрирован:', registration);
           })
           .catch(error => {
             console.error('Ошибка регистрации ServiceWorker:', error);
           });
-      });
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      registerServiceWorker();
+    } else {
+      window.addEventListener('load', registerServiceWorker);
     }
+
+    return () => {
+      window.removeEventListener('load', registerServiceWorker);
+    };
   }, []);
+
 
   return (
     <html lang="ru">
-      <body>
+      <body data-testid="body">
         <Provider store={store}>
-          <AuthGuard>
-            <Suspense fallback={<Loader isFade={true} />}>
+          <Suspense fallback={<Loader isFade={true} />}>
+            <AuthGuard>
               <Layout>
                 {children}
               </Layout>
-            </Suspense>
-          </AuthGuard>
+            </AuthGuard>
+          </Suspense>
         </Provider>
       </body>
     </html>

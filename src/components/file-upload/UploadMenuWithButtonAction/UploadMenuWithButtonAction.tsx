@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import MediaUploadMenu from "@/components/upload-file-components/MediaUploadMenu/MediaUploadMenu";
 import { useSelector } from "@/hooks/useTypedSelector";
@@ -9,10 +9,11 @@ import { ChangeEvent, useState } from "react";
 const UploadMenuWithButtonAction = (
     { setIsFormUploadFade, setFile, setFileSrc,
         isFormUploadFile, setIsFormUploadFile
-      }: UploadMenuWithButtonActionProps) => {
+    }: UploadMenuWithButtonActionProps) => {
 
     const [isOpenMenuFiles, setIsOpenMenuFiles] = useState(false);
     const [isSelectFilesFade, setIsSelectFilesFade] = useState(true);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const changeMessageState = useSelector(selectChangeMessageState);
 
@@ -44,8 +45,26 @@ const UploadMenuWithButtonAction = (
         }
     }
 
+    const handleClickOutside = (event: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsSelectFilesFade(false);
+            setTimeout(() => {
+                setIsOpenMenuFiles(false);
+            }, 100);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpenMenuFiles) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [isOpenMenuFiles]);
+
     return (
-        <div className="relative z-55">
+        <div ref={menuRef} className="relative z-55">
             {!changeMessageState.isChange &&
                 (<button onClick={onShowSelectTypeFile}
                     className="ml-6 text-3xl cursor-pointer hover:opacity-70 transition-opacity duration-700">

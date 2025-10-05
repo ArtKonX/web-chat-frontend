@@ -14,7 +14,7 @@ const FormRegistrationOrLogin = (
 
     if (typeForm === 'reg') {
         return (
-            <form noValidate className="" onSubmit={onSubmit}>
+            <form data-testid='form' noValidate className="" onSubmit={onSubmit}>
                 <HeadingWithTitle text='Регистрация в K-Чат'>
                     <div className="mb-4 flex justify-end items-center">
                         Уже есть K-ID? <Link className="text-amber-600/90 font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/login'}>Войти</Link>
@@ -48,7 +48,7 @@ const FormRegistrationOrLogin = (
         )
     } else if (typeForm === 'log') {
         return (
-            <form onSubmit={onSubmit}>
+            <form data-testid='form' onSubmit={onSubmit}>
                 <HeadingWithTitle text='Вход в K-Чат'>
                     <div className="mb-4 flex justify-end items-center">
                         Ещё нет K-ID? <Link className="text-amber-600/90 font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/registration'}>Регистрация</Link>

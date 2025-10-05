@@ -4,10 +4,24 @@ const useUrl = () => {
     const [url, setUrl] = useState<URL | null>(null);
 
     useEffect(() => {
-        // Инициализируем URL только на клиенте
-        if (typeof window !== 'undefined') {
-            setUrl(new URL(window.location.href));
-        }
+        // Функция для обновления URL
+        const updateUrl = () => {
+            if (typeof window !== 'undefined') {
+                setUrl(new URL(window.location.href));
+            }
+        };
+
+        // Инициализируем URL при монтировании
+        updateUrl();
+
+        // Добавляем слушатель на изменения location
+        window.addEventListener('popstate', updateUrl);
+        window.addEventListener('hashchange', updateUrl);
+
+        return () => {
+            window.removeEventListener('popstate', updateUrl);
+            window.removeEventListener('hashchange', updateUrl);
+        };
     }, []);
 
     return { url }

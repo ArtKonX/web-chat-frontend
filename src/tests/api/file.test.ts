@@ -11,7 +11,6 @@ describe('File API', () => {
     let mockRequest: NextRequest;
 
     beforeEach(() => {
-        // Создаем тестовый ответ от axios
         mockResponse = {
             data: new Uint8Array([0x48, 0x65, 0x6c, 0x6c, 0x6f]),
             headers: {
@@ -19,7 +18,6 @@ describe('File API', () => {
             }
         } as unknown as NextResponse;
 
-        // Создаем тестовый запрос
         mockRequest = new Request('http://localhost/api/file?fileUrl=test') as unknown as NextRequest;
     });
 
@@ -29,7 +27,7 @@ describe('File API', () => {
 
 
     test('должен успешно получить файл', async () => {
-        // Настраиваем мок для axios.get
+
         (axios.get as jest.Mock).mockResolvedValue(mockResponse);
 
         const response = await GET(mockRequest);

@@ -74,7 +74,10 @@ const CheckPinPage = () => {
     const onSendPin = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setPin('');
+        console.log('Отправляем форму');
+
         if (searchParams?.get('action') === 'login') {
+            console.log('Вызываем login мутацию');
             login({
                 email: auth.email,
                 password: auth.password,
@@ -135,7 +138,7 @@ const CheckPinPage = () => {
                 : 'opacity-0 scale-95 -translate-y-2'}`}
         >
             {(isLoginLoading || loginError || isUpdateLoading || updateError) && <Loader isFade={true} />}
-            <form onSubmit={onSendPin}
+            <form data-testid="form" onSubmit={onSendPin}
                 className="z-100 bg-white py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-10/11 w-full flex
                 flex-col items-center relative">
                 <HeadingWithTitle text='Введите код для двойной защиты:' >
@@ -147,6 +150,10 @@ const CheckPinPage = () => {
                     <InputWithLabelAndInfo error={false} text='Код' type='text' value={pin} onChange={onChange} />
                     <span>
                         Введите код, который был Вам предоставлен при подключении двойной защиты
+                        {String(isUpdateLoading)}
+                        {String(isLoginLoading)}
+                        {loginError ? String(loginError?.data?.data?.attempt) : null}
+                        {/* {dataLogin && String(Object.keys(dataLogin).join(' '))} */}
                     </span>
                     <div className="w-full text-end">
                         <Btn text='Проверить' type='submit' />

@@ -1,5 +1,5 @@
 import { UserData } from "@/interfaces/users"
-import { ChangeEvent } from "react"
+import { ChangeEvent, ReactNode } from "react"
 
 interface DialogueData {
     recipient_id: string,
@@ -15,11 +15,15 @@ export interface SideBarProps {
     onSearchUsers: (e: ChangeEvent<HTMLInputElement>) => void,
     searchUsers: string,
     dialoguesData: DialogueData[],
-    isDisableFindUsers?: boolean
+    isDisableFindUsers?: boolean,
+    isListInfoDialoguesLoading: boolean,
+    children: ReactNode
 }
 
 export interface SideBarActionLinkProps {
-    icon: string,
+    icon: {
+        src: string
+    },
     alt: string,
     href: string,
     isActive: boolean,

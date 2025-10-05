@@ -23,14 +23,16 @@ export const store = configureStore({
         imageSlice: imageSlice
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware(
-            {
-                serializableCheck: {
-                    ignoredActions: ['persist/PERSIST'],
-                    ignoredPaths: ['persist.register']
-                }
-            }).concat(authApi.middleware, usersApi.middleware,
-                messagesApi.middleware, citiesApi.middleware),
+        getDefaultMiddleware({
+            serializableCheck: false,
+            immutableCheck: false
+        })
+            .concat(
+                authApi.middleware,
+                usersApi.middleware,
+                messagesApi.middleware,
+                citiesApi.middleware
+            )
 });
 
 export const persistor = persistStore(store);

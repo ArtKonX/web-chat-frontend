@@ -1,0 +1,5 @@
+module.exports = {
+  src: "https://placekitten.com/100/100",
+  width: 100,
+  height: 100,
+}

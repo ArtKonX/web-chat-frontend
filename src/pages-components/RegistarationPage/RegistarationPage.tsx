@@ -122,7 +122,7 @@ const RegistrationPage = () => {
             }));
         }
 
-        if (!isValid.valid || !formState.email.trim()) {
+        if (!isValid?.valid || !formState.email.trim()) {
             setErrors((prev) => ({ ...prev, email: true }));
         }
 

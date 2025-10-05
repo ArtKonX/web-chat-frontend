@@ -5,7 +5,11 @@ import { CheckAuthData, CheckAuthResponse, GetPublicKeysData, GetPublicKeysRespo
 const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: constsEnv.NEXT_BACKEND_URL
+        baseUrl: constsEnv.NEXT_BACKEND_URL,
+        fetchFn: (url, options) => {
+            // Убираем signal, чтобы избежать конфликта с MSW
+            return fetch(url, { ...options, signal: undefined });
+        },
     }),
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginData>({

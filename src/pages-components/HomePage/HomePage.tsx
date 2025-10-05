@@ -75,7 +75,7 @@ const HomePage = () => {
     const tokenState = useSelector(selectTokenState);
 
     // Получение данных авторизованного пользователя
-    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({ token: tokenState?.token });
 
     const [mapCity, setMapCity] = useState(authState?.user?.city);
 
@@ -144,8 +144,9 @@ const HomePage = () => {
         setWsMessages([])
         setMessages([])
         setCurrentOffSet('0')
+
         if (searchParams?.get('user') && authState?.user?.id) {
-            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: '0', token: tokenState.token })
+            getMessages({ currentUserId: searchParams?.get('user'), userId: authState?.user?.id, offset: '0', token: tokenState?.token })
         }
 
     }, [searchParams?.get('user')])
@@ -208,7 +209,7 @@ const HomePage = () => {
             url.searchParams.delete('showSelectedCities');
             url.searchParams.delete('showMapCities');
 
-            router.push(url.href)
+            router?.push(url.href)
         }
     }, [updateCityData])
 
@@ -216,7 +217,7 @@ const HomePage = () => {
         if (url && authState?.user?.id && !url.searchParams.get('tab')) {
             url.searchParams.set('tab', 'chats');
 
-            router.push(url.href)
+            router?.push(url.href)
         }
     }, [authState?.user?.id])
 
@@ -229,7 +230,7 @@ const HomePage = () => {
     }, [searchParams?.get('offset'), authState?.user?.id])
 
     useEffect(() => {
-        if (searchParams.get('tab') === 'chats' && searchParams?.get('user') && url) {
+        if (searchParams?.get('tab') === 'chats' && searchParams?.get('user') && url) {
             url?.searchParams.set('offset', '0')
             url?.searchParams.set('user', String(searchParams?.get('user')));
             setCurrentOffSet('0')
@@ -247,7 +248,7 @@ const HomePage = () => {
             url?.searchParams.set('offset', '0')
             url?.searchParams.set('user', String(searchParams?.get('user')));
             setCurrentOffSet('0')
-            router.push(url.href)
+            router?.push(url.href)
         }
     }, [url])
 
@@ -256,7 +257,7 @@ const HomePage = () => {
         if (url && searchParams?.get('user')) {
             url?.searchParams.set('offset', String(currentOffSet))
             url?.searchParams.set('user', String(searchParams?.get('user')))
-            router.push(url.href);
+            router?.push(url.href);
         }
     }, [url, setCurrentOffSet, currentOffSet])
 
@@ -365,11 +366,11 @@ const HomePage = () => {
                     return 0
                 });
 
-                const userId = searchParams.get('user');
+                const userId = searchParams?.get('user');
 
                 try {
                     if ([...messagesSort, ...messages].length && userId) {
-                        await cacheMessages([...messagesSort, ...messages], searchParams.get('user')!);
+                        await cacheMessages([...messagesSort, ...messages], searchParams!.get('user')!);
                         console.log('Сообщения успешно сохранены в кеш');
                     }
                 } catch (error) {
@@ -408,7 +409,7 @@ const HomePage = () => {
 
         (async () => {
             if (!isOnline && searchParams?.get('user')) {
-                const cached = await getCachedMessages(String(searchParams.get('user')));
+                const cached = await getCachedMessages(String(searchParams?.get('user')));
                 if (cached.length > 0) {
                     const sortedMessages = cached.toSorted((a, b) => new Date(String(a.created_at)).getTime() - new Date(String(b.created_at)).getTime())
                     setMessages(sortedMessages);
@@ -422,7 +423,7 @@ const HomePage = () => {
             window.location.reload()
             setIsReloaded(false)
         }
-    }, [isOnline, searchParams.get('user')])
+    }, [isOnline, searchParams?.get('user')])
 
     useEffect(() => {
         if (file && publicKeysData?.publicKeys.length) {
@@ -462,11 +463,11 @@ const HomePage = () => {
         })()
     }, [authState?.user,])
 
-    if (isLoadingAuth) return <Loader isFade={true} />
+    if (isLoadingAuth && !authState && !userInfo?.id) return <Loader isFade={true} />
 
     if (isOnline && !isLoadingAuth && (!authState?.user?.id && !userInfo)) {
         return <HomeWelcomePage />
-    } else if ((!isOnline || isOnline) && !isLoadingAuth && (authState?.user?.id || userInfo)) {
+    } else if ((!isOnline || isOnline) && !isLoadingAuth) {
 
         return (
             <Suspense fallback={<Loader isFade={true} />}>

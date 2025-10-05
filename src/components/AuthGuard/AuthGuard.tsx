@@ -13,6 +13,8 @@ import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
 import { cacheUser, getCachedUser } from '@/cashe/userCache';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
     const tokenState = useSelector(selectTokenState);
@@ -21,6 +23,10 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     const [updateCity, { data: updateCityData, isLoading: isLoadingUpdateCity }] = useUpdateCityMutation();
 
     const bgColor = useSelector(selectbackgroundState);
+
+    const searchParams = useSearchParams();
+
+    const router = useRouter()
 
     const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
@@ -42,6 +48,10 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         if (body && authData) {
             // Для фона чата
             body.style.background = `url('${urlBg.src}'), linear-gradient(135deg, ${bgColor.bgColor}, rgba(0, 0, 255, 0.3))`;
+
+            if (!searchParams.get('tab')) {
+                router.push('/?tab=users')
+            }
         }
 
     }, [bgColor, authData,])
@@ -49,7 +59,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
 
         if (!isLoadingAuth && !authData?.user.city) {
-            getGeoCoors().then(geoCoors => {
+            getGeoCoors()?.then(geoCoors => {
                 const coors = geoCoors as Coordinates;
 
                 setPosition(coors);
@@ -75,11 +85,11 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     }, [authData])
 
     useEffect(() => {
-        if (position && !isLoadingAuth && !authData?.user.city && authData?.user.id && tokenState.token) {
+        if (position && !isLoadingAuth && !authData?.user.city && authData?.user?.id && tokenState.token) {
             fetchCityFromCoors({ position }).then(res => {
                 if (res) {
                     const dataPosition = {
-                        id: authData?.user.id,
+                        id: authData?.user?.id,
                         city: res,
                         token: tokenState.token
                     }

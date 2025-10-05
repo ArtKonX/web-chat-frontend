@@ -147,7 +147,7 @@ const Header = (
                 {userName && (<span className={`text-[18px] font-bold ${!isOnline && 'text-red-600/90'} max-sm:absolute max-sm:w-full max-sm:flex max-sm:justify-center max-sm:-bottom-[29px] max-sm:left-0 max-sm:bg-amber-100 $`}>{!isOnline ? 'Нет соединения с интернетом(' : userName}</span>)}
                 {(userInfo?.id || (!isDemoHeader && !isWelcomePage)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
-                        <HeaderUserLinks isDisable={!isOnline} city={dataUser.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
+                        <HeaderUserLinks isDisable={!isOnline} city={dataUser.city || userInfo!.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
                         <button onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
                     </div>
                 )}

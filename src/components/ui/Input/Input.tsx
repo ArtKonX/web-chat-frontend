@@ -8,6 +8,7 @@ const Input = (
 
     return (
         <input
+            data-testid={`${error ? 'name-error' : 'input'}`}
             className={`outline-0 bg-gray-100/90 border-1
             border-transparent pt-4 pb-1
             px-3 rounded-lg ${isFocused && 'bg-white border-black!'}

@@ -15,6 +15,7 @@ import { СhoosingCitiesOnMapProps } from '@/interfaces/components/actions-with-
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+
 import { fromLonLat, transform } from 'ol/proj';
 import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
 import useUrl from '@/hooks/useUrl';
 
 const ChoosingCitiesOnMap = (
-    { position, mapCity, setMapCity, setSelectedCity }: СhoosingCitiesOnMapProps
+    { position, mapCity, setMapCity, setSelectedCity, testSetNewPosition }: СhoosingCitiesOnMapProps
 ) => {
     const mapRef = useRef<HTMLDivElement | null>(null);
 
@@ -38,6 +39,12 @@ const ChoosingCitiesOnMap = (
         if (mapCity)
             setSelectedCity(mapCity)
     }
+
+    useEffect(() => {
+        if (testSetNewPosition) {
+            setNewPosition(testSetNewPosition);
+        }
+    }, [testSetNewPosition]);
 
     useEffect(() => {
         // Если поменялись координаты, которые мы выбрали на карте
@@ -142,21 +149,19 @@ const ChoosingCitiesOnMap = (
             <div className="absolute flex right-0 top-0">
                 <CloseBtn onClose={onClose} />
             </div>
-            <form onSubmit={onChooseСityOnMap}>
+            <form data-testid="map-form" role="form" onSubmit={onChooseСityOnMap}>
                 <HeadingWithTitle text='Выберите свой город на карте:'>
                     <div className='flex text-xl flex-col font-bold mb-3'>
                         <div className="flex mb-3">
                             Выбранный город:
-                            {newPosition && (
-                                <div className="ml-3">
-                                    <span className={`${typeof mapCity !== 'string' && 'animate-pulse'}`}>
-                                        {typeof mapCity === 'string' ? mapCity : 'Поиск...'}
-                                    </span>
-                                </div>
-                            )}
+                            <div className="ml-3">
+                                <span data-testid="selected-city" className={`${typeof mapCity !== 'string' && 'animate-pulse'}`}>
+                                    {typeof mapCity === 'string' ? mapCity : 'Поиск...'}
+                                </span>
+                            </div>
                         </div>
                         {/* Отображаем саму карту */}
-                        <div className='shadow-lg shadow-gray-700 object-contain hover:cursor-grab
+                        <div data-testid="map" id='map' className='shadow-lg shadow-gray-700 object-contain hover:cursor-grab
                     active:cursor-grabbing'
                             ref={mapRef}
                             style={{

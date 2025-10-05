@@ -4,7 +4,8 @@ export interface СhoosingCitiesOnMapProps {
     position: Coordinates | null;
     mapCity: string | undefined;
     setMapCity: (mapCity: string) => void,
-    setSelectedCity: (selectedCity: string) => void
+    setSelectedCity: (selectedCity: string) => void,
+    testSetNewPosition?: Coordinates | null
 }
 
 export interface ChoosingCitiesItemProps {

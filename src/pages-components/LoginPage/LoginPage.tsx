@@ -65,9 +65,7 @@ const LoginPage = () => {
     }, [authData])
 
     useEffect(() => {
-        console.log('errorLogin?.data', dataLogin, errorLogin)
         if ((dataLogin?.status === 'ok' && dataLogin?.user?.token)) {
-                console.log('JSON.stringify(dataLogin?.user?.token) }', JSON.stringify(dataLogin?.user?.token))
             dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
             location.reload()
         } else if (errorLogin?.data?.status === 'not-pin-code') {
@@ -111,7 +109,6 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isSubmit) {
-            console.log('formState', formState, errors)
             if (!Object.values(errors).some(Boolean)) {
                 login({
                     email: formState.email,

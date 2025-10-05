@@ -88,7 +88,7 @@ const FormTurnOff2FA = (
                         Осталось попыток: {attempt}
                     </span>)
                 }
-                <InputWithLabelAndInfo error={isErrorTurnOff2FA} text='Код' type='text' value={savePin} onChange={onChangePin} />
+                <InputWithLabelAndInfo name='turn-off' error={isErrorTurnOff2FA} text='Код' type='text' value={savePin} onChange={onChangePin} />
                 <span>
                     При отключении двойной защиты риск потери аккаунта возрастает, подумайте прежде чем это делать!
                 </span>

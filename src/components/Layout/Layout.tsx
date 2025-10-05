@@ -23,6 +23,7 @@ import { useCheckAuthQuery } from '@/redux/services/authApi';
 import { cacheDialogue, getCachedDialogues } from '@/cashe/dialoguesCache';
 import { UserData } from '@/interfaces/users';
 import { getCachedUser } from '@/cashe/userCache';
+import SkeletonLayoutList from '../sceleton-layout/SkeletonLayoutList/SkeletonLayoutList';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -33,14 +34,14 @@ const Layout = (
     const sideBarState = useSelector(selectSideBarState);
     const tokenState = useSelector(selectTokenState)
 
-    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData } = useCheckAuthQuery({ token: tokenState?.token });
 
     const pathname = usePathname();
     const [isDemoHeader, setIsDemoHeader] = useState(false);
     const [searchUsers, setSearchUsers] = useState('');
     const searchUsersDebounce = useDebounce(searchUsers, 400);
-    const { data: findUsers } = useGetUsersQuery({ q: searchUsersDebounce, currentId: authData?.user?.id, token: tokenState.token });
-    const { data: usersOnMessages, isLoading } = useGetInfoDialoguesQuery({ userId: authData?.user?.id, token: tokenState.token });
+    const { data: findUsers, isLoading: isFindUsersLoading } = useGetUsersQuery({ q: searchUsersDebounce, currentId: authData?.user?.id, token: tokenState.token });
+    const { data: listInfoDialogues, isLoading: isListInfoDialoguesLoading } = useGetInfoDialoguesQuery({ userId: authData?.user?.id, token: tokenState.token });
     const { socket, wsInfoDialogues, setWsInfoDialogues, userStatus, setUserStatus } = WebSocketConnection();
     const [listDialogues, setListDialogues] = useState<DialogueData[] | null>(null);
 
@@ -125,9 +126,9 @@ const Layout = (
     }, [userStatus, setUserStatus])
 
     useEffect(() => {
-        if (usersOnMessages?.data?.length && privatKey) {
+        if (listInfoDialogues?.data?.length && privatKey) {
             const fetchDialogues = async () => {
-                const decListDialogues = await Promise.all(usersOnMessages?.data.map(async (dialogue) => {
+                const decListDialogues = await Promise.all(listInfoDialogues?.data.map(async (dialogue) => {
                     const messageList = dialogue.lastMessage.split('\n');
 
                     let decMessage;
@@ -179,7 +180,7 @@ const Layout = (
 
             fetchDialogues()
         }
-    }, [usersOnMessages?.data?.length, isLoading,])
+    }, [listInfoDialogues?.data?.length, isListInfoDialoguesLoading,])
 
     useEffect(() => {
         const userId = searchParams.get('user');
@@ -230,17 +231,21 @@ const Layout = (
     return (
         <Suspense fallback={<Loader isFade={true} />}>
             <div className="max-w-full w-full">
-                <Header isDemoHeader={isDemoHeader || !userInfo?.id}
-                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && !userInfo?.id} />
-                <div className="w-full h-screen pt-[66px] flex max-lg:pt-[0px]">
-                    {sideBarState.isShow && !isDemoHeader && userInfo?.id && (
+                <Header isDemoHeader={isDemoHeader || (!userInfo?.id && !authData?.user.id)}
+                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && (!userInfo?.id && !authData?.user.id)} />
+                <div className="w-full max-w-full h-screen pt-[66px] flex max-lg:pt-[0px] relative">
+                    {sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (
                         <SideBar
+                            isListInfoDialoguesLoading={isListInfoDialoguesLoading}
                             isDisableFindUsers={!isOnline}
                             findUsers={findUsers?.users || []}
                             dialoguesData={listDialogues || []}
                             onSearchUsers={onSearchUsers}
                             searchUsers={searchUsers}
-                        />
+                        >
+                            {(searchParams.get('tab') === 'users') && isFindUsersLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[170px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
+                            {(searchParams.get('tab') === 'chats') && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
+                        </SideBar>
                     )}
                     {children}
                 </div>

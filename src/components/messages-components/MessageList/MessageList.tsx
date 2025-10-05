@@ -29,11 +29,13 @@ const MessageList = (
     // функция для автоматической плавной прокрутки при получении нового сообщения
     // либо если сообщения не влезают в область видимости
     const scrollToBottom = () => {
-        if (messagesListRef.current) {
+        if (messagesListRef.current && typeof messagesListRef.current.scroll === 'function') {
             messagesListRef.current.scroll({
                 top: messagesListRef.current.scrollHeight,
-                behavior: 'smooth'
+                behavior: 'smooth',
             });
+        } else if (messagesListRef.current) {
+            messagesListRef.current.scrollTop = messagesListRef.current.scrollHeight;
         }
     };
 
@@ -62,7 +64,7 @@ const MessageList = (
     }, [searchParams?.get('user'), wsMessages.length,]);
 
     return (
-        <ul
+        <ul data-testid="message-list"
             ref={messagesListRef}
             className={`overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-23 max-sm:h-[83%] h-full ${isScroll && 'overflow-y-hidden'}`}
         >

@@ -7,7 +7,7 @@ const HeaderMenu = (
     { dataMenu }: { dataMenu: MenuDataElem[] }) => {
 
     return (
-        <ul className="max-w-full w-full flex justify-between">
+        <ul data-testid="header-menu" className="max-w-full w-full flex justify-between">
             {dataMenu.map(itemData => (
                 <li key={itemData.id}>
                     <HeaderMenuItem {...itemData} />

@@ -10,7 +10,7 @@ interface AuthState {
 
 export interface UploadFileProps {
     isShowUploadForm: boolean,
-    file: File | null,
+    file?: File | null,
     fileSrc: string,
     isFormUploadFade: boolean,
     setIsFormUploadFade: (isFormUploadFade: boolean) => void,

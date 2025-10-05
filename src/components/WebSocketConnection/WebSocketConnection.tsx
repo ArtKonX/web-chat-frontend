@@ -27,7 +27,6 @@ const WebSocketConnection = () => {
     const [wsMessages, setWsMessages] = useState<MessageInfo[]>([]);
     const searchParams = useSearchParams();
     const tokenState = useSelector(selectTokenState);
-    const { data: authState } = useCheckAuthQuery({ token: tokenState.token });
     const [wsInfoDialogues, setWsInfoDialogues] = useState<WSDialogueData | null>(null);
     const userRef = useRef(searchParams?.get('user'));
     const [deleteMessageId, setDeleteMessageId] = useState<string | null>(null);
@@ -36,7 +35,7 @@ const WebSocketConnection = () => {
 
     const [userId, setUserId] = useState<string | null>(null)
 
-    const { data: dataAuth, isLoading: isAuthLoading, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: dataAuth, isLoading: isAuthLoading, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState?.token });
 
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
 
@@ -81,8 +80,8 @@ const WebSocketConnection = () => {
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if ((newMessage.sender_id === searchParams?.get('user')
-                        && newMessage.recipient_id === authState?.user?.id) ||
-                        (newMessage.sender_id === authState?.user?.id
+                        && newMessage.recipient_id === dataAuth?.user?.id) ||
+                        (newMessage.sender_id === dataAuth?.user?.id
                             && newMessage.recipient_id === searchParams?.get('user'))) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
@@ -228,7 +227,7 @@ const WebSocketConnection = () => {
         if (userId) {
             initWebSocket();
         }
-    }, [userId, authState?.user, dataAuth?.user?.id, userRef.current, privatKey, searchParams.get('user')]);
+    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey, searchParams?.get('user'),]);
 
     useEffect(() => {
 
@@ -237,7 +236,7 @@ const WebSocketConnection = () => {
         } else {
             authRefetch();
         }
-    }, [isAuthLoading, authState?.user])
+    }, [isAuthLoading, dataAuth?.user])
 
     return {
         socket, wsMessages,

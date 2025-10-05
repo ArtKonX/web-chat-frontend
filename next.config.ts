@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  "compilerOptions": {
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
+    ]
+  },
+  experimental: {
+    clientInstrumentationHook: true,
+  },
   images: {
     domains: [
       'downloader.disk.yandex.ru'

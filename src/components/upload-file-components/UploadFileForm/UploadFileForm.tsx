@@ -112,7 +112,7 @@ const UploadFileForm = (
             {isLoadingUpload ?
                 <Loader isFade={isLoadingUpload} /> :
                 null}
-            <form onSubmit={onUploadFile} className="bg-white py-3 px-5 rounded-2xl
+            <form data-testid="upload-file-form"  onSubmit={onUploadFile} className="bg-white py-3 px-5 rounded-2xl
                                     max-w-2/6 max-lg:max-w-9/11 max-sm::max-w-10/11 w-full flex flex-col items-center justify-center">
                 <div className="w-full flex justify-between items-center mb-4 z-200">
                     <h3>
@@ -127,7 +127,7 @@ const UploadFileForm = (
                     <input className={`w-[calc(100%-22px)] focus:outline-0 text-lg`}
                         type="text" placeholder="Добавить описание..."
                         onChange={onChangeMessFile} value={String(messageToFile)} />
-                    <button type="submit" className="hover:text-amber-400/50 transition-all
+                    <button type="submit" data-testid="mock-upload-button" className="hover:text-amber-400/50 transition-all
                 duration-400 text-2xl cursor-pointer">
                         ➤
                     </button>
