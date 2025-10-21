@@ -5,7 +5,7 @@ import Link from "next/link"
 const HeaderLogo = () => {
 
     return (
-        <Link href={'/'} data-testid="header-logo" className="flex flex-col bg-amber-400/50 max-w-12 h-12 w-12 mr-3
+        <Link href={'/?tab=users'} data-testid="header-logo" className="flex flex-col bg-amber-400/50 max-w-12 h-12 w-12 mr-3
         rounded-b-4xl rounded-t-lg items-center justify-center
         border-2 cursor-pointer
         hover:bg-black hover:border-amber-400 hover:text-amber-400

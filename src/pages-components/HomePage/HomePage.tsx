@@ -67,6 +67,7 @@ const HomePage = () => {
 
     const [updateCity, { data: updateCityData }] = useUpdateCityMutation();
     const [messages, setMessages] = useState<MessageInfo[]>([]);
+    const [caсheMessages, setCaсheMessages] = useState<MessageInfo[]>([]);
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null);
     const [countFirstRender, setCountFirstRender] = useState(0);
 
@@ -378,31 +379,52 @@ const HomePage = () => {
                 }
 
                 if (userId) {
+                    const sortedMessages = [...messagesSort, ...messages].toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
 
-                    const cached = await getCachedMessages(userId);
-                    if (cached.length > 0) {
-                        const allMessagesLen = [...messagesSort, ...messages].length;
-                        if (cached.length < [...messagesSort, ...messages].length) {
+                    const uniqueIds = new Set();
+                    const uniqueMessages = [...sortedMessages].filter(message => !uniqueIds.has(message.id) && uniqueIds.add(message.id))
+                    if (uniqueMessages.length) {
+                        // Убираем сообщения для первоначального отображения из кеша
+                        setCaсheMessages([])
 
-                            const allMessages = [...cached, ...[...messagesSort, ...messages].slice(allMessagesLen)]
-                            const sortedMessages = allMessages.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
-
-                            setMessages(sortedMessages);
-                            console.log('Загружены сообщения из кеша с новыми сообщениями:', cached.length);
-                        } else {
-                            const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
-
-                            setMessages(sortedMessagesCashed);
-                            console.log('Загружены сообщения из кеша:', cached.length);
-                        }
-                    } else {
-                        setMessages([...messagesSort, ...messages]);
+                        setMessages([...uniqueMessages]);
                     }
                 }
             })()
 
         }
-    }, [messagesData?.messages, isLoadingMessages, privatKey])
+
+        if (!messagesData && !isOnline) {
+            (async () => {
+                const userId = searchParams?.get('user');
+
+                if (userId) {
+                    const cached = await getCachedMessages(userId);
+                    if (cached.length > 0) {
+                        const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+
+                        setCaсheMessages([])
+                        setMessages([...sortedMessagesCashed]);
+                        console.log('Загружены сообщения из кеша:', sortedMessagesCashed, cached.length);
+                    }
+                }
+            })()
+        }
+
+        (async () => {
+            const userId = searchParams?.get('user');
+
+            if (userId) {
+                const cached = await getCachedMessages(userId);
+                if (cached.length > 0 && !messagesData?.messages.length) {
+                    const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+
+                    setCaсheMessages([...sortedMessagesCashed]);
+                    console.log('Загружены сообщения из кеша для первоначального отображения:', sortedMessagesCashed, cached.length);
+                }
+            }
+        })()
+    }, [messagesData?.messages, isLoadingMessages, privatKey,])
 
     useEffect(() => {
         setIsReloaded(false);
@@ -494,18 +516,20 @@ const HomePage = () => {
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
                             {(!isLoadingMessages &&
-                                !messagesData?.messages.length && !wsMessages.length && !messages.length) ? (
+                                !messagesData?.messages.length && !wsMessages.length && !messages.length && !caсheMessages.length) ? (
                                 <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
                             ) : null}
                             <MessageList
+                                isOnline={isOnline}
                                 userId={searchParams?.get('user')}
                                 wsMessages={wsMessages}
                                 setCurrentOffSet={setCurrentOffSet}
                                 messages={[...messages || [], ...wsMessages]}
+                                caсheMessages={caсheMessages}
                                 currentUser={authState?.user || userInfo}
                                 anotherAuthorName={userData && userData?.users[0]}
                                 dataNextLength={dataNextLength}
-                                isLoadingMessages={isLoadingMessages}
+                                isLoadingMessages={isLoadingMessages || !messages.length}
                             />
                             {isOnline ? (
                                 <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>

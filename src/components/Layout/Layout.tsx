@@ -233,7 +233,7 @@ const Layout = (
             <div className="max-w-full w-full">
                 <Header isDemoHeader={isDemoHeader || (!userInfo?.id && !authData?.user.id)}
                     isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && (!userInfo?.id && !authData?.user.id)} />
-                <div className="w-full max-w-full h-screen pt-[66px] flex max-lg:pt-[0px] relative">
+                <div className="w-full max-w-full h-screen pt-[66px] flex max-lg:pt-[0px] max-lg:min-w-full relative">
                     {sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (
                         <SideBar
                             isListInfoDialoguesLoading={isListInfoDialoguesLoading}
@@ -244,7 +244,7 @@ const Layout = (
                             searchUsers={searchUsers}
                         >
                             {(searchParams.get('tab') === 'users') && isFindUsersLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[170px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
-                            {(searchParams.get('tab') === 'chats') && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
+                            {(searchParams.get('tab') === 'chats') && !listDialogues?.length && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && !listDialogues?.length && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
                         </SideBar>
                     )}
                     {children}

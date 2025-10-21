@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import imgAudio from '../../../../public/images/img-audio.png';
 import { useEffect, useRef, useState } from 'react';
@@ -34,6 +34,25 @@ const MessageItem = (
     const [deleteMessage, { data: deleteMessageData, isLoading: isLoadingDeleteMessage }] = useDeleteMessageMutation()
 
     const messageChangeData = useSelector(selectChangeMessageState);
+
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+        if (
+            showActionMessage &&
+            refActions.current &&
+            !refActions.current.contains(event.target as Node)
+        ) {
+            setShowActionMessage({ id: message.id, isShow: false });
+        }
+    }, [showActionMessage, refActions, message.id]);
+
+    useEffect(() => {
+        if (showActionMessage?.isShow) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [showActionMessage, handleClickOutside]);
 
     useEffect(() => {
 
@@ -167,9 +186,7 @@ const MessageItem = (
                     'opacity-0 scale-95 -translate-y-2'}`}>
             </div>) : null}
             {showActionMessage?.isShow && !messageChangeData.isChange && isFade && (
-                <div ref={refActions} className='absolute w-full z-110 flex items-center justify-center
-                max-lg:left-0! max-lg:h-full max-lg:top-0
-                 max-sm:left-0! max-sm:h-full max-sm:top-0'>
+                <div ref={refActions} className='absolute w-full z-110 flex items-center justify-center'>
                     <ul className='bg-white rounded-4xl border-2 border-black'>
                         {['Изменить', 'Удалить', 'Отмена'].map((item, indx) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
@@ -182,7 +199,7 @@ const MessageItem = (
                 </div>
             )}
             <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-10 pl-4 rounded-3xl
-        border-2 ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 max-lg:z-50 max-sm:z-50 fixed'} ${currentId?.id === message?.sender_id ?
+        border-2 ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
                 {!messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-50'>
                     <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }) }} className='bg-white pt-[4px] pb-[14px] px-3

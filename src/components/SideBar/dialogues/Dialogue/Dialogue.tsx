@@ -4,17 +4,33 @@ import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
 import Link from "next/link"
 
+import { useMediaPredicate } from 'react-media-hook';
+import { useDispatch } from 'react-redux';
+import { toggleSideBar } from '@/redux/slices/sideBarSlice';
+
 const Dialogue = (
     { id, name, isActiveUser,
         status, profileColor,
         quantityMessages, lastMassage }: DialogueProps
 ) => {
 
+    const dispatch = useDispatch();
+
+    const isMobile = useMediaPredicate('(max-width: 768px)');
+
+    const closeSideBarMobile = () => {
+        if (isMobile) {
+            dispatch(toggleSideBar());
+        }
+    }
+
+
     return (
         <Link href={`/?tab=chats&user=${id}`}
             className={`hover:opacity-60 transition-opacity duration-700 cursor-pointer relative
         ${isActiveUser ? 'border-amber-400 opacity-50 pointer-events-none' :
-                    'border-black'} pb-2 mt-10 flex items-center border-b-2 justify-around`}>
+                    'border-black'} pb-2 mt-10 flex items-center border-b-2 justify-around`}
+            onClick={closeSideBarMobile}>
             <UserIcon status={status}
                 nameFirstSymbol={name?.length ?
                     String(name[0]) : ''}

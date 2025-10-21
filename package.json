@@ -30,6 +30,7 @@
     "ol": "^10.6.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-media-hook": "^0.5.1",
     "react-redux": "^9.2.0",
     "react-scroll": "^1.9.3",
     "react-use": "^17.6.0",

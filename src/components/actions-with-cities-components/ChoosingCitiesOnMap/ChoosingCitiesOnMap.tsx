@@ -92,12 +92,10 @@ const ChoosingCitiesOnMap = (
                 // веб-картами) в EPSG:4326(человеческий формат для систем координат)
                 const coorsArray = transform(center!, 'EPSG:3857', 'EPSG:4326');
 
-                // if (position.longitude !== coorsArray[0] && position.latitude !== coorsArray[1]) {
                 setNewPosition({
                     longitude: coorsArray[0],
                     latitude: coorsArray[1]
                 });
-                // }
             }
 
             map.on('moveend', onMoving)

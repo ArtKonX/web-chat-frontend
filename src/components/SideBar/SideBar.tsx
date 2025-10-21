@@ -20,7 +20,7 @@ const SideBar = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div data-testid="sidebar" className="w-2/7 max-sm:pt-[66px] max-lg:pt-[66px] max-sm:w-full bg-white h-full max-lg:min-w-[220px] px-5 border-r-2">
+            <div data-testid="sidebar" className="w-2/7 max-sm:pt-[66px] max-lg:pt-[66px] max-sm:w-full bg-white h-full px-5 border-r-2 max-lg:min-w-full">
                 <div className="w-full h-full pt-10 relative">
                     <h3 data-testid="search-users-title" className="text-center text-lg font-bold max-sm:text-[20px]">
                         {searchParams!.get('tab') == 'chats' ?

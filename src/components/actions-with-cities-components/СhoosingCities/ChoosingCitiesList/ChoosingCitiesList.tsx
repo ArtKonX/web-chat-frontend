@@ -8,7 +8,7 @@ const ChoosingCitiesList = (
 ) => {
 
     return (
-        <ul className="bottom-t-1 max-h-80 overflow-y-auto w-full flex flex-col">
+        <ul className="bottom-t-1 max-h-83 overflow-y-auto w-full flex flex-col">
             {cities.map((city, indx) => (
                 <li key={indx}>
                     <ChoosingCitiesItem onChooseCity={onChooseCity} city={city.name} />

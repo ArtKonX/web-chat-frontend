@@ -9,8 +9,10 @@ interface UserData {
 export interface MessagesListProps {
     messages: MessageInfo[],
     wsMessages: MessageInfo[],
+    caсheMessages: MessageInfo[],
     currentUser?: UserData | null,
     anotherAuthorName?: UserData,
+    isOnline: boolean,
     setCurrentOffSet: (currentOffSet: string) => void,
     dataNextLength?: {
         lengthNextMessages: number,
