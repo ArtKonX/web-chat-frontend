@@ -493,7 +493,7 @@ const HomePage = () => {
 
         return (
             <Suspense fallback={<Loader isFade={true} />}>
-                <div className={`h-full flex flex-col justify-end w-full relative`}>
+                <div className={`h-full flex flex-col justify-end w-full relative z-0`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
                         null}
@@ -529,7 +529,7 @@ const HomePage = () => {
                                 currentUser={authState?.user || userInfo}
                                 anotherAuthorName={userData && userData?.users[0]}
                                 dataNextLength={dataNextLength}
-                                isLoadingMessages={isLoadingMessages || !messages.length}
+                                isLoadingMessages={isLoadingMessages && !messages.length}
                             />
                             {isOnline ? (
                                 <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>

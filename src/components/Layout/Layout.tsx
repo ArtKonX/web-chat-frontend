@@ -230,10 +230,10 @@ const Layout = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div className="max-w-full w-full">
+            <div className="max-w-full w-full h-full">
                 <Header isDemoHeader={isDemoHeader || (!userInfo?.id && !authData?.user.id)}
                     isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && (!userInfo?.id && !authData?.user.id)} />
-                <div className="w-full max-w-full h-screen pt-[66px] flex max-lg:pt-[0px] max-lg:min-w-full relative">
+                <div className="w-full max-w-full h-full pt-[66px] flex max-lg:pt-[0px] max-lg:min-w-full max-lg:h-[calc(100%+22px)] relative">
                     {sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (
                         <SideBar
                             isListInfoDialoguesLoading={isListInfoDialoguesLoading}

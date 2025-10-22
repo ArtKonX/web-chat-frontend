@@ -67,52 +67,54 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[3%] max-sm:h-[90%] h-full ${isScroll && 'overflow-y-hidden'}`}
+            className={`overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:-top-[2vh] max-md:h-[90vh] h-full ${isScroll && 'overflow-y-hidden'}`}
         >
             {dataNextLength?.isNextMessages && isOnline ? (
                 <li className="flex justify-center items-center my-5 pb-4 bg-amber-100/90 rounded-3xl">
                     <Btn text="Показать больше" type="button" onAction={onOffset} />
                 </li>) : null
             }
-            {isLoadingMessages && dataNextLength?.lengthNextMessages || !messages.length ?
-                <SkeletonMessagesList length={dataNextLength?.lengthNextMessages} /> :
-                isLoadingMessages && !dataNextLength?.lengthNextMessages ?
-                    <SkeletonMessagesList length={10} /> :
-                    null}
+            <span className='absolute top-0 left-0 w-full'>
+                {isLoadingMessages && dataNextLength?.lengthNextMessages && !messages.length && !caсheMessages.length ?
+                    <SkeletonMessagesList length={dataNextLength?.lengthNextMessages} /> :
+                    isLoadingMessages && !dataNextLength?.lengthNextMessages && !messages.length && !caсheMessages.length ?
+                        <SkeletonMessagesList length={5} /> :
+                        null}
+            </span>
             {
-            caсheMessages.length && !messages.length ?
-            caсheMessages.map((message, indx) => (
-                <li
-                    key={message.id}
-                    id={String(indx)}
-                    className={`flex ${currentUser?.id === message?.sender_id ?
-                        'justify-start' :
-                        'justify-end'} mb-15 mt-10`}
-                >
-                    <MessageItem
-                        currentId={currentUser}
-                        message={message}
-                        anotherAuthorName={anotherAuthorName}
-                        setIsScroll={setIsScroll}
-                    />
-                </li>
-            )) : messages.length && !caсheMessages.length ?
-            messages.map((message, indx) => (
-                <li
-                    key={message.id}
-                    id={String(indx)}
-                    className={`flex ${currentUser?.id === message?.sender_id ?
-                        'justify-start' :
-                        'justify-end'} mb-15 mt-10`}
-                >
-                    <MessageItem
-                        currentId={currentUser}
-                        message={message}
-                        anotherAuthorName={anotherAuthorName}
-                        setIsScroll={setIsScroll}
-                    />
-                </li>
-            )) : null}
+                caсheMessages.length && !messages.length ?
+                    caсheMessages.map((message, indx) => (
+                        <li
+                            key={message.id}
+                            id={String(indx)}
+                            className={`flex ${currentUser?.id === message?.sender_id ?
+                                'justify-start' :
+                                'justify-end'} mb-15 mt-10`}
+                        >
+                            <MessageItem
+                                currentId={currentUser}
+                                message={message}
+                                anotherAuthorName={anotherAuthorName}
+                                setIsScroll={setIsScroll}
+                            />
+                        </li>
+                    )) : messages.length && !caсheMessages.length ?
+                        messages.map((message, indx) => (
+                            <li
+                                key={message.id}
+                                id={String(indx)}
+                                className={`flex ${currentUser?.id === message?.sender_id ?
+                                    'justify-start' :
+                                    'justify-end'} mb-15 mt-10`}
+                            >
+                                <MessageItem
+                                    currentId={currentUser}
+                                    message={message}
+                                    anotherAuthorName={anotherAuthorName}
+                                    setIsScroll={setIsScroll}
+                                />
+                            </li>
+                        )) : null}
         </ul>
     )
 }

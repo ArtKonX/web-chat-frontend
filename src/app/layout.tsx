@@ -36,11 +36,22 @@ export default function RootLayout({
       window.addEventListener('load', registerServiceWorker);
     }
 
+    // Для правильного отображения футера и формы отправки
+    // сообщения на ios и android
+    window.addEventListener('resize', () => {
+
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+
+    const vh = window.innerHeight * 0.01;
+
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
     return () => {
       window.removeEventListener('load', registerServiceWorker);
     };
   }, []);
-
 
   return (
     <html lang="ru">
