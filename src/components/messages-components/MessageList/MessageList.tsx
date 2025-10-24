@@ -96,6 +96,7 @@ const MessageList = (
                                 message={message}
                                 anotherAuthorName={anotherAuthorName}
                                 setIsScroll={setIsScroll}
+                                isCache={true}
                             />
                         </li>
                     )) : messages.length && !caсheMessages.length ?

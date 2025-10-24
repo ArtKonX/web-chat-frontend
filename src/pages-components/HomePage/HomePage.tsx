@@ -394,7 +394,7 @@ const HomePage = () => {
 
         }
 
-        if (!messagesData && !isOnline) {
+        if (!messagesData && isOnline) {
             (async () => {
                 const userId = searchParams?.get('user');
 
@@ -433,8 +433,9 @@ const HomePage = () => {
             if (!isOnline && searchParams?.get('user')) {
                 const cached = await getCachedMessages(String(searchParams?.get('user')));
                 if (cached.length > 0) {
+                    setMessages([])
                     const sortedMessages = cached.toSorted((a, b) => new Date(String(a.created_at)).getTime() - new Date(String(b.created_at)).getTime())
-                    setMessages(sortedMessages);
+                    setCaсheMessages(sortedMessages);
                 }
 
                 setIsReloaded(true)
@@ -445,7 +446,7 @@ const HomePage = () => {
             window.location.reload()
             setIsReloaded(false)
         }
-    }, [isOnline, searchParams?.get('user')])
+    }, [isOnline, searchParams?.get('user'),])
 
     useEffect(() => {
         if (file && publicKeysData?.publicKeys.length) {

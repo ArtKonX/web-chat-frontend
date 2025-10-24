@@ -47,7 +47,8 @@ interface DialogueData {
     sender_id: string,
     lastMessage: string,
     status: boolean,
-    colorProfile: string
+    colorProfile: string,
+    isCache?: boolean
 }
 
 export interface DialoguesListProps {
@@ -61,5 +62,6 @@ export interface DialogueProps {
     quantityMessages: number,
     lastMassage: string,
     status: boolean,
-    profileColor: string
+    profileColor: string,
+    isCache: boolean
 }

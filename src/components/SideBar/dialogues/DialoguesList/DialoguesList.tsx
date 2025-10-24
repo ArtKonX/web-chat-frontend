@@ -49,7 +49,7 @@ const DialoguesList = (
             {
                 dialoguesData?.map((dialogue) => (
                     <li data-testid="dialogues-item" key={dialogue.userId}>
-                        <UserItem id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
+                        <UserItem isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
                             quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
                             isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
                             status={dialogue.status} profileColor={dialogue.colorProfile} />

@@ -26,7 +26,8 @@ export interface MessageItemProps {
     currentId?: UserData | null,
     message: MessageInfo,
     anotherAuthorName?: UserData,
-    setIsScroll: (isScroll: boolean) => void
+    setIsScroll: (isScroll: boolean) => void,
+    isCache?: boolean
 }
 
 export interface ShowActionMessage {

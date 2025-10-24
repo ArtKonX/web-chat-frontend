@@ -198,7 +198,7 @@ const Layout = (
                 const cached = await getCachedDialogues();
 
                 if (cached.length > 0) {
-                    setListCachedDialogues(cached)
+                    setListCachedDialogues(cached.map(cache => ({ ...cache, isCache: true })))
                 }
             }
         })()

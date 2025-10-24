@@ -15,7 +15,7 @@ import { cacheDeleteMessage } from '@/cashe/messageCache';
 
 const MessageItem = (
     { currentId, message,
-        anotherAuthorName, setIsScroll }: MessageItemProps
+        anotherAuthorName, setIsScroll, isCache }: MessageItemProps
 ) => {
 
     const [showActionMessage, setShowActionMessage] = useState<ShowActionMessage | null>(null);
@@ -133,8 +133,10 @@ const MessageItem = (
 
     const onDelete = (id?: string) => {
         if (id) {
-            deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
             cacheDeleteMessage(id)
+            setTimeout(() => {
+                deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
+            }, 0);
         }
     }
 
@@ -203,9 +205,9 @@ const MessageItem = (
                 </div>
             )}
             <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-10 pl-4 rounded-3xl
-        border-2 ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
+        border-2 ${isCache ? 'opacity-80' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
-                {!messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-50'>
+                {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-50'>
                     <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }) }} className='bg-white pt-[4px] pb-[14px] px-3
                 rounded-full text-2xl font-bold cursor-pointer hover:opacity-85 duration-500 z-51'>
                         …
