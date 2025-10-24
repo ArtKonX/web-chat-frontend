@@ -67,7 +67,7 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:-top-[2vh] max-md:h-[90vh] h-full ${isScroll && 'overflow-y-hidden'}`}
+            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:h-[90vh] h-full ${isScroll && 'overflow-y-hidden'}`}
         >
             {dataNextLength?.isNextMessages && isOnline ? (
                 <li className="flex justify-center items-center my-5 pb-4 bg-amber-100/90 rounded-3xl">

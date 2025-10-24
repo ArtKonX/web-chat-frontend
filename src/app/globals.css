@@ -33,8 +33,10 @@ body {
   position: relative;
   padding-bottom: env(safe-area-inset-bottom);
   margin: 0;
-  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: 100vh;
+  /* Fallback for browsers that do not support Custom Properties */
   height: calc(var(--vh, 1vh) * 100);
+  padding: 0 !important;
 }
 
 body::after {
@@ -53,5 +55,9 @@ body::after {
 @media only screen and (max-width: 768px) {
   body {
     padding-bottom: calc(1.4rem + env(safe-area-inset-bottom));
+  }
+
+  .message-list {
+    margin-top: calc(2.4rem + env(safe-area-inset-bottom));
   }
 }

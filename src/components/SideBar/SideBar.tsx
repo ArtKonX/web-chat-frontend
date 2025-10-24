@@ -20,8 +20,8 @@ const SideBar = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div data-testid="sidebar" className="w-2/7 max-sm:pt-[66px] max-lg:pt-[66px] max-sm:w-full bg-white h-full px-5 border-r-2 max-lg:min-w-full">
-                <div className="w-full h-full pt-10 relative">
+            <div data-testid="sidebar" className="w-2/7 max-sm:pt-[66px] max-lg:pt-[66px] max-sm:w-full bg-white h-full px-5 border-r-2 max-lg:min-w-full z-1">
+                <div className="w-full h-full relative">
                     <h3 data-testid="search-users-title" className="text-center text-lg font-bold max-sm:text-[20px]">
                         {searchParams!.get('tab') == 'chats' ?
                             'Все ваши сообщения:' : findUsers.length > 0 ?
@@ -34,7 +34,7 @@ const SideBar = (
                         <SideBarInputSearch onSearchUsers={onSearchUsers} searchUsers={searchUsers} />
                     )}
                     {searchParams!.get('tab') == 'users' && findUsers && (
-                        <div className="w-full flex justify-center">
+                        <div className="w-full h-full flex justify-center">
                             <div className="mt-10 w-full">
                                 <SearchUsersWithActionList usersData={findUsers} />
                             </div>

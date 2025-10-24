@@ -8,7 +8,7 @@ const SearchUsersWithActionList = (
 ) => {
 
     return (
-        <ul className="w-full max-h-full overflow-auto">
+        <ul className="w-full h-full max-h-[80%] overflow-y-auto pr-[15px]">
             {usersData?.map(user => (
                 <li key={user.id}>
                     <SearchUserWithAction {...user} />

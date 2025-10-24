@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
 import { useDispatch } from "react-redux"
-import CloseBtn from "../ui/CloseBtn/CloseBtn"
 import { resetUrl } from "@/redux/slices/imageSlice";
 
 const ImageWindow = (
@@ -21,10 +20,18 @@ const ImageWindow = (
         }
     }, [url]);
 
+    const handleClickOutside = (event: MouseEvent) => {
+        if (refImg.current && !refImg.current.contains(event.target as Node)) {
+            dispatch(resetUrl())
+        }
+    };
 
-    const closeFileForm = () => {
-        dispatch(resetUrl())
-    }
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <div className={`z-60 flex justify-center items-center fixed top-0 left-0 w-full
@@ -33,10 +40,7 @@ const ImageWindow = (
             <div className="w-full h-full flex flex-col items-center justify-center relative">
                 <div className="w-[100%] h-[100%]">
                     <div className="w-full h-full relative flex items-center justify-center">
-                        <img ref={refImg} className="max-w-[40%] w-full object-contain" src={url} alt={url} />
-                        <div ref={closeBtnBlockRef} className='absolute'>
-                            <CloseBtn onClose={closeFileForm} />
-                        </div>
+                        <img ref={refImg} className="max-w-[40%] max-h-[600px] w-full object-contain" src={url} alt={url} />
                     </div>
                 </div>
             </div>

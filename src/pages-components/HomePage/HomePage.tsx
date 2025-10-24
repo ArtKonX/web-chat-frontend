@@ -513,6 +513,12 @@ const HomePage = () => {
                                 setMapCity={setMapCity} mapCity={mapCity} />
                         </WrapperChoosingCities>
                     )}
+                    {searchParams?.get('tab') === 'chats' && !searchParams?.get('user') && (
+                        <WindowWithInfo title="Не выбран собеседник!" text="Выбери и отобразятся сообщения" />
+                    )}
+                    {searchParams?.get('tab') === 'users' && (
+                        <WindowWithInfo title="Нет сообщений!" text="Для отображения сообщений найди и напиши" />
+                    )}
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
                             {(!isLoadingMessages &&

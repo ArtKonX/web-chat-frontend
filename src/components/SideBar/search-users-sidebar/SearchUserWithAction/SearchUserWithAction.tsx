@@ -13,7 +13,7 @@ const SearchUserWithAction = (
 
     const dispatch = useDispatch();
 
-    const isMobile = useMediaPredicate('(max-width: 768px)');
+    const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const closeSideBarMobile = () => {
         if (isMobile) {
