@@ -44,6 +44,7 @@ const Layout = (
     const { data: listInfoDialogues, isLoading: isListInfoDialoguesLoading } = useGetInfoDialoguesQuery({ userId: authData?.user?.id, token: tokenState.token });
     const { socket, wsInfoDialogues, setWsInfoDialogues, userStatus, setUserStatus } = WebSocketConnection();
     const [listDialogues, setListDialogues] = useState<DialogueData[] | null>(null);
+    const [listCachedDialogues, setListCachedDialogues] = useState<DialogueData[] | null>(null);
 
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
 
@@ -93,9 +94,11 @@ const Layout = (
                     }
 
                     const filteredAllListDialogues = allListDialogues.filter(dialogue =>
-                        (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.recipient_id))
+                        (dialogue.lastMessage && ![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.recipient_id))
                         || (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.sender_id))) as DialogueData[]
-                    filteredAllListDialogues.unshift(wsInfoDialogues)
+                    if (wsInfoDialogues.lastMessage) {
+                        filteredAllListDialogues.unshift(wsInfoDialogues)
+                    }
 
                     setListDialogues(filteredAllListDialogues)
                 }
@@ -129,34 +132,37 @@ const Layout = (
         if (listInfoDialogues?.data?.length && privatKey) {
             const fetchDialogues = async () => {
                 const decListDialogues = await Promise.all(listInfoDialogues?.data.map(async (dialogue) => {
-                    const messageList = dialogue.lastMessage.split('\n');
+                    console.log('dialogue.lastMessage', typeof dialogue.lastMessage)
+                    if (typeof dialogue.lastMessage !== 'object') {
+                        const messageList = dialogue.lastMessage.split('\n');
 
-                    let decMessage;
-                    // Для бота т.к. его сообщения формируются на сервере
-                    // и не закодированы
-                    if (messageList.length === 2) {
-                        try {
-                            const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
-                            decMessage = await decryptText(arrBufferMessage, privatKey.data)
-                        } catch (err) {
-                            console.log(err);
-                            decMessage = messageList[1];
-                        }
-                        if (decMessage) {
-                            const allMessage = messageList[0].trim() + ' \n ' + decMessage;
-                            return { ...dialogue, lastMessage: allMessage };
-                        }
-                    } else {
-                        try {
-                            const arrBufferMessage = base64ToArrayBuffer(JSON.parse(dialogue.lastMessage));
-                            decMessage = await decryptText(arrBufferMessage, privatKey.data)
-                        } catch (err) {
-                            console.log(err);
-                            decMessage = dialogue.lastMessage;
-                        }
+                        let decMessage;
+                        // Для бота т.к. его сообщения формируются на сервере
+                        // и не закодированы
+                        if (messageList.length === 2) {
+                            try {
+                                const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
+                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                            } catch (err) {
+                                console.log(err);
+                                decMessage = messageList[1];
+                            }
+                            if (decMessage) {
+                                const allMessage = messageList[0].trim() + ' \n ' + decMessage;
+                                return { ...dialogue, lastMessage: allMessage };
+                            }
+                        } else {
+                            try {
+                                const arrBufferMessage = base64ToArrayBuffer(JSON.parse(dialogue.lastMessage));
+                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                            } catch (err) {
+                                console.log(err);
+                                decMessage = dialogue.lastMessage;
+                            }
 
-                        if (decMessage) {
-                            return { ...dialogue, lastMessage: decMessage };
+                            if (decMessage) {
+                                return { ...dialogue, lastMessage: decMessage };
+                            }
                         }
                     }
                 })) as DialogueData[]
@@ -176,6 +182,7 @@ const Layout = (
                     console.error('Ошибка при сохранении в кеш:', error);
                 }
                 setListDialogues(decListDialogues)
+
             }
 
             fetchDialogues()
@@ -191,7 +198,7 @@ const Layout = (
                 const cached = await getCachedDialogues();
 
                 if (cached.length > 0) {
-                    setListDialogues(cached)
+                    setListCachedDialogues(cached)
                 }
             }
         })()
@@ -236,15 +243,15 @@ const Layout = (
                 <div className="w-full max-w-full h-full pt-[66px] flex max-lg:min-w-full relative">
                     {sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (
                         <SideBar
-                            isListInfoDialoguesLoading={isListInfoDialoguesLoading}
+                            isListInfoDialoguesLoading={isListInfoDialoguesLoading && !listCachedDialogues?.length}
                             isDisableFindUsers={!isOnline}
                             findUsers={findUsers?.users || []}
-                            dialoguesData={listDialogues || []}
+                            dialoguesData={listDialogues || listCachedDialogues || []}
                             onSearchUsers={onSearchUsers}
                             searchUsers={searchUsers}
                         >
                             {(searchParams.get('tab') === 'users') && isFindUsersLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[170px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
-                            {(searchParams.get('tab') === 'chats') && !listDialogues?.length && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && !listDialogues?.length && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
+                            {(searchParams.get('tab') === 'chats') && !listDialogues?.length && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && !listCachedDialogues?.length && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
                         </SideBar>
                     )}
                     {children}

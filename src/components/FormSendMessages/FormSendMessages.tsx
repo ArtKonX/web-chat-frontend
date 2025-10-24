@@ -13,6 +13,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { cacheUpdateMessage } from '@/cashe/messageCache';
 
 const FormSendMessages = (
     { message, socket, name,
@@ -50,8 +51,9 @@ const FormSendMessages = (
 
                 const formData = new FormData();
 
-                if (updateMessageState.isChange && publicKeys) {
+                if (updateMessageState.isChange && publicKeys && messageId) {
                     updateMessage({ messageId: messageId, userId: authData?.user?.id, data: { message: JSON.stringify(base64Message) }, token: tokenState.token });
+                    cacheUpdateMessage(message, messageId)
                     setMessage('')
                     setIsSubmit(false)
                     setEncMessage(null)
@@ -111,7 +113,7 @@ const FormSendMessages = (
 
             setIsSubmit(true)
             const encryptMessage = await encryptText(message, publicKeys);
-            console.log(encryptMessage, message, publicKeys)
+
             if (encryptMessage) {
                 setEncMessage(encryptMessage)
             }

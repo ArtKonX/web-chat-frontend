@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 
 import constsEnv from '@/environment/environment';
 import { cacheDeleteMessage, cacheMessage, cacheUpdateMessage } from '@/cashe/messageCache';
-import { cacheDialogue } from '@/cashe/dialoguesCache';
+import { cacheDeleteDialogue, cacheDialogue } from '@/cashe/dialoguesCache';
 
 const WebSocketConnection = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -198,10 +198,13 @@ const WebSocketConnection = () => {
 
                         if (newMessage.type === 'info-about-chat' && privatKey) {
                             let decMessage;
+                            console.log('newMessage', newMessage)
 
                             try {
-                                const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
-                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                if (newMessage.lastMessage) {
+                                    const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
+                                    decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                }
                             } catch (err) {
                                 console.log(err);
                                 decMessage = newMessage.lastMessage
@@ -210,6 +213,9 @@ const WebSocketConnection = () => {
                             if (decMessage) {
                                 await cacheDialogue({ ...newMessage, lastMessage: decMessage })
                                 setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
+                            } else {
+                                await cacheDeleteDialogue(newMessage.userId)
+                                setWsInfoDialogues({ ...newMessage, lastMessage: null })
                             }
                         }
                     }

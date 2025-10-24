@@ -27,23 +27,25 @@ const Dialogue = (
 
     return (
         <Link href={`/?tab=chats&user=${id}`}
-            className={`hover:opacity-60 transition-opacity duration-700 cursor-pointer relative
+            className={`hover:opacity-60 transition-opacity max-lg:justify-between duration-700 cursor-pointer relative
         ${isActiveUser ? 'border-amber-400 opacity-50 pointer-events-none' :
-                    'border-black'} pb-2 mt-10 flex items-center border-b-2 justify-around`}
+                    'border-black'} pb-2 mt-10 flex items-center border-b-2 justify-around max-lg:w-full`}
             onClick={closeSideBarMobile}>
-            <UserIcon status={status}
-                nameFirstSymbol={name?.length ?
-                    String(name[0]) : ''}
-                colorBackgroundIcon={profileColor} />
-            <div className='flex flex-col ml-4'>
-                <span data-testid="user-name" className='font-bold'>
-                    {name}
-                </span>
-                <p className="w-40 overflow-x-hidden text-nowrap overflow-ellipsis">
-                    {lastMassage}
-                </p>
+            <div className='flex justify-center items-center'>
+                <UserIcon status={status}
+                    nameFirstSymbol={name?.length ?
+                        String(name[0]) : ''}
+                    colorBackgroundIcon={profileColor} />
+                <div className='flex flex-col ml-4 max-lg:ml-10'>
+                    <span data-testid="user-name" className='font-bold'>
+                        {name}
+                    </span>
+                    <p className="w-40 overflow-x-hidden max-lg:max-w-[250px] max-lg:w-full text-nowrap overflow-ellipsis">
+                        {lastMassage}
+                    </p>
+                </div>
             </div>
-            <span className={`max-lg:hidden max-md:hidden px-3.5 py-1.5 text-xl rounded-full border-2 font-bold ${isActiveUser ?
+            <span className={`px-3.5 py-1.5 text-xl rounded-full border-2 font-bold ${isActiveUser ?
                 'bg-black text-amber-400/50 border-amber-400/50' :
                 'bg-amber-400/50 border-black'}`}>
                 {quantityMessages}

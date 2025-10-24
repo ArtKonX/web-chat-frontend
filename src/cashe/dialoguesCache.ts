@@ -63,6 +63,28 @@ export const getCachedDialogues = async (): Promise<DialogueData[]> => {
     });
 };
 
+export const cacheDeleteDialogue = async (
+    messageId: string
+) => {
+    try {
+
+        const db = await initDB(DB_NAME, STORE_NAME);
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+
+        await new Promise((resolve, reject) => {
+            const request = store.delete(messageId);
+            request.onsuccess = resolve;
+            request.onerror = () => reject(request.error);
+        });
+
+        transaction.commit();
+    } catch (error) {
+        console.error('Ошибка при удаления диалога:', error);
+        throw error;
+    }
+};
+
 export const clearCachedDialogues = async (): Promise<void> => {
     const db = await initDB(DB_NAME, STORE_NAME);
     const transaction = db.transaction(STORE_NAME, 'readwrite');

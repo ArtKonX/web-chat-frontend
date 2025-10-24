@@ -11,6 +11,7 @@ import { MessageItemProps, ShowActionMessage } from '@/interfaces/components/mes
 import { addUrl } from '@/redux/slices/imageSlice';
 import { formattedDate } from '@/utils/formattedDate';
 import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { cacheDeleteMessage } from '@/cashe/messageCache';
 
 const MessageItem = (
     { currentId, message,
@@ -131,7 +132,10 @@ const MessageItem = (
     }
 
     const onDelete = (id?: string) => {
-        deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
+        if (id) {
+            deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
+            cacheDeleteMessage(id)
+        }
     }
 
     const onChange = () => {
