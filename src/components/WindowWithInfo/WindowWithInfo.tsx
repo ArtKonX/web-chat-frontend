@@ -6,7 +6,7 @@ const WindowWithInfo = (
     { title, text }: WindowWithInfoProps) => {
 
     return (
-        <div className="z-0 h-full w-full flex justify-center items-center absolute">
+        <div className="h-full w-full flex justify-center items-center absolute">
             <div className="bg-amber-200 p-8 text-3xl flex
             flex-col items-center font-bold rounded-3xl border-3 max-sm:text-[21px] max-sm:p-3 m-2">
                 {title}

@@ -101,18 +101,29 @@ const WebSocketConnection = () => {
                                                 newMessage.file_type);
 
                                             const messageList = newMessage.message.split('\n');
+                                              console.log('messageList', messageList)
+
                                             let decMessage;
 
                                             try {
-                                                const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
-                                                decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                                if (messageList[1].trim()) {
+                                                    const arrBufferMessage = base64ToArrayBuffer(messageList[1].trim());
+                                                    decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                                } else {
+                                                    const arrBufferMessage = base64ToArrayBuffer(newMessage.message.trim());
+                                                    decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                                }
                                             } catch (err) {
                                                 console.log(err);
-                                                decMessage = messageList[1].trim();
+                                                if (messageList[1].trim()) {
+                                                    decMessage = messageList[1].trim();
+                                                } else {
+                                                    decMessage = newMessage.message
+                                                }
                                             }
 
                                             if (decryptedArrayBuffer && decMessage) {
-                                                const allMessage = messageList[0].trim() + ' \n ' + decMessage;
+                                                const allMessage = messageList[1].trim() ? messageList[0].trim() + ' \n ' + decMessage : decMessage;
 
                                                 try {
 

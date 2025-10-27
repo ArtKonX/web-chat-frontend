@@ -14,6 +14,7 @@ import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
 import { cacheUser, getCachedUser } from '@/cashe/userCache';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Loader from '../ui/Loader/Loader';
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
     const tokenState = useSelector(selectTokenState);
@@ -113,7 +114,12 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         }
     }, [dataPosition, setDataPosition, isLoadingAuth, authData?.user.city])
 
-    return children;
+    return (
+        <>
+            {(isLoadingUpdateCity || isLoadingAuth) && <Loader isFade={true} />}
+            {children}
+        </>
+    );
 };
 
 export default AuthGuard

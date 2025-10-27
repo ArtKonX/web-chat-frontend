@@ -246,6 +246,7 @@ const Layout = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
+            {isListInfoDialoguesLoading && <Loader isFade={true} />}
             <div className="max-w-full w-full h-full">
                 <Header isDemoHeader={isDemoHeader || (!userInfo?.id && !authData?.user.id)}
                     isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && (!userInfo?.id && !authData?.user.id)} />

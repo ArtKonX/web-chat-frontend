@@ -80,7 +80,7 @@ const Loader = (
     }, [])
 
     return (
-        <div data-testid="loader" className={`z-60 flex justify-center items-center fixed top-0 left-0 w-full
+        <div data-testid="loader" className={`z-360 flex justify-center items-center absolute  top-0 left-0 w-full
         h-full bg-black/60 transition-all duration-200 ease-out
         ${isFade ? 'opacity-100 scale-100 translate-y-0 flex-col' :
                 'opacity-0 scale-95 -translate-y-2'}`}>

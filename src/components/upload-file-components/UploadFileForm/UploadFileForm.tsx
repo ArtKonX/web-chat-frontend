@@ -38,26 +38,28 @@ const UploadFileForm = (
 
     useEffect(() => {
         const submitForm = async () => {
+            let base64Message = '';
+
             if (encMessage) {
-                const base64Message = Buffer.from(encMessage).toString('base64');
+                base64Message = Buffer.from(encMessage).toString('base64');
+            }
 
-                if (socket) {
-                    if (file) {
-                        const id = uuidv4();
-                        const formData = new FormData();
-                        formData.append('file', file);
-                        const message = { id, message: base64Message }
-                        formData.append('message', JSON.stringify(message));
-                        const userId = searchParams?.get('user');
+            if (socket) {
+                if (file) {
+                    const id = uuidv4();
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const message = { id, message: base64Message }
+                    formData.append('message', JSON.stringify(message));
+                    const userId = searchParams?.get('user');
 
-                        if (userId && authState && socket) {
-                            uploadFileWithMess({
-                                userId,
-                                currentUserId: authState?.user.id,
-                                data: formData,
-                                token: tokenState.token
-                            })
-                        }
+                    if (userId && authState && socket) {
+                        uploadFileWithMess({
+                            userId,
+                            currentUserId: authState?.user.id,
+                            data: formData,
+                            token: tokenState.token
+                        })
                     }
                 }
             }
@@ -78,13 +80,12 @@ const UploadFileForm = (
         e.preventDefault();
 
         if (publicKeys && messageToFile) {
-
-            setIsSubmit(true)
             const encryptMessage = await encryptText(messageToFile, publicKeys);
             if (encryptMessage) {
                 setEncMessage(encryptMessage)
             }
         }
+        setIsSubmit(true)
     }
 
     const renderViewFile = (type: string, src: string) => {
@@ -107,15 +108,14 @@ const UploadFileForm = (
         }
     }
 
+    if (isLoadingUpload) return <Loader isFade={isLoadingUpload} />
+
     return (
         <>
-            {isLoadingUpload ?
-                <Loader isFade={isLoadingUpload} /> :
-                null}
-            <form data-testid="upload-file-form"  onSubmit={onUploadFile} className="bg-white py-3 px-5 rounded-2xl
+            <form data-testid="upload-file-form" onSubmit={onUploadFile} className="bg-white py-3 px-5 rounded-2xl
                                     max-w-2/6 max-lg:max-w-9/11 max-sm::max-w-10/11 w-full flex flex-col items-center justify-center">
                 <div className="w-full flex justify-between items-center mb-4 z-200">
-                    <h3>
+                    <h3 className='overflow-hidden whitespace-nowrap text-ellipsis'>
                         {typeFile.includes('image') ? 'Изображение' :
                             typeFile.includes('video') ? 'Видео' : typeFile.includes('audio') ?
                                 'Аудио' : 'Не распознан формат'}: {file?.name}
@@ -132,7 +132,7 @@ const UploadFileForm = (
                         ➤
                     </button>
                 </div>
-            </form>
+            </form >
         </>
     )
 }

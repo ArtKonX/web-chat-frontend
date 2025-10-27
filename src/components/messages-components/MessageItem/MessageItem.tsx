@@ -151,30 +151,22 @@ const MessageItem = (
                     <button className="relative w-full h-60 hover:opacity-80
                     duration-300 transition-opacity cursor-pointer" onClick={() => onShowImage(url)}>
                         <img className='w-160 h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
-                        <a href={url} download={message.file_name} className="text-3xl absolute right-1 bottom-1 border-2 rounded-lg h-9 bg-white hover:opacity-80 transition-opacity duration-200">
-                            ⬇
-                        </a>
                     </button>
                 )
             } else if (type.includes('video')) {
                 return (
                     <div className="relative w-full h-60">
                         <video className='w-full h-60 object-cover' src={url} controls />
-                        <a href={url} download={message.file_name} className="text-3xl absolute right-1 bottom-1 border-2 rounded-lg h-9 bg-white hover:opacity-80 transition-opacity duration-200">
-                            ⬇
-                        </a>
                     </div>
                 )
             } else if (type.includes('audio')) {
                 return (
-                    <div className="relative w-full flex flex-col items-center h-52 pr-10">
-                        <div className='w-full flex justify-center bg-amber-600/50 rounded-3xl mb-2'>
+                    <div className="relative w-full min-w-full flex flex-col items-center h-52">
+                        <div className='w-full flex bg-amber-600/50 rounded-3xl mb-2 items-center justify-around px-1 box-border'>
                             <img className='w-40 h-40' src={imgAudio.src} alt="обложка песни" />
+                            <p className='mx-1 text-[black] font-bold whitespace-pre-line'>{message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ')}</p>
                         </div>
                         <audio className='w-full h-10 object-cover' src={url} controls />
-                        <a href={url} download={message.file_name} className="text-3xl absolute right-1 bottom-1 border-2 rounded-lg h-9 bg-white hover:opacity-80 transition-opacity duration-200">
-                            ⬇
-                        </a>
                     </div>
                 )
             }
@@ -192,13 +184,29 @@ const MessageItem = (
             {showActionMessage?.isShow && !messageChangeData.isChange && isFade && (
                 <div ref={refActions} className='absolute w-full z-110 flex items-center justify-center'>
                     <ul className='bg-white rounded-4xl border-2 border-black'>
-                        {['Изменить', 'Удалить', 'Отмена'].map((item, indx) => (
+                        {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
-                                <button onClick={() => indx === 0 ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
-                                    {item}
-                                </button>
+                                {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?
+                                    (<button onClick={() => indx === 0 && !message.file_type?.includes('audio/mpeg') ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                        {item}
+                                    </button>) :
+                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer">
+                                        {item}
+                                    </a>) :
+                                    (<button onClick={() => indx === 0 ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                        {item}
+                                    </button>)}
                             </li>
-                        ))}
+                        ))) : (['Скачать файл', 'Удалить', 'Отмена'].filter(elem => Boolean(elem)).map((item, indx) => (
+                            <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
+                                {[1, 2].includes(indx) ?
+                                    (<button onClick={() => indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                        {item}
+                                    </button>) :
+                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer">
+                                        {item}
+                                    </a>)}
+                            </li>)))}
                     </ul>
                 </div>
             )}
@@ -215,12 +223,12 @@ const MessageItem = (
                     message.file_url && renderFileByType(message.file_type, message.file_url)
                 }
                 {
-                    message.message.split('/n').length ? (
-                        <div>
-                            <p className="font-bold">{message.message.split('\n')[0]}</p>
-                            <p className="font-bold">{message.message.split('\n')[1]}</p>
+                    message.message.length ? (
+                        <div className='my-1'>
+                            {!message.file_type?.includes('audio/mpeg') ? <p className="font-bold">{message.message.split('\n')[0]}</p> : null}
+                            {message.message.split('\n')[1]?.trim() ? <p className="font-bold">{message.message.split('\n')[1]}</p> : null}
                         </div>
-                    ) : <p className="font-bold">{message.message}</p>
+                    ) : <p className="font-bold my-1 whitespace-pre-wrap">{message.message}</p>
                 }
                 <time>{formattedDate(message.created_at)}</time>
                 <>

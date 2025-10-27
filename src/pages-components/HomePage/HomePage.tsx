@@ -70,7 +70,7 @@ const HomePage = () => {
     const [searchCity, setSearchCity] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
 
-    const [updateCity, { data: updateCityData }] = useUpdateCityMutation();
+    const [updateCity, { data: updateCityData, isLoading: isUpdateCityLoading }] = useUpdateCityMutation();
     const [messages, setMessages] = useState<MessageInfo[]>([]);
     const [caсheMessages, setCaсheMessages] = useState<MessageInfo[]>([]);
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>();
@@ -546,8 +546,9 @@ const HomePage = () => {
 
     useEffect(() => {
         const numberNextMess = messagesState?.messagesLenObj?.[String(searchParams?.get('user'))] - (Number(currentOffSet) + 10)
+        console.log('numberNextMess', numberNextMess, messagesState?.messagesLenObj?.[String(searchParams?.get('user'))])
         setDataNextLenMesages(numberNextMess)
-    }, [messagesState.messagesLenObj, searchParams?.get('user'), currentOffSet])
+    }, [messagesState.messagesLenObj, searchParams?.get('user'), currentOffSet, messagesData,])
 
     if ((isLoadingAuth && !authState && !userInfo?.id) || isUpdatePublicKeyLoading) return <Loader isFade={true} />
 
@@ -558,7 +559,8 @@ const HomePage = () => {
         return (
             <Suspense fallback={<Loader isFade={true} />}>
                 {String(privatKey) === 'null' ? <RestoringAccessForm onSubmitUpdatePublicKey={onSubmitUpdatePublicKey} /> : null}
-                <div className={`h-full flex flex-col justify-end w-full relative z-0`}>
+                {isUpdateCityLoading && <Loader isFade={true} />}
+                <div className={`h-full flex flex-col justify-end w-full relative z-${isFormUploadFile ? '100' : '0'}`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
                         null}
@@ -599,7 +601,7 @@ const HomePage = () => {
                                 caсheMessages={caсheMessages}
                                 currentUser={authState?.user || userInfo}
                                 anotherAuthorName={userData && userData?.users[0]}
-                                dataNextLength={{ lengthNextMessages: Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages), isNextMessages: Number(dataNextLenMesages) > 0 }}
+                                dataNextLength={{ lengthNextMessages: Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages), isNextMessages: ((messagesData?.messages.length ? messagesData?.messages.length : 0) + (wsMessages.length ? wsMessages.length : 0)) !== Number(dataNextLenMesages) + (Number(currentOffSet) + 10) && Number(dataNextLenMesages) > 0 }}
                             >
                                 <span className='relative top-0 left-0 w-full'>
                                     {/* {isLoadingMessages && Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
@@ -607,10 +609,10 @@ const HomePage = () => {
                                         isLoadingMessages && !(Number(dataNextLenMesages) < 0) ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
                                             <SkeletonMessagesList length={5} /> :
                                             isLoadingMessages ? <SkeletonMessagesList length={5} /> : null} */}
-                                        {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={5} /> : null}
+                                    {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={5} /> : null}
                                 </span>
                             </MessageList>
-                            {isOnline ? (
+                            {isOnline && !isLoadingMessages ? (
                                 <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
                                     <UploadMenuWithButtonAction
                                         setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
