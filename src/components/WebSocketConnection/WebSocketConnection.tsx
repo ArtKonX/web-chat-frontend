@@ -80,11 +80,13 @@ const WebSocketConnection = () => {
                     console.log('newMessage', newMessage)
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
-                    if ((newMessage.sender_id === searchParams?.get('user')
-                        && newMessage.recipient_id === dataAuth?.user?.id) ||
+                    if (((newMessage.sender_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.recipient_id === dataAuth?.user?.id)
+                        || (newMessage.recipient_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.sender_id === dataAuth?.user?.id)) ||
+                        (newMessage.sender_id === searchParams?.get('user')
+                            && newMessage.recipient_id === dataAuth?.user?.id) ||
                         (newMessage.sender_id === dataAuth?.user?.id
                             && newMessage.recipient_id === searchParams?.get('user'))
-                        || (newMessage.sender_id === dataAuth?.user?.id || newMessage.recipient_id === dataAuth?.user?.id)) {
+                    ) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
                                 if (newMessage.file_type && privatKey) {
@@ -198,6 +200,30 @@ const WebSocketConnection = () => {
                             }
                         }
 
+                        if (newMessage.type === 'info-about-chat' && privatKey) {
+                            let decMessage;
+                            console.log('newMessage', newMessage)
+
+                            try {
+                                if (newMessage.lastMessage) {
+                                    const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
+                                    decMessage = await decryptText(arrBufferMessage, privatKey.data)
+                                }
+                            } catch (err) {
+                                console.log(err);
+                                decMessage = newMessage.lastMessage
+                            }
+
+                            if (decMessage) {
+                                await cacheDialogue({ ...newMessage, lastMessage: decMessage })
+                                setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
+                            } else {
+                                await cacheDeleteDialogue(newMessage.userId)
+                                setWsInfoDialogues({ ...newMessage, lastMessage: null })
+                            }
+                        }
+                    }
+                    if ((newMessage.sender_id === dataAuth?.user?.id || newMessage.recipient_id === dataAuth?.user?.id)) {
                         if (newMessage.type === 'info-about-chat' && privatKey) {
                             let decMessage;
                             console.log('newMessage', newMessage)
