@@ -8,6 +8,7 @@ import { persistbackgroundReducer, persistSideBarReducer, persistTokenReducer } 
 import authSlice from '../slices/authSlice';
 import changeMessageSlice from '../slices/changeMessageSlice';
 import imageSlice from '../slices/imageSlice';
+import messagesSlice from '../slices/messagesSlice';
 
 export const store = configureStore({
     reducer: {
@@ -19,8 +20,9 @@ export const store = configureStore({
         backgroundState: persistbackgroundReducer,
         tokenState: persistTokenReducer,
         authState: authSlice,
-        changeMessageSlice: changeMessageSlice,
-        imageSlice: imageSlice
+        changeMessageSlice,
+        imageSlice,
+        messagesSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

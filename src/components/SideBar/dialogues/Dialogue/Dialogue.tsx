@@ -28,7 +28,7 @@ const Dialogue = (
         <Link href={`/?tab=chats&user=${id}`}
             className={`hover:opacity-60 transition-opacity max-lg:justify-between duration-700 cursor-pointer relative
         ${isActiveUser ? 'border-amber-400 opacity-50 pointer-events-none' :
-                    'border-black'} pb-2 mt-10 flex items-center border-b-2 justify-around max-lg:w-full ${isCache ? 'opacity-50 pointer-events-none' : ''}`}
+                    'border-black'} pb-2 flex items-center border-b-2 justify-around max-lg:w-full ${isCache ? 'opacity-50 pointer-events-none' : ''}`}
             onClick={closeSideBarMobile}>
             <div className='flex justify-center items-center'>
                 <UserIcon status={status}

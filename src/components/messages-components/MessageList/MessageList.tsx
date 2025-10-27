@@ -7,14 +7,13 @@ import MessageItem from "../MessageItem/MessageItem";
 import Btn from "@/components/ui/Btn/Btn";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUrl from "@/hooks/useUrl";
-import SkeletonMessagesList from "@/components/skeleton-messages/SkeletonMessagesList/SkeletonMessagesList";
 import { MessagesListProps } from "@/interfaces/components/messages-components";
 
 const MessageList = (
     { messages, wsMessages, currentUser,
         anotherAuthorName, setCurrentOffSet,
-        dataNextLength, isLoadingMessages, userId,
-        isOnline, caсheMessages
+        dataNextLength, userId,
+        isOnline, caсheMessages, children
     }: MessagesListProps
 ) => {
 
@@ -41,6 +40,7 @@ const MessageList = (
     };
 
     const onOffset = () => {
+        console.log(isScroll)
         if (url && userId) {
             const offSet = searchParams?.get('offset');
 
@@ -67,20 +67,14 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:h-[90vh] h-full ${isScroll && 'overflow-y-hidden'}`}
+            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:h-[90vh] h-full`}
         >
-            {dataNextLength?.isNextMessages && isOnline ? (
+            {dataNextLength?.isNextMessages && isOnline && !caсheMessages.length ? (
                 <li className="flex justify-center items-center my-5 pb-4 bg-amber-100/90 rounded-3xl">
                     <Btn text="Показать больше" type="button" onAction={onOffset} />
                 </li>) : null
             }
-            <span className='absolute top-0 left-0 w-full'>
-                {isLoadingMessages && dataNextLength?.lengthNextMessages && !messages.length && !caсheMessages.length ?
-                    <SkeletonMessagesList length={dataNextLength?.lengthNextMessages} /> :
-                    isLoadingMessages && !dataNextLength?.lengthNextMessages && !messages.length && !caсheMessages.length ?
-                        <SkeletonMessagesList length={5} /> :
-                        null}
-            </span>
+            {children}
             {
                 caсheMessages.length && !messages.length ?
                     caсheMessages.map((message, indx) => (

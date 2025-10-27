@@ -22,7 +22,8 @@ const mockRouter = {
 
 jest.mock('next/navigation', () => ({
     useRouter: () => mockRouter,
-    useSearchParams: () => new URLSearchParams()
+    useSearchParams: () => new URLSearchParams(),
+    usePathname: () => '/'
 }));
 
 describe('AuthGuard', () => {

@@ -1,5 +1,6 @@
 export interface PrivatKey {
-    data: CryptoKey
+    data: CryptoKey,
+    date: Date
 }
 
 export interface JWK {

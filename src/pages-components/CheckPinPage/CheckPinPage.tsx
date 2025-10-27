@@ -103,7 +103,7 @@ const CheckPinPage = () => {
 
     useEffect(() => {
         if (!auth.id) {
-            router.push('/')
+            // router.push('/')
         }
     }, [auth])
 

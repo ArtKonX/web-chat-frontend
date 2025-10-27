@@ -1,4 +1,5 @@
 import { MessageInfo } from "@/interfaces/message"
+import { ReactNode } from "react"
 
 interface UserData {
     id: string,
@@ -18,8 +19,8 @@ export interface MessagesListProps {
         lengthNextMessages: number,
         isNextMessages: boolean
     },
-    isLoadingMessages: boolean,
-    userId: string | null
+    userId: string | null,
+    children: ReactNode
 }
 
 export interface MessageItemProps {

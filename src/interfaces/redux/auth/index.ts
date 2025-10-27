@@ -22,6 +22,15 @@ export interface LoginData {
     pin?: string
 }
 
+export interface UpdateKeyResponse {
+    status: string
+}
+export interface UpdateKeyData {
+    id: string,
+    publicKey: string,
+    token: string
+}
+
 export interface RegistarationResponse {
     user: {
         id: string,

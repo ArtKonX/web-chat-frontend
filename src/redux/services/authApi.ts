@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import constsEnv from '@/environment/environment';
-import { CheckAuthData, CheckAuthResponse, GetPublicKeysData, GetPublicKeysResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, RegistarationData, RegistarationResponse, TurnOff2FAData, TurnOff2FAResponse, TurnOn2FAData, TurnOn2FAResponse, UpdateCityData, UpdateCityResponse, UpdateUserData, UpdateUserResponse } from '@/interfaces/redux/auth';
+import { CheckAuthData, CheckAuthResponse, GetPublicKeysData, GetPublicKeysResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, RegistarationData, RegistarationResponse, TurnOff2FAData, TurnOff2FAResponse, TurnOn2FAData, TurnOn2FAResponse, UpdateCityData, UpdateCityResponse, UpdateKeyData, UpdateKeyResponse, UpdateUserData, UpdateUserResponse } from '@/interfaces/redux/auth';
 
 const authApi = createApi({
     reducerPath: 'authApi',
@@ -77,7 +77,15 @@ const authApi = createApi({
                 headers: { 'Authorization': `Bearer ${data.token}` },
                 body: data
             })
-        })
+        }),
+        updatePublicKey: builder.mutation<UpdateKeyResponse, UpdateKeyData>({
+            query: (data) => ({
+                url: '/update-public-key',
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${data.token}` },
+                body: data
+            })
+        }),
     })
 });
 
@@ -85,5 +93,5 @@ export const { useGetPublicKeysQuery, useRegistarationMutation,
     useUpdateUserMutation, useCheckAuthQuery,
     useLogoutMutation, useLoginMutation,
     useUpdateCityMutation, useTurnOn2FAMutation,
-    useTurnOff2FAMutation } = authApi;
+    useTurnOff2FAMutation, useUpdatePublicKeyMutation } = authApi;
 export default authApi;

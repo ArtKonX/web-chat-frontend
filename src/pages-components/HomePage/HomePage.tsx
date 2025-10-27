@@ -1,12 +1,12 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { FormEvent, Suspense } from 'react';
 
 import FormSendMessages from "@/components/FormSendMessages/FormSendMessages";
 import Loader from "@/components/ui/Loader/Loader";
 import MessageList from "@/components/messages-components/MessageList/MessageList";
 import WebSocketConnection from "@/components/WebSocketConnection/WebSocketConnection";
-import { useGetMessagesMutation, useGetNextLengthMessagesQuery } from "@/redux/services/messagesApi";
+import { useGetMessagesMutation } from "@/redux/services/messagesApi";
 import { useGetUsersQuery } from "@/redux/services/usersApi";
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react";
@@ -14,14 +14,14 @@ import WrapperChoosingCities from "@/components/actions-with-cities-components/W
 import ChoosingCities from "@/components/actions-with-cities-components/СhoosingCities/ChoosingCities";
 import { useGetCitiesQuery } from "@/redux/services/citiesApi";
 import useDebounce from "@/hooks/useDebounce";
-import { useCheckAuthQuery, useGetPublicKeysQuery, useUpdateCityMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useGetPublicKeysQuery, useUpdateCityMutation, useUpdatePublicKeyMutation } from "@/redux/services/authApi";
 import { useRouter } from "next/navigation";
 import ChoosingCitiesOnMap from "@/components/actions-with-cities-components/ChoosingCitiesOnMap/ChoosingCitiesOnMap";
 import HomeWelcomePage from "../HomeWelcomePage/HomeWelcomePage";
 import SettingsWindow from "@/components/SettingsWindow/SettingsWindow";
 import useUrl from "@/hooks/useUrl";
 import { useSelector } from "@/hooks/useTypedSelector";
-import { selectChangeMessageState, selectImageState, selectTokenState } from "@/selectors/selectors";
+import { selectChangeMessageState, selectImageState, selectMessagesState, selectTokenState } from "@/selectors/selectors";
 import { encryptFile } from "@/utils/encryption/encryptFile";
 import UploadMenuWithButtonAction from "@/components/file-upload/UploadMenuWithButtonAction/UploadMenuWithButtonAction";
 import UploadFile from "@/components/file-upload/UploadFile/UploadFile";
@@ -30,14 +30,19 @@ import { decryptFile } from "@/utils/encryption/decryptFile";
 import { getPrivateKeyFromIndexedDB } from "@/utils/encryption/indexedDB/getPrivateKeyFromIndexedDB";
 import WindowWithInfo from "@/components/WindowWithInfo/WindowWithInfo";
 import { MessageInfo } from "@/interfaces/message";
-import { PrivatKey } from "@/interfaces/encryption";
+import { JWK, PrivatKey } from "@/interfaces/encryption";
 import { Coordinates } from "@/interfaces/position";
 import { decryptText } from "@/utils/encryption/decryptText";
 import { base64ToArrayBuffer } from "@/utils/base64ToArrayBuffer";
 import ImageWindow from "@/components/ImageWindow/ImageWindow";
-import { cacheMessages, getCachedMessages } from '@/cashe/messageCache';
+import { cacheMessages, clearCachedMessages, getCachedMessages } from '@/cashe/messageCache';
 import { getCachedUser } from '@/cashe/userCache';
 import { UserData } from '@/interfaces/users';
+import RestoringAccessForm from '@/components/RestoringAccessForm/RestoringAccessForm';
+import { generateKeyPair } from '@/utils/encryption/generateKeyPair';
+import { savePrivateKeyToIndexedDB } from '@/utils/encryption/indexedDB/savePrivateKeyToIndexedDB';
+import { clearCachedDialogues } from '@/cashe/dialoguesCache';
+import SkeletonMessagesList from '@/components/skeleton-messages/SkeletonMessagesList/SkeletonMessagesList';
 
 const HomePage = () => {
     // Для работы вебсокета
@@ -68,12 +73,17 @@ const HomePage = () => {
     const [updateCity, { data: updateCityData }] = useUpdateCityMutation();
     const [messages, setMessages] = useState<MessageInfo[]>([]);
     const [caсheMessages, setCaсheMessages] = useState<MessageInfo[]>([]);
-    const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null);
+    const [privatKey, setPrivatKey] = useState<PrivatKey | null>();
     const [countFirstRender, setCountFirstRender] = useState(0);
+
+    const [publicKey, setPublicKey] = useState<JWK | null>(null)
+    const [isSubmitUpdatePublicKey, setIsSubmitUpdatePublicKey] = useState<boolean>(false)
 
     const [isReloaded, setIsReloaded] = useState(false);
 
     const tokenState = useSelector(selectTokenState);
+
+    const messagesState = useSelector(selectMessagesState);
 
     // Получение данных авторизованного пользователя
     const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({ token: tokenState?.token });
@@ -88,13 +98,10 @@ const HomePage = () => {
     // Получение юзеров
     const { data: userData } = useGetUsersQuery({ q: String(searchParams?.get('user')), currentId: authState?.user?.id, token: tokenState.token });
 
-    // Длина следующих сообщений
-    const { data: dataNextLength } = useGetNextLengthMessagesQuery({
-        nextOffset: Number(currentOffSet) + 10,
-        senderId: authState?.user?.id,
-        recipientId: searchParams?.get('user'),
-        token: tokenState.token
-    });
+    // Для восстановления ключей для шифрования
+    const [updatePublicKey, { data: updatePublicKeyData, isLoading: isUpdatePublicKeyLoading }] = useUpdatePublicKeyMutation()
+
+    const [dataNextLenMesages, setDataNextLenMesages] = useState<number | null>(null)
 
     // Хук для работы с url
     const { url } = useUrl();
@@ -107,6 +114,12 @@ const HomePage = () => {
 
     // Получение сообщений
     const [getMessages, { data: messagesData, isLoading: isLoadingMessages }] = useGetMessagesMutation();
+
+    const onSubmitUpdatePublicKey = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        setIsSubmitUpdatePublicKey(true)
+    }
 
     // Счетчик для первоначального рендера
     useEffect(() => {
@@ -267,6 +280,8 @@ const HomePage = () => {
             const privatKeyCurrent = await getPrivateKeyFromIndexedDB();
             if (privatKeyCurrent) {
                 setPrivatKey(privatKeyCurrent)
+            } else {
+                setPrivatKey(null)
             }
         }
 
@@ -276,7 +291,8 @@ const HomePage = () => {
     useEffect(() => {
         if (!isLoadingMessages && messagesData?.messages?.length && privatKey) {
             (async () => {
-                const messagesDataAll = await Promise.all(messagesData?.messages.map(async (message) => {
+                const accessListMessages = messagesData?.messages.filter(message => (new Date(String(message.created_at)).getTime() > new Date(privatKey.date).getTime()))
+                const messagesDataAll = await Promise.all(accessListMessages.map(async (message) => {
                     if (message.file_type) {
 
                         const encryptedFile = await loadFile(
@@ -394,18 +410,19 @@ const HomePage = () => {
 
         }
 
-        if (!messagesData && isOnline) {
+        if (!messagesData && !isOnline) {
             (async () => {
                 const userId = searchParams?.get('user');
 
                 if (userId) {
                     const cached = await getCachedMessages(userId);
-                    if (cached.length > 0) {
+                    if (cached.length > 0 && privatKey) {
                         const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+                        const accessSortedMessagesCashed = sortedMessagesCashed.filter(message => (new Date(String(message.created_at)).getTime() > new Date(privatKey.date).getTime()))
 
                         setCaсheMessages([])
-                        setMessages([...sortedMessagesCashed]);
-                        console.log('Загружены сообщения из кеша:', sortedMessagesCashed, cached.length);
+                        setMessages([...accessSortedMessagesCashed]);
+                        console.log('Загружены сообщения из кеша:', accessSortedMessagesCashed, cached.length);
                     }
                 }
             })()
@@ -414,17 +431,29 @@ const HomePage = () => {
         (async () => {
             const userId = searchParams?.get('user');
 
-            if (userId) {
+            if (userId && Number(currentOffSet) < 10) {
                 const cached = await getCachedMessages(userId);
-                if (cached.length > 0 && !messagesData?.messages.length) {
+                if (cached.length > 0 && !messagesData?.messages.length && privatKey) {
                     const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
+                    const accessSortedMessagesCashed = sortedMessagesCashed.filter(message => (new Date(String(message.created_at)).getTime() > new Date(privatKey.date).getTime()))
 
-                    setCaсheMessages([...sortedMessagesCashed]);
-                    console.log('Загружены сообщения из кеша для первоначального отображения:', sortedMessagesCashed, cached.length);
+                    setCaсheMessages([...accessSortedMessagesCashed]);
+                    console.log('Загружены сообщения из кеша для первоначального отображения:', accessSortedMessagesCashed, cached.length);
                 }
             }
         })()
-    }, [messagesData?.messages, isLoadingMessages, privatKey,])
+    }, [messagesData?.messages, isLoadingMessages, privatKey, updatePublicKeyData?.status,])
+
+    useEffect(() => {
+        if (privatKey) {
+            caсheMessages.forEach(cache => {
+                if (cache.created_at && new Date(cache.created_at).getTime() < new Date(privatKey.date).getTime()) {
+                    clearCachedMessages()
+                    setCaсheMessages([])
+                }
+            });
+        }
+    }, [privatKey, caсheMessages, messagesData?.messages])
 
     useEffect(() => {
         setIsReloaded(false);
@@ -486,7 +515,41 @@ const HomePage = () => {
         })()
     }, [authState?.user,])
 
-    if (isLoadingAuth && !authState && !userInfo?.id) return <Loader isFade={true} />
+    useEffect(() => {
+        const fetchKeys = async () => {
+            const { publicKey, privateKey } = await generateKeyPair();
+
+            savePrivateKeyToIndexedDB(privateKey);
+            setPublicKey(publicKey)
+        }
+
+        if (isSubmitUpdatePublicKey) {
+            fetchKeys()
+        }
+
+    }, [isSubmitUpdatePublicKey])
+
+    useEffect(() => {
+        if (publicKey && isSubmitUpdatePublicKey && authState?.user.id) {
+            updatePublicKey({ id: authState?.user.id, publicKey: JSON.stringify(publicKey), token: tokenState.token })
+        }
+    }, [publicKey, authState?.user.id])
+
+    useEffect(() => {
+        if (updatePublicKeyData?.status === 'ok') {
+            setIsSubmitUpdatePublicKey(false)
+            clearCachedMessages()
+            clearCachedDialogues()
+            window.location.reload();
+        }
+    }, [updatePublicKeyData])
+
+    useEffect(() => {
+        const numberNextMess = messagesState?.messagesLenObj?.[String(searchParams?.get('user'))] - (Number(currentOffSet) + 10)
+        setDataNextLenMesages(numberNextMess)
+    }, [messagesState.messagesLenObj, searchParams?.get('user'), currentOffSet])
+
+    if ((isLoadingAuth && !authState && !userInfo?.id) || isUpdatePublicKeyLoading) return <Loader isFade={true} />
 
     if (isOnline && !isLoadingAuth && (!authState?.user?.id && !userInfo)) {
         return <HomeWelcomePage />
@@ -494,6 +557,7 @@ const HomePage = () => {
 
         return (
             <Suspense fallback={<Loader isFade={true} />}>
+                {String(privatKey) === 'null' ? <RestoringAccessForm onSubmitUpdatePublicKey={onSubmitUpdatePublicKey} /> : null}
                 <div className={`h-full flex flex-col justify-end w-full relative z-0`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
@@ -518,12 +582,12 @@ const HomePage = () => {
                         <WindowWithInfo title="Не выбран собеседник!" text="Выбери и отобразятся сообщения" />
                     )}
                     {searchParams?.get('tab') === 'users' && (
-                        <WindowWithInfo title="Нет сообщений!" text="Для отображения сообщений найди и напиши" />
+                        <WindowWithInfo title="Не выбран пользователь!" text="Для отображения сообщений найди собеседника и напиши" />
                     )}
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
                             {(!isLoadingMessages &&
-                                !messagesData?.messages.length && !wsMessages.length && !messages.length && !caсheMessages.length) ? (
+                                !wsMessages.length && !messages.length && !caсheMessages.length) ? (
                                 <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
                             ) : null}
                             <MessageList
@@ -535,9 +599,17 @@ const HomePage = () => {
                                 caсheMessages={caсheMessages}
                                 currentUser={authState?.user || userInfo}
                                 anotherAuthorName={userData && userData?.users[0]}
-                                dataNextLength={dataNextLength}
-                                isLoadingMessages={isLoadingMessages && !messages.length}
-                            />
+                                dataNextLength={{ lengthNextMessages: Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages), isNextMessages: Number(dataNextLenMesages) > 0 }}
+                            >
+                                <span className='relative top-0 left-0 w-full'>
+                                    {/* {isLoadingMessages && Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
+                                        <SkeletonMessagesList length={Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages)} /> :
+                                        isLoadingMessages && !(Number(dataNextLenMesages) < 0) ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
+                                            <SkeletonMessagesList length={5} /> :
+                                            isLoadingMessages ? <SkeletonMessagesList length={5} /> : null} */}
+                                        {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={5} /> : null}
+                                </span>
+                            </MessageList>
                             {isOnline ? (
                                 <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
                                     <UploadMenuWithButtonAction

@@ -134,9 +134,7 @@ const MessageItem = (
     const onDelete = (id?: string) => {
         if (id) {
             cacheDeleteMessage(id)
-            setTimeout(() => {
-                deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
-            }, 0);
+            deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
         }
     }
 
@@ -205,7 +203,7 @@ const MessageItem = (
                 </div>
             )}
             <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-10 pl-4 rounded-3xl
-        border-2 ${isCache ? 'opacity-80' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
+        border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
                 {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-50'>
                     <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }) }} className='bg-white pt-[4px] pb-[14px] px-3

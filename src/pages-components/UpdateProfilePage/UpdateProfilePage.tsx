@@ -53,6 +53,9 @@ const UpdateProfilePage = () => {
         password: '',
         checkPassword: ''
     });
+
+    const [isSubmit, setIsSubmit] = useState(false);
+
     const [errors, setErrors] = useState<Errors>({
         name: false,
         password: false,
@@ -67,6 +70,8 @@ const UpdateProfilePage = () => {
 
     const onSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        setIsSubmit(true)
 
         const errorsInputs = Object.fromEntries(
             Object.entries(formState)
@@ -100,21 +105,38 @@ const UpdateProfilePage = () => {
             setErrors({ ...errorsInputs });
         }, 2000);
 
-        if (!Object.values(errors).some(Boolean)) {
-            try {
+        // if (!Object.values(errors).some(Boolean)) {
+        //     try {
+        //         const updateData = {
+        //             id: authData?.user?.id,
+        //             name: formState.name,
+        //             password: formState.password,
+        //             token: tokenState.token
+        //         }
+
+        //         updateUser(updateData);
+        //     } catch (e) {
+        //         console.error(e)
+        //     }
+        // }
+    }
+
+    useEffect(() => {
+        if (isSubmit) {
+            if (!Object.values(errors).some(Boolean)) {
                 const updateData = {
                     id: authData?.user?.id,
                     name: formState.name,
                     password: formState.password,
-                    token: tokenState.token
+                    token: tokenState?.token
                 }
 
                 updateUser(updateData);
-            } catch (e) {
-                console.error(e)
+            } else {
+                setIsSubmit(false)
             }
         }
-    }
+    }, [setIsSubmit, isSubmit, errors])
 
     useEffect(() => {
         if (!isUpdateLoading) {

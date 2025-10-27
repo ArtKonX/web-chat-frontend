@@ -43,7 +43,7 @@ const SideBar = (
                     {searchParams!.get('tab') == 'chats' && dialoguesData?.length > 0 ? (
                         <DialoguesList dialoguesData={dialoguesData} />
                     ) : searchParams!.get('tab') === 'users' ? null : !isListInfoDialoguesLoading ? <span className="w-full flex justify-center mt-5 font-bold max-sm:text-[18px] max-sm:text-center">У вас нет сообщений(</span> : null}
-                    <div className="w-full absolute bottom-0 pb-1 pt-2 flex justify-around border-t-2">
+                    <div className="w-full absolute bottom-0 pb-1 pt-2 flex justify-around border-t-2 bg-white">
                         <SideBarActionLink isActive={searchParams!.get('tab') === 'chats'} icon={messageIcon} alt='сообщения' href='/?tab=chats' />
                         <SideBarActionLink isDisable={isDisableFindUsers} isActive={searchParams!.get('tab') === 'users'} icon={usersIcon} alt='пользователи' href='/?tab=users&q=' />
                     </div>

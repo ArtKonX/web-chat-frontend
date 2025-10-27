@@ -65,3 +65,11 @@ export const selectUser = createSelector(
         return user ?? null;
     }
 );
+
+export const selectMessagesState = createSelector(
+    (state: RootState) => state.messagesSlice,
+
+    (messagesState) => ({
+        ...messagesState
+    })
+);

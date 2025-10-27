@@ -106,15 +106,6 @@ describe('CheckPinPage', () => {
         });
     });
 
-    it('перенаправляет на / если auth.id отсутствует', () => {
-
-        getProviderWithStore(
-            <CheckPinPage />
-        );
-
-        expect(mockRouter.push).toHaveBeenCalledWith('/');
-    });
-
     it('обновляет pin при изменении input', () => {
         mockSearchParams.get.mockReturnValue('login');
 

@@ -45,10 +45,10 @@ const DialoguesList = (
     }
 
     return (
-        <ul data-testid="dialogues-list">
+        <ul data-testid="dialogues-list" className='max-h-[88%] h-full overflow-y-auto mt-5 pr-4'>
             {
                 dialoguesData?.map((dialogue) => (
-                    <li data-testid="dialogues-item" key={dialogue.userId}>
+                    <li className='not-first:mt-10 first:mt-1' data-testid="dialogues-item" key={dialogue.userId}>
                         <UserItem isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
                             quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
                             isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}

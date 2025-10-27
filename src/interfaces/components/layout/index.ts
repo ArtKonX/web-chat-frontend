@@ -7,5 +7,7 @@ export interface DialogueData {
     lengthMessages: number,
     lastMessage: string,
     status: boolean,
-    colorProfile: string
+    colorProfile: string,
+    dateMessage: Date,
+    listDates: Date[]
 }

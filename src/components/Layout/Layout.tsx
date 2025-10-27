@@ -24,6 +24,8 @@ import { cacheDialogue, getCachedDialogues } from '@/cashe/dialoguesCache';
 import { UserData } from '@/interfaces/users';
 import { getCachedUser } from '@/cashe/userCache';
 import SkeletonLayoutList from '../sceleton-layout/SkeletonLayoutList/SkeletonLayoutList';
+import { addMessageLen } from '@/redux/slices/messagesSlice';
+import { useDispatch } from 'react-redux';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -35,6 +37,8 @@ const Layout = (
     const tokenState = useSelector(selectTokenState)
 
     const { data: authData } = useCheckAuthQuery({ token: tokenState?.token });
+
+    const dispatch = useDispatch();
 
     const pathname = usePathname();
     const [isDemoHeader, setIsDemoHeader] = useState(false);
@@ -100,7 +104,9 @@ const Layout = (
                         filteredAllListDialogues.unshift(wsInfoDialogues)
                     }
 
-                    setListDialogues(filteredAllListDialogues)
+                    dispatch(addMessageLen({ id: wsInfoDialogues.userId, numberMessages: wsInfoDialogues.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length }))
+
+                    setListDialogues(filteredAllListDialogues.map(dialogue => ({ ...dialogue, lengthMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length + (dialogue.lengthMessages > dialogue.listDates.length ? dialogue.lengthMessages - dialogue.listDates.length : 0) })))
                 }
             }
         }
@@ -113,11 +119,13 @@ const Layout = (
         if (listDialogues && userStatus) {
             const findIndexDialogue = listDialogues.findIndex(dialogue => dialogue.userId === userStatus.userId);
 
-            if (findIndexDialogue !== -1) {
+            if (findIndexDialogue !== -1 && privatKey) {
                 const updatedDialogues = [...listDialogues];
 
+                dispatch(addMessageLen({ id: updatedDialogues[findIndexDialogue].userId, numberMessages: updatedDialogues[findIndexDialogue].listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length }))
                 const updatedDialogue = {
                     ...updatedDialogues[findIndexDialogue],
+                    lengthMessages: updatedDialogues[findIndexDialogue].listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length,
                     status: userStatus.status
                 };
 
@@ -126,13 +134,13 @@ const Layout = (
                 setListDialogues(updatedDialogues);
             }
         }
-    }, [userStatus, setUserStatus])
+    }, [userStatus, setUserStatus, privatKey])
 
     useEffect(() => {
         if (listInfoDialogues?.data?.length && privatKey) {
             const fetchDialogues = async () => {
-                const decListDialogues = await Promise.all(listInfoDialogues?.data.map(async (dialogue) => {
-                    console.log('dialogue.lastMessage', typeof dialogue.lastMessage)
+                const accessListInfoDialogues = listInfoDialogues.data.filter(dialogue => (new Date(dialogue.dateMessage).getTime() > new Date(privatKey.date).getTime()))
+                const decListDialogues = await Promise.all(accessListInfoDialogues.map(async (dialogue) => {
                     if (typeof dialogue.lastMessage !== 'object') {
                         const messageList = dialogue.lastMessage.split('\n');
 
@@ -161,7 +169,8 @@ const Layout = (
                             }
 
                             if (decMessage) {
-                                return { ...dialogue, lastMessage: decMessage };
+                                dispatch(addMessageLen({ id: dialogue.userId, numberMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length }))
+                                return { ...dialogue, lengthMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, lastMessage: decMessage };
                             }
                         }
                     }

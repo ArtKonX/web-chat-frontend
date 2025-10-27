@@ -65,6 +65,7 @@ const LoginPage = () => {
     }, [authData])
 
     useEffect(() => {
+        console.log(dataLogin)
         if ((dataLogin?.status === 'ok' && dataLogin?.user?.token)) {
             dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
             location.reload()
@@ -120,6 +121,23 @@ const LoginPage = () => {
         }
     }, [setIsSubmit, isSubmit, errors])
 
+    useEffect(() => {
+        if (errorLogin?.data?.status === 'error') {
+            setErrors(prev => ({
+                ...prev,
+                password: true,
+            }));
+
+            setTimeout(() => {
+                const errorsInputs = Object.fromEntries(
+                    Object.entries(errors).map((key) => key, false)
+                ) as Errors;
+
+                setErrors({ ...errorsInputs });
+            }, 2000);
+        }
+    }, [errorLogin])
+
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
 
@@ -129,7 +147,7 @@ const LoginPage = () => {
 
     return (
         <div className="w-full min-h-[calc(100vh-82px)] flex items-center">
-            {isDataLoading || errorLogin && <Loader isFade={true} />}
+            {isDataLoading && <Loader isFade={true} />}
             <div className="my-2 w-full flex justify-center">
                 <div className="bg-white py-6 px-9 max-sm:mx-4 rounded-2xl
                 max-w-2/5 w-full max-sm:max-w-full">

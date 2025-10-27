@@ -77,12 +77,14 @@ const WebSocketConnection = () => {
             currentSocket.onmessage = async (event) => {
                 try {
                     const newMessage = JSON.parse(event.data);
+                    console.log('newMessage', newMessage)
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if ((newMessage.sender_id === searchParams?.get('user')
                         && newMessage.recipient_id === dataAuth?.user?.id) ||
                         (newMessage.sender_id === dataAuth?.user?.id
-                            && newMessage.recipient_id === searchParams?.get('user'))) {
+                            && newMessage.recipient_id === searchParams?.get('user'))
+                        || (newMessage.sender_id === dataAuth?.user?.id || newMessage.recipient_id === dataAuth?.user?.id)) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
                                 if (newMessage.file_type && privatKey) {

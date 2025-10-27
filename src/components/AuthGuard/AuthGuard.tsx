@@ -13,8 +13,7 @@ import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
 import { cacheUser, getCachedUser } from '@/cashe/userCache';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
     const tokenState = useSelector(selectTokenState);
@@ -27,6 +26,8 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     const searchParams = useSearchParams();
 
     const router = useRouter()
+
+    const pathname = usePathname();
 
     const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
@@ -49,9 +50,13 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
             // Для фона чата
             body.style.background = `url('${urlBg.src}'), linear-gradient(135deg, ${bgColor.bgColor}, rgba(0, 0, 255, 0.3))`;
 
-            if (!searchParams.get('tab')) {
+            if (!searchParams.get('tab') && !pathname.includes('profile')) {
                 router.push('/?tab=users')
             }
+        }
+
+        if (!isLoadingAuth && !authData) {
+            router?.push('/')
         }
 
     }, [bgColor, authData,])

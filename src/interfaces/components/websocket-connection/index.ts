@@ -6,5 +6,7 @@ export interface WSDialogueData {
     lengthMessages: number,
     lastMessage: string,
     status: boolean,
-    colorProfile: string
+    colorProfile: string,
+    listDates: Date[],
+    dateMessage: Date
 }

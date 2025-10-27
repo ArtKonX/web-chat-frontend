@@ -20,7 +20,7 @@ export async function savePrivateKeyToIndexedDB(encryptedKeyData: CryptoKey) {
             // сохраняем приватный ключ
             await db.transaction('keys', 'readwrite')
                 .objectStore('keys')
-                .put({ id: 'privateKey', data: encryptedKeyData });
+                .put({ id: 'privateKey', data: encryptedKeyData, date: new Date() });
         } else {
             throw new Error('Хранилище keys не сущаствует');
         }

@@ -65,7 +65,7 @@ const RegistrationPage = () => {
         // регистрация или он уже входил
         if (dataRegister?.status === 'ok' && dataRegister?.user?.token && !isLoadingRegister ||
             (authData && authData?.user?.city)) {
-            dispatch(addToken({ token: JSON.stringify(dataRegister!.user!.token) }))
+            dispatch(addToken({ token: JSON.stringify(dataRegister?.user!.token) }))
             setFormState({
                 name: '', email: '',
                 password: '', checkPassword: ''
