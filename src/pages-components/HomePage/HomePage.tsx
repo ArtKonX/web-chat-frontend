@@ -545,8 +545,9 @@ const HomePage = () => {
     }, [updatePublicKeyData])
 
     useEffect(() => {
+        setDataNextLenMesages(null)
         const numberNextMess = messagesState?.messagesLenObj?.[String(searchParams?.get('user'))] - (Number(currentOffSet) + 10)
-        console.log('numberNextMess', numberNextMess, messagesState?.messagesLenObj?.[String(searchParams?.get('user'))])
+
         setDataNextLenMesages(numberNextMess)
     }, [messagesState.messagesLenObj, searchParams?.get('user'), currentOffSet, messagesData,])
 
@@ -601,7 +602,7 @@ const HomePage = () => {
                                 caсheMessages={caсheMessages}
                                 currentUser={authState?.user || userInfo}
                                 anotherAuthorName={userData && userData?.users[0]}
-                                dataNextLength={{ lengthNextMessages: Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages), isNextMessages: ((messagesData?.messages.length ? messagesData?.messages.length : 0) + (wsMessages.length ? wsMessages.length : 0)) !== Number(dataNextLenMesages) + (Number(currentOffSet) + 10) && Number(dataNextLenMesages) > 0 }}
+                                dataNextLength={{ lengthNextMessages: Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages), isNextMessages: (Number(messagesData?.messages.length ? messagesData?.messages.length : 0) + Number(wsMessages.length ? wsMessages.length : 0)) !== Number(dataNextLenMesages) + (Number(currentOffSet) + 10) && Number(dataNextLenMesages) > 0 }}
                             >
                                 <span className='relative top-0 left-0 w-full'>
                                     {/* {isLoadingMessages && Number(dataNextLenMesages) < 0 ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?

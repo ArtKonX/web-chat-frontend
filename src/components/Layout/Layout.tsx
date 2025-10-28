@@ -199,16 +199,13 @@ const Layout = (
     }, [listInfoDialogues?.data?.length, isListInfoDialoguesLoading,])
 
     useEffect(() => {
-        const userId = searchParams.get('user');
 
         (async () => {
-            if (userId) {
 
-                const cached = await getCachedDialogues();
+            const cached = await getCachedDialogues();
 
-                if (cached.length > 0) {
-                    setListCachedDialogues(cached.map(cache => ({ ...cache, isCache: true })))
-                }
+            if (cached.length > 0) {
+                setListCachedDialogues(cached.map(cache => ({ ...cache, isCache: true })))
             }
         })()
     }, [searchParams.get('user'),])
