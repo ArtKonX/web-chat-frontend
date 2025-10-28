@@ -561,7 +561,7 @@ const HomePage = () => {
             <Suspense fallback={<Loader isFade={true} />}>
                 {String(privatKey) === 'null' ? <RestoringAccessForm onSubmitUpdatePublicKey={onSubmitUpdatePublicKey} /> : null}
                 {isUpdateCityLoading && <Loader isFade={true} />}
-                <div className={`h-full flex flex-col justify-end w-full relative z-${isFormUploadFile ? '100' : '0'}`}>
+                <div className={`h-full flex flex-col justify-end w-full z-361 relative z-${isFormUploadFile ? '100' : '0'}`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
                         null}
