@@ -55,6 +55,13 @@ const WebSocketConnection = () => {
         userRef.current = searchParams?.get('user')
     }, [searchParams?.get('user')])
 
+
+    const currentUserRef = useRef(searchParams?.get('user'));
+
+    useEffect(() => {
+        currentUserRef.current = searchParams?.get('user');
+    }, [searchParams]);
+
     useEffect(() => {
 
         const initWebSocket = async () => {
@@ -76,16 +83,15 @@ const WebSocketConnection = () => {
             // Создаем обработчик обмена сообщениями
             currentSocket.onmessage = async (event) => {
                 try {
+                    const currentUser = currentUserRef.current;
                     const newMessage = JSON.parse(event.data);
-                    console.log('newMessage', newMessage)
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if (((newMessage.sender_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.recipient_id === dataAuth?.user?.id)
-                        || (newMessage.recipient_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.sender_id === dataAuth?.user?.id)) ||
-                        (newMessage.sender_id === searchParams?.get('user')
-                            && newMessage.recipient_id === dataAuth?.user?.id) ||
+                        || (newMessage.recipient_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.sender_id === dataAuth?.user?.id) || (((newMessage.sender_id !== '0f000000-000c-00d0-00d0-0d0000e00000') && (newMessage.recipient_id !== '0f000000-000c-00d0-00d0-0d0000e00000') && (currentUser !== '0f000000-000c-00d0-00d0-0d0000e00000')) && (newMessage.sender_id === currentUser
+                        && newMessage.recipient_id === dataAuth?.user?.id) ||
                         (newMessage.sender_id === dataAuth?.user?.id
-                            && newMessage.recipient_id === searchParams?.get('user'))
+                            && currentUser !== '0f000000-000c-00d0-00d0-0d0000e00000') && newMessage.recipient_id === currentUser))
                     ) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
@@ -101,7 +107,6 @@ const WebSocketConnection = () => {
                                                 newMessage.file_type);
 
                                             const messageList = newMessage.message.split('\n');
-                                              console.log('messageList', messageList)
 
                                             let decMessage;
 
@@ -234,10 +239,10 @@ const WebSocketConnection = () => {
                             }
                         }
                     }
+
                     if ((newMessage.sender_id === dataAuth?.user?.id || newMessage.recipient_id === dataAuth?.user?.id)) {
                         if (newMessage.type === 'info-about-chat' && privatKey) {
                             let decMessage;
-                            console.log('newMessage', newMessage)
 
                             try {
                                 if (newMessage.lastMessage) {
@@ -272,7 +277,7 @@ const WebSocketConnection = () => {
         if (userId) {
             initWebSocket();
         }
-    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey, searchParams?.get('user'),]);
+    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey,]);
 
     useEffect(() => {
 

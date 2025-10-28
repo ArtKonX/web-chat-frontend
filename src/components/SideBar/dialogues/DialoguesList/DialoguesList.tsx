@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 import UserItem from "../Dialogue/Dialogue"
 import { useSelector } from "@/hooks/useTypedSelector"
@@ -10,6 +10,7 @@ import { useCheckAuthQuery } from '@/redux/services/authApi';
 import { selectTokenState } from '@/selectors/selectors';
 import { UserData } from '@/interfaces/users';
 import { getCachedUser } from '@/cashe/userCache';
+import Loader from '@/components/ui/Loader/Loader';
 
 const DialoguesList = (
     { dialoguesData }: DialoguesListProps
@@ -45,18 +46,20 @@ const DialoguesList = (
     }
 
     return (
-        <ul data-testid="dialogues-list" className='max-h-[88%] h-full overflow-y-auto mt-5 pr-4'>
-            {
-                dialoguesData?.map((dialogue) => (
-                    <li className='not-first:mt-10 first:mt-1' data-testid="dialogues-item" key={dialogue.userId}>
-                        <UserItem isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
-                            quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
-                            isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
-                            status={dialogue.status} profileColor={dialogue.colorProfile} />
-                    </li>
-                ))
-            }
-        </ul>
+        <Suspense fallback={<Loader isFade={true} />}>
+            <ul data-testid="dialogues-list" className='max-h-[88%] h-full overflow-y-auto mt-5 pr-4'>
+                {
+                    dialoguesData?.map((dialogue) => (
+                        <li className='not-first:mt-10 first:mt-1' data-testid="dialogues-item" key={dialogue.userId}>
+                            <UserItem isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
+                                quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
+                                isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
+                                status={dialogue.status} profileColor={dialogue.colorProfile} />
+                        </li>
+                    ))
+                }
+            </ul>
+        </Suspense>
     )
 }
 
