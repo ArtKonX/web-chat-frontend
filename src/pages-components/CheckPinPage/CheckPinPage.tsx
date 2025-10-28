@@ -137,7 +137,7 @@ const CheckPinPage = () => {
                             ${true ? 'opacity-100 scale-100 translate-y-0'
                 : 'opacity-0 scale-95 -translate-y-2'}`}
         >
-            {(isLoginLoading || loginError || isUpdateLoading || updateError) && <Loader isFade={true} />}
+            {(isLoginLoading || isUpdateLoading) && <Loader isFade={true} />}
             <form data-testid="form" onSubmit={onSendPin}
                 className="z-100 bg-white py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-10/11 w-full flex
                 flex-col items-center relative">
