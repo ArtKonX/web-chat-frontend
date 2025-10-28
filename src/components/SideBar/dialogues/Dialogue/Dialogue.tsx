@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
-// import Link from "next/link"
+import Link from "next/link"
 
 import { useMediaPredicate } from 'react-media-hook';
 import { useDispatch } from 'react-redux';
 import { toggleSideBar } from '@/redux/slices/sideBarSlice';
-import useUrl from '@/hooks/useUrl';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 const Dialogue = (
     { id, name, isActiveUser,
@@ -18,48 +16,16 @@ const Dialogue = (
 
     const dispatch = useDispatch();
 
-    const { url } = useUrl()
-
-    const router = useRouter()
-    const searchParams = useSearchParams()
-
-    const [isSend, setIsSend] = useState(false);
-
     const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const closeSideBarMobile = () => {
         if (isMobile) {
             dispatch(toggleSideBar());
         }
-
-        if (url) {
-            // href={`/?tab=chats&user=${id}`}
-            if (searchParams.get('tab') !== 'chats') {
-                url.searchParams.set('tab', 'chats')
-            }
-
-            if (searchParams.get('user')) {
-                url.searchParams.delete('user');
-                router?.push(url.href)
-                setIsSend(true)
-            }
-
-            console.log(searchParams.get('user'))
-        }
     }
 
-    useEffect(() => {
-        if (!searchParams.get('user') && url && isSend) {
-
-            url.searchParams.set('user', id)
-
-            router?.push(url.href)
-            setIsSend(false)
-        }
-    }, [searchParams.get('user'), isSend, setIsSend])
-
     return (
-        <button
+        <Link href={`/?tab=chats&user=${id}`}
             className={`hover:opacity-60 flex transition-opacity max-lg:justify-between duration-700 cursor-pointer relative
         ${isActiveUser ? 'border-amber-400 opacity-50 pointer-events-none' :
                     'border-black'} pb-2 flex items-center border-b-2 justify-around max-lg:w-full ${isCache ? 'opacity-50 pointer-events-none' : ''}`}
@@ -83,7 +49,7 @@ const Dialogue = (
                 'bg-amber-400/50 border-black'}`}>
                 {quantityMessages}
             </span>
-        </button>
+        </Link>
     )
 }
 
