@@ -176,17 +176,13 @@ const Layout = (
                     }
                 })) as DialogueData[]
 
-                const userId = searchParams.get('user');
-
                 try {
-                    if (userId) {
 
-                        await Promise.all(decListDialogues.map(async (dialogue) => {
-                            await cacheDialogue(dialogue);
-                        }))
+                    await Promise.all(decListDialogues.map(async (dialogue) => {
+                        await cacheDialogue(dialogue);
+                    }))
 
-                        console.log('Диалоги успешно сохранены в кеш', decListDialogues);
-                    }
+                    console.log('Диалоги успешно сохранены в кеш', decListDialogues);
                 } catch (error) {
                     console.error('Ошибка при сохранении в кеш:', error);
                 }

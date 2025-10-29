@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent, Suspense } from 'react';
+import React, { FormEvent, Suspense, useRef } from 'react';
 
 import FormSendMessages from "@/components/FormSendMessages/FormSendMessages";
 import Loader from "@/components/ui/Loader/Loader";
@@ -70,6 +70,9 @@ const HomePage = () => {
     const [searchCity, setSearchCity] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [itemCount, setItemCount] = useState(0);
+
     const [updateCity, { data: updateCityData, isLoading: isUpdateCityLoading }] = useUpdateCityMutation();
     const [messages, setMessages] = useState<MessageInfo[]>([]);
     const [caсheMessages, setCaсheMessages] = useState<MessageInfo[]>([]);
@@ -115,11 +118,32 @@ const HomePage = () => {
     // Получение сообщений
     const [getMessages, { data: messagesData, isLoading: isLoadingMessages }] = useGetMessagesMutation();
 
+    const [isWindowImage, setIsWindowImage] = useState(false);
+
     const onSubmitUpdatePublicKey = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         setIsSubmitUpdatePublicKey(true)
     }
+
+
+    useEffect(() => {
+        const targetNode = document.body;
+
+        const observer = new MutationObserver(() => {
+            const element = document.getElementById('image-window');
+            setIsWindowImage(element ? true : false);
+        });
+
+        observer.observe(targetNode, {
+            childList: true,
+            subtree: true
+        });
+
+        setIsWindowImage(document.getElementById('image-window') ? true : false);
+
+        return () => observer.disconnect();
+    }, []);
 
     // Счетчик для первоначального рендера
     useEffect(() => {
@@ -551,6 +575,39 @@ const HomePage = () => {
         setDataNextLenMesages(numberNextMess)
     }, [messagesState.messagesLenObj, searchParams?.get('user'), currentOffSet, messagesData,])
 
+    const calculateItems = () => {
+        if (!containerRef.current) return;
+
+
+        const containerHeight = containerRef.current.clientHeight;
+
+        const itemHeight = 120; // например, 60px
+        const padding = 20; // отступы между элементами
+
+
+        const availableHeight = containerHeight - padding;
+        const count = Math.floor(availableHeight / (itemHeight + padding));
+
+        console.log('count', count)
+        setItemCount(Math.max(1, count));
+    };
+
+    useEffect(() => {
+        calculateItems();
+        window.addEventListener('resize', calculateItems);
+
+        return () => window.removeEventListener('resize', calculateItems);
+    }, [searchParams?.get('user')]);
+
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver(calculateItems);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, [containerRef.current]);
+
     if ((isLoadingAuth && !authState && !userInfo?.id) || isUpdatePublicKeyLoading) return <Loader isFade={true} />
 
     if (isOnline && !isLoadingAuth && (!authState?.user?.id && !userInfo)) {
@@ -561,7 +618,7 @@ const HomePage = () => {
             <Suspense fallback={<Loader isFade={true} />}>
                 {String(privatKey) === 'null' ? <RestoringAccessForm onSubmitUpdatePublicKey={onSubmitUpdatePublicKey} /> : null}
                 {isUpdateCityLoading && <Loader isFade={true} />}
-                <div className={`h-full flex flex-col justify-end w-full relative z-${isFormUploadFile ? '100' : '0'}`}>
+                <div ref={containerRef} className={`h-full flex flex-col justify-end w-full relative z-${isFormUploadFile || isWindowImage ? '3000' : '0'}`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
                         null}
@@ -610,7 +667,7 @@ const HomePage = () => {
                                         isLoadingMessages && !(Number(dataNextLenMesages) < 0) ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
                                             <SkeletonMessagesList length={5} /> :
                                             isLoadingMessages ? <SkeletonMessagesList length={5} /> : null} */}
-                                    {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={5} /> : null}
+                                    {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={itemCount} /> : null}
                                 </span>
                             </MessageList>
                             {isOnline && !isLoadingMessages ? (

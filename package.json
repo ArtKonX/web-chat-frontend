@@ -61,6 +61,7 @@
     "babel-jest": "^30.2.0",
     "babel-plugin-styled-components": "^2.1.4",
     "broadcastchannel-polyfill": "^1.0.1",
+    "dom-resize-observer": "^1.0.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "identity-obj-proxy": "^3.0.0",

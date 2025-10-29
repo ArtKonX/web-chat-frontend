@@ -34,7 +34,7 @@ const ImageWindow = (
     }, []);
 
     return (
-        <div className={`z-60 flex justify-center items-center fixed top-0 left-0 w-full
+        <div id='image-window' className={`z-60 flex justify-center items-center fixed top-0 left-0 w-full
             h-full bg-black/60 transition-all duration-200 ease-out
             opacity-100 scale-100 translate-y-0`}>
             <div className="w-full h-full flex flex-col items-center justify-center relative">
