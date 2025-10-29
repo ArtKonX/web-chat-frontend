@@ -91,7 +91,7 @@ const UploadFileForm = (
     const renderViewFile = (type: string, src: string) => {
         if (type.includes('image')) {
             return (
-                <img src={src} width={100} height={100} className="mb-4" />
+                <img src={src} height={300} className="mb-4" />
             )
         } else if (type.includes('video')) {
             return (

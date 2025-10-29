@@ -646,10 +646,10 @@ const HomePage = () => {
                     )}
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
-                            {(!isLoadingMessages &&
-                                !wsMessages.length && !messages.length && !caсheMessages.length) ? (
-                                <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
-                            ) : null}
+                            {
+                                (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages].length) ? (
+                                    <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
+                                ) : null}
                             <MessageList
                                 isOnline={isOnline}
                                 userId={searchParams?.get('user')}
