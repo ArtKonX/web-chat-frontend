@@ -18,7 +18,7 @@ const Error404Page = () => {
         }, 1000)
 
         const idSetTimeout = setTimeout(() => {
-            router.push('/')
+            router.push('/?tab=users&q=')
         }, 7000)
 
         return () => {
@@ -28,7 +28,7 @@ const Error404Page = () => {
     }, [])
 
     return (
-        <div className="w-full h-screen absolute">
+        <div className="w-full h-[calc(100%+66px)] fixed top-0 z-2000">
             <div className="bg-[#F6F7F8] w-full h-[calc(100%-42px)] flex flex-col items-center justify-center py-10 px-48 max-sm:px-10 max-lg:px-10">
                 <h1 className="text-amber-500 font-bold text-8xl animate-pulse">
                     404
@@ -39,7 +39,7 @@ const Error404Page = () => {
                 <p className="font-bold text-2xl mb-6 max-sm:text-center max-lg:text-center">До перехода на главную страницу всего секунд:
                     <span className="text-amber-500 text-3xl"> {time}</span>
                 </p>
-                <LinkNavigate path='/' text='Перейти на главную' />
+                <LinkNavigate path='/?tab=users&q=' text='Перейти на главную' />
             </div>
         </div>
     )

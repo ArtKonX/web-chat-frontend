@@ -12,6 +12,7 @@ import { addUrl } from '@/redux/slices/imageSlice';
 import { formattedDate } from '@/utils/formattedDate';
 import { useCheckAuthQuery } from '@/redux/services/authApi';
 import { cacheDeleteMessage } from '@/cashe/messageCache';
+import { useMediaPredicate } from 'react-media-hook';
 
 const MessageItem = (
     { currentId, message,
@@ -22,6 +23,8 @@ const MessageItem = (
     const [isFade, setIsFade] = useState(false)
 
     const tokenState = useSelector(selectTokenState);
+
+    const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     // для вычисления ширины сообщения
     const refMessageItem = useRef<HTMLDivElement | null>(null);
@@ -64,7 +67,9 @@ const MessageItem = (
             refMessageItem.current &&
             refMessageItem?.current
         ) {
-            refActions.current.style.left = `${refMessageItem?.current?.offsetWidth / 2}px`;
+            if (!isMobile) {
+                refActions.current.style.left = `${refMessageItem?.current?.offsetWidth / 2}px`;
+            }
         }
     }, [showActionMessage?.isShow, messageChangeData?.isChange, isFade]);
 
@@ -182,28 +187,28 @@ const MessageItem = (
                     'opacity-0 scale-95 -translate-y-2'}`}>
             </div>) : null}
             {showActionMessage?.isShow && !messageChangeData.isChange && isFade && (
-                <div ref={refActions} className='absolute w-full z-110 flex items-center justify-center'>
+                <div ref={refActions} className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
                     <ul className='bg-white rounded-4xl border-2 border-black'>
                         {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?
-                                    (<button onClick={() => indx === 0 && !message.file_type?.includes('audio/mpeg') ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                    (<button onClick={() => indx === 0 && !message.file_type?.includes('audio/mpeg') ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
                                         {item}
                                     </button>) :
-                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer">
+                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-xl font-bold hover:opacity-55 duration-500 cursor-pointer">
                                         {item}
                                     </a>) :
-                                    (<button onClick={() => indx === 0 ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                    (<button onClick={() => indx === 0 ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
                                         {item}
                                     </button>)}
                             </li>
                         ))) : (['Скачать файл', 'Удалить', 'Отмена'].filter(elem => Boolean(elem)).map((item, indx) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {[1, 2].includes(indx) ?
-                                    (<button onClick={() => indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
+                                    (<button onClick={() => indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
                                         {item}
                                     </button>) :
-                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-2xl font-bold hover:opacity-55 duration-500 cursor-pointer">
+                                    (<a onClick={() => onClose(message.id)} href={message.file_url} download={message.file_name} className="text-xl font-bold hover:opacity-55 duration-500 cursor-pointer">
                                         {item}
                                     </a>)}
                             </li>)))}
@@ -211,7 +216,7 @@ const MessageItem = (
                 </div>
             )}
             <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-10 pl-4 rounded-3xl
-        border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
+        border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow && !isMobile) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
                 {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-50'>
                     <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }) }} className='bg-white pt-[4px] pb-[14px] px-3
