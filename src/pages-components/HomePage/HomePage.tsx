@@ -647,7 +647,7 @@ const HomePage = () => {
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
                             {
-                                (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages].length) ? (
+                                (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length) ? (
                                     <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
                                 ) : null}
                             <MessageList
