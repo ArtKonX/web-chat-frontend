@@ -32,8 +32,16 @@ const SettingsWindow = (
 
     const dispatch = useDispatch();
 
+    const newParams = useRef<URLSearchParams | null>(null);
+
     const refForm = useRef<HTMLFormElement | null>(null);
     const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab')]);
 
     useEffect(() => {
         if (refForm.current && closeBtnBlockRef.current) {
@@ -64,21 +72,12 @@ const SettingsWindow = (
 
         dispatch(addColor({ bgColor: hex }))
 
-        if (url) {
-            url?.searchParams.delete('settings');
-            const tab = url.searchParams.get('tab');
+        if (url && newParams.current) {
+            newParams.current.delete('settings');
 
-            if (tab) {
-                url?.searchParams.set('tab', tab);
-            }
+            const newUrl = `${url.pathname}?${newParams.current.toString()}`;
 
-            const user = url.searchParams.get('user');
-
-            if (user) {
-                url?.searchParams.set('user', user);
-            }
-
-            router.push(url?.href);
+            router.push(newUrl);
         }
     }
 

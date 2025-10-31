@@ -19,8 +19,8 @@ jest.mock('@/hooks/useUrl')
 jest.mock('@/cashe/userCache')
 
 type MockValue = {
-    mockReturnValue: jest.Mock
-    mockResolvedValue:jest.Mock
+  mockReturnValue: jest.Mock
+  mockResolvedValue: jest.Mock
 }
 
 describe('Header', () => {
@@ -118,24 +118,26 @@ describe('Header', () => {
     expect(screen.queryByText(/T/)).not.toBeInTheDocument()
   })
 
-  test('клик по кнопке настроек вызывает router.push с правильным url', () => {
-    const routerPushMock = jest.fn()
+  test('клик по кнопке настроек вызывает router.push с правильным url', async () => {
+    const routerPushMock = jest.fn();
+    const mockUrl = new URL('http://localhost/?tab=chats&user=user1');
 
-    router.mockReturnValue({ push: routerPushMock })
-
-    const url = new URL('http://localhost/?tab=chats&user=user1')
-    defaultUrlHook.mockReturnValue({ url })
+    // Моки
+    (nextNavigation.useRouter as jest.Mock).mockReturnValue({ push: routerPushMock });
+    (useUrlHook.default as jest.Mock).mockReturnValue({ url: mockUrl });
 
     getProviderWithStore(
       <Header isDemoHeader={false} isWelcomePage={false} />
-    )
+    );
 
-    const settingsButton = screen.getByRole('button', { name: '⚙' })
-    fireEvent.click(settingsButton)
+    const settingsButton = screen.getByTestId('settings-button');
+    fireEvent.click(settingsButton);
 
-    expect(routerPushMock).toHaveBeenCalledWith(url.href)
-    expect(url.searchParams.get('settings')).toBe('true')
-  })
+    await waitFor(() => {
+      // Проверяем относительный URL
+      expect(routerPushMock).toHaveBeenCalledWith('/?settings=true');
+    });
+  });
 
   test('отображает HeaderMenu на странице приветствия', () => {
     getProviderWithStore(

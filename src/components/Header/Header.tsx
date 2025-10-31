@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useEffect, useState } from "react"
 import HeaderBurger from "./HeaderBurger/HeaderBurger"
@@ -45,6 +45,14 @@ const Header = (
         colorBackgroundIcon: '',
         userName: ''
     })
+
+    const newParams = useRef<URLSearchParams>(new URLSearchParams());
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab')]);
 
     useEffect(() => {
         (async () => {
@@ -100,25 +108,13 @@ const Header = (
 
     const showSendSettings = () => {
 
-        if (url) {
-            if (!searchParams?.get('settings')) {
-                url?.searchParams.set('settings', 'true');
-            }
+        if (url && newParams.current) {
 
-            const tab = searchParams.get('tab');
+            newParams.current.set('settings', 'true');
 
-            if (tab === 'chats') {
-                url?.searchParams.set('tab', tab);
-                const user = searchParams.get('user');
-                if (user) {
-                    url?.searchParams.set('user', user);
-                }
-            } else if (tab === 'users') {
-                url?.searchParams.set('tab', tab);
-                url?.searchParams?.delete('user')
-            }
+            const newUrl = `${url.pathname}?${newParams.current.toString()}`;
 
-            router.push(url?.href);
+            router.push(newUrl);
         }
     }
 
@@ -148,7 +144,7 @@ const Header = (
                 {(userInfo?.id || (!isDemoHeader && !isWelcomePage)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
                         <HeaderUserLinks isDisable={!isOnline} city={dataUser.city || userInfo!.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
-                        <button onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
+                        <button data-testid="settings-button" onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
                     </div>
                 )}
             </div>

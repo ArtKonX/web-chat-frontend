@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import GeoCityName from "@/components/ui/GeoCityName/GeoCityName";
 import UserIcon from "@/components/ui/UserIcon/UserIcon";
 import useUrl from "@/hooks/useUrl";
 import { HeaderUserLinksProps } from "@/interfaces/components/header";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const HeaderUserLinks = (
     { city, userName, colorBackgroundIcon, isDisable }: HeaderUserLinksProps
@@ -14,16 +14,27 @@ const HeaderUserLinks = (
 
     const { url } = useUrl();
 
-    const onSwitchingOnShowCities = () => {
-        // Задаем параметр показа выбора городов
-        if (url) {
-            url.searchParams.set('city', city);
-            url.searchParams.delete('showMapCities');
-            url.searchParams.set('showSelectedCities', 'true');
+    const newParams = useRef<URLSearchParams | null>(null);
 
-            router.push(url.href)
+    const searchParams = useSearchParams();
+
+    const onSwitchingOnShowCities = () => {
+        if (!url || !newParams.current) return;
+
+        newParams.current.set('city', city);
+        newParams.current.delete('showMapCities');
+        newParams.current.set('showSelectedCities', 'true');
+
+        const newUrl = `${url.pathname}?${newParams.current.toString()}`;
+
+        router.push(newUrl);
+    };
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
         }
-    }
+    }, [window.location.search, searchParams?.get('tab')]);
 
     return (
         <div className="flex items-center">

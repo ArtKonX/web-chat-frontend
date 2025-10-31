@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"
 import ChoosingCitiesList from "./ChoosingCitiesList/ChoosingCitiesList"
@@ -19,11 +19,23 @@ const ChoosingCities = (
     const url = new URL(window?.location?.href);
     const searchParams = useSearchParams();
 
-    const onAction = () => {
-        url.searchParams.delete('showSelectedCities');
-        url.searchParams.set('showMapCities', 'true');
+    const newParams = useRef<URLSearchParams>(new URLSearchParams());
 
-        router.push(url.pathname + url.search)
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab')]);
+
+    const onAction = () => {
+        if (!newParams.current) return
+
+        newParams.current.delete('showSelectedCities');
+        newParams.current.set('showMapCities', 'true');
+
+        const newUrl = `${url.pathname}?${newParams.current.toString()}`;
+
+        router.push(newUrl);
     }
 
     const onSearchCity = (e: ChangeEvent<HTMLInputElement>) => {
@@ -39,29 +51,13 @@ const ChoosingCities = (
     }
 
     const onClose = () => {
-        if (searchParams) {
-            if (searchParams?.get('tab')) {
-                const tab = searchParams?.get('tab') as string
-                url.searchParams.set('tab', tab)
-            }
+        if (searchParams && newParams.current) {
 
-            if (searchParams?.get('user')) {
-                const user = searchParams?.get('user') as string
-                url.searchParams.set('user', user)
-            }
+            newParams.current.delete('showSelectedCities');
 
-            if (searchParams?.get('offset')) {
-                const offset = searchParams?.get('offset') as string
-                url.searchParams.set('offset', offset)
-            }
+            const newUrl = `${url.pathname}?${newParams.current.toString()}`;
 
-            if (searchParams?.get('city')) {
-                const city = searchParams?.get('city') as string
-                url.searchParams.set('city', city)
-            }
-
-            url.searchParams.delete('showSelectedCities');
-            router.push(url.href)
+            router.push(newUrl);
         }
     }
 
