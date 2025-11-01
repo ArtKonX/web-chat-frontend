@@ -242,7 +242,7 @@ const Layout = (
             {isListInfoDialoguesLoading && <Loader isFade={true} />}
             <div className="max-w-full w-full h-full">
                 <Header isDemoHeader={isDemoHeader || (!userInfo?.id && !authData?.user.id)}
-                    isWelcomePage={!['/login', '/registration'].includes(String(pathname)) && (!userInfo?.id && !authData?.user.id)} />
+                    isWelcomePage={(!['/login', '/registration', '/profile'].includes(String(pathname))) && (!userInfo?.id && !authData?.user.id)} />
                 <div className="w-full max-w-full h-full pt-[66px] flex max-lg:min-w-full relative">
                     {sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (
                         <SideBar

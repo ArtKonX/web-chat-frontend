@@ -17,6 +17,19 @@ const HeaderUserLinks = (
     const newParams = useRef<URLSearchParams | null>(null);
 
     const searchParams = useSearchParams();
+    const newPathname = useRef<string>('/');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.pathname) {
+            newPathname.current = window.location.pathname;
+        }
+    }, [window.location.pathname]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab')]);
 
     const onSwitchingOnShowCities = () => {
         if (!url || !newParams.current) return;
@@ -25,16 +38,10 @@ const HeaderUserLinks = (
         newParams.current.delete('showMapCities');
         newParams.current.set('showSelectedCities', 'true');
 
-        const newUrl = `${url.pathname}?${newParams.current.toString()}`;
+        const newUrl = `${newPathname.current.toString()}?${newParams.current.toString()}`;
 
         router.push(newUrl);
     };
-
-    useEffect(() => {
-        if (typeof window !== 'undefined' && window.location.search) {
-            newParams.current = new URLSearchParams(window.location.search);
-        }
-    }, [window.location.search, searchParams?.get('tab')]);
 
     return (
         <div className="flex items-center">

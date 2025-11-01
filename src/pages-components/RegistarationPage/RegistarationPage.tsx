@@ -63,8 +63,7 @@ const RegistrationPage = () => {
     useEffect(() => {
         // Отправляем пользователя на главную страницу если успешная
         // регистрация или он уже входил
-        if (dataRegister?.status === 'ok' && dataRegister?.user?.token && !isLoadingRegister ||
-            (authData && authData?.user?.city)) {
+        if (dataRegister?.status === 'ok' && dataRegister?.user?.token && !isLoadingRegister) {
             dispatch(addToken({ token: JSON.stringify(dataRegister?.user!.token) }))
             setFormState({
                 name: '', email: '',

@@ -47,12 +47,19 @@ const Header = (
     })
 
     const newParams = useRef<URLSearchParams>(new URLSearchParams());
+    const newPathname = useRef<string>('/');
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.location.search) {
             newParams.current = new URLSearchParams(window.location.search);
         }
     }, [window.location.search, searchParams?.get('tab')]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.pathname) {
+            newPathname.current = window.location.pathname;
+        }
+    }, [window.location.pathname]);
 
     useEffect(() => {
         (async () => {
@@ -112,7 +119,7 @@ const Header = (
 
             newParams.current.set('settings', 'true');
 
-            const newUrl = `${url.pathname}?${newParams.current.toString()}`;
+            const newUrl = `${newPathname.current.toString()}?${newParams.current.toString()}`;
 
             router.push(newUrl);
         }
@@ -141,7 +148,7 @@ const Header = (
                     </div>
                 )}
                 {userName && (<span className={`text-[18px] font-bold ${!isOnline && 'text-red-600/90'} max-sm:absolute max-sm:w-full max-sm:flex max-sm:justify-center max-sm:-bottom-[29px] max-sm:left-0 max-sm:bg-amber-100 $`}>{!isOnline ? 'Нет соединения с интернетом(' : userName}</span>)}
-                {(userInfo?.id || (!isDemoHeader && !isWelcomePage)) && (
+                {((!isWelcomePage && !isDemoHeader)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
                         <HeaderUserLinks isDisable={!isOnline} city={dataUser.city || userInfo!.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
                         <button data-testid="settings-button" onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
