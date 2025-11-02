@@ -146,7 +146,7 @@ const LoginPage = () => {
 
 
     return (
-        <div className="w-full min-h-[calc(100vh-82px)] flex items-center">
+        <div className="w-full h-[calc(100%-26px)] flex items-center">
             {isDataLoading && <Loader isFade={true} />}
             <div className="my-2 w-full flex justify-center">
                 <div className="bg-white py-6 px-9 max-sm:mx-4 rounded-2xl

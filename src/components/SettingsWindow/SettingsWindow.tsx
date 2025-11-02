@@ -35,6 +35,10 @@ const SettingsWindow = (
 
     const newParams = useRef<URLSearchParams | null>(null);
 
+    useEffect(() => {
+        console.log('bgColor', hex)
+    }, [hex])
+
     // const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -127,7 +131,7 @@ const SettingsWindow = (
                         <img className="z-120 w-full h-full object-cover absolute" src={bg.src} alt="фон" />
                     </div>
 
-                    <select defaultValue={bgColor.bgColor} onChange={onChangeColor} className="my-4" name="city" id="city-select">
+                    <select onChange={onChangeColor} className="my-4" name="city" id="city-select">
                         {bgColors.map(color => (
                             <option selected={bgColor.bgColor === color.hex} key={color.id} value={`${color.hex},${color.color}`}>{color.colorRu}</option>
                         ))}
