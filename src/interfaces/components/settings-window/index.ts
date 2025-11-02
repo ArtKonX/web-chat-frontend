@@ -1,3 +1,6 @@
+import { Ref } from "react";
+
 export interface SettingsWindowProps {
-    isFade: boolean
+    isFade: boolean,
+    refWindowSettings: Ref<HTMLFormElement> | null | undefined
 }

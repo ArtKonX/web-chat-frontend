@@ -29,7 +29,7 @@ const MessageItem = (
     // для вычисления ширины сообщения
     const refMessageItem = useRef<HTMLDivElement | null>(null);
 
-    const refActions = useRef<HTMLDivElement | null>(null);
+    const refActions = useRef<HTMLUListElement | null>(null);
 
     const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
@@ -187,8 +187,8 @@ const MessageItem = (
                     'opacity-0 scale-95 -translate-y-2'}`}>
             </div>) : null}
             {showActionMessage?.isShow && !messageChangeData.isChange && isFade && (
-                <div ref={refActions} className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
-                    <ul className='bg-white rounded-4xl border-2 border-black'>
+                <div className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
+                    <ul ref={refActions} className='bg-white rounded-4xl border-2 border-black'>
                         {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?

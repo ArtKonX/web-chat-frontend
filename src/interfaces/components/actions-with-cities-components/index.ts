@@ -1,11 +1,13 @@
 import { CityData, Coordinates } from "@/interfaces/position";
+import { Ref } from "react";
 
 export interface СhoosingCitiesOnMapProps {
     position: Coordinates | null;
     mapCity: string | undefined;
     setMapCity: (mapCity: string) => void,
     setSelectedCity: (selectedCity: string) => void,
-    testSetNewPosition?: Coordinates | null
+    testSetNewPosition?: Coordinates | null,
+    refWindowChooseMapCity?: Ref<HTMLDivElement> | null
 }
 
 export interface ChoosingCitiesItemProps {
@@ -23,5 +25,6 @@ export interface ChoosingCitiesProps {
     cities?: CityData[],
     cityFromServer: string,
     setSelectedCity: (selectedCity: string) => void
-    setSearchCity: (searchCity: string) => void
+    setSearchCity: (searchCity: string) => void,
+    refWindowChooseCity?: Ref<HTMLDivElement> | null
 }

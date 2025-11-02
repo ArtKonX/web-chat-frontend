@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent, Suspense, useRef } from 'react';
+import React, { FormEvent, Suspense, useCallback, useRef } from 'react';
 
 import FormSendMessages from "@/components/FormSendMessages/FormSendMessages";
 import Loader from "@/components/ui/Loader/Loader";
@@ -21,7 +21,7 @@ import HomeWelcomePage from "../HomeWelcomePage/HomeWelcomePage";
 import SettingsWindow from "@/components/SettingsWindow/SettingsWindow";
 import useUrl from "@/hooks/useUrl";
 import { useSelector } from "@/hooks/useTypedSelector";
-import { selectChangeMessageState, selectImageState, selectMessagesState, selectTokenState } from "@/selectors/selectors";
+import { selectChangeMessageState, selectImageState, selectMessagesState, selectTokenState, selectWindowState } from "@/selectors/selectors";
 import { encryptFile } from "@/utils/encryption/encryptFile";
 import UploadMenuWithButtonAction from "@/components/file-upload/UploadMenuWithButtonAction/UploadMenuWithButtonAction";
 import UploadFile from "@/components/file-upload/UploadFile/UploadFile";
@@ -88,6 +88,8 @@ const HomePage = () => {
 
     const messagesState = useSelector(selectMessagesState);
 
+    const windowState = useSelector(selectWindowState);
+
     // Получение данных авторизованного пользователя
     const { data: authState, isLoading: isLoadingAuth, refetch } = useCheckAuthQuery({ token: tokenState?.token });
 
@@ -115,10 +117,26 @@ const HomePage = () => {
     // Получение городов при поиске
     const { data: citiesData } = useGetCitiesQuery({ q: debounceSearchCity });
 
+    const urlWindow = new URL(window?.location?.href);
+
     // Получение сообщений
     const [getMessages, { data: messagesData, isLoading: isLoadingMessages }] = useGetMessagesMutation();
 
     const [isWindowImage, setIsWindowImage] = useState(false);
+
+    const refWindowSettings = useRef<HTMLFormElement | null>(null)
+
+    const refWindowChooseCity = useRef<HTMLDivElement | null>(null)
+
+    const refWindowChooseMapCity = useRef<HTMLDivElement | null>(null)
+
+    const newParams = useRef<URLSearchParams>(new URLSearchParams());
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab')]);
 
     const onSubmitUpdatePublicKey = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -126,6 +144,48 @@ const HomePage = () => {
         setIsSubmitUpdatePublicKey(true)
     }
 
+    const onCloseWindow = () => {
+        if (searchParams && newParams.current) {
+
+            newParams.current.delete('settings');
+            newParams.current.delete('showSelectedCities');
+            newParams.current.delete('showMapCities');
+
+            const newUrl = `${urlWindow.pathname}?${newParams.current.toString()}`;
+
+            router.push(newUrl);
+        }
+    }
+
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+        if (
+            searchParams?.get('settings') &&
+            refWindowSettings.current &&
+            !refWindowSettings.current.contains(event.target as Node)
+        ) {
+            onCloseWindow()
+        }
+        else if (searchParams?.get('showSelectedCities') &&
+            refWindowChooseCity.current &&
+            !refWindowChooseCity.current.contains(event.target as Node)) {
+            onCloseWindow()
+        }
+        else if (searchParams?.get('showMapCities') &&
+            refWindowChooseMapCity.current &&
+            !refWindowChooseMapCity.current.contains(event.target as Node)) {
+            onCloseWindow()
+        }
+
+    }, [searchParams?.get('settings'), searchParams?.get('showSelectedCities'), searchParams?.get('showMapCities'), refWindowSettings, refWindowChooseCity, refWindowChooseMapCity]);
+
+    useEffect(() => {
+        if (searchParams?.get('settings') || searchParams?.get('showSelectedCities') || searchParams?.get('showMapCities')) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [searchParams?.get('settings'), searchParams?.get('showSelectedCities'), handleClickOutside]);
 
     useEffect(() => {
         const targetNode = document.body;
@@ -578,17 +638,14 @@ const HomePage = () => {
     const calculateItems = () => {
         if (!containerRef.current) return;
 
-
         const containerHeight = containerRef.current.clientHeight;
 
-        const itemHeight = 120; // например, 60px
+        const itemHeight = 120;
         const padding = 20; // отступы между элементами
-
 
         const availableHeight = containerHeight - padding;
         const count = Math.floor(availableHeight / (itemHeight + padding));
 
-        console.log('count', count)
         setItemCount(Math.max(1, count));
     };
 
@@ -618,23 +675,23 @@ const HomePage = () => {
             <Suspense fallback={<Loader isFade={true} />}>
                 {String(privatKey) === 'null' ? <RestoringAccessForm onSubmitUpdatePublicKey={onSubmitUpdatePublicKey} /> : null}
                 {isUpdateCityLoading && <Loader isFade={true} />}
-                <div ref={containerRef} className={`h-full flex flex-col justify-end w-full relative z-${isFormUploadFile || isWindowImage ? '3000' : '0'}`}>
+                <div ref={containerRef} className={`h-full flex flex-col justify-end w-full relative z-${windowState.isShowWindow || isFormUploadFile || isWindowImage ? '3000' : '3000'}`}>
                     {imageUrlState.isShowImage && imageUrlState.url ?
                         <ImageWindow url={imageUrlState.url} /> :
                         null}
                     {searchParams?.get('settings') && (
-                        <SettingsWindow isFade={true} />
+                        <SettingsWindow refWindowSettings={refWindowSettings} isFade={true} />
                     )}
 
                     {searchParams?.get('showSelectedCities') && authState?.user?.city && (
                         <WrapperChoosingCities >
-                            <ChoosingCities setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
+                            <ChoosingCities refWindowChooseCity={refWindowChooseCity} setSelectedCity={setSelectedCity} setSearchCity={setSearchCity} searchCity={searchCity}
                                 cities={citiesData?.cities} cityFromServer={authState?.user?.city} />
                         </WrapperChoosingCities>
                     )}
                     {searchParams?.get('showMapCities') && authState?.user.city && (
                         <WrapperChoosingCities >
-                            <ChoosingCitiesOnMap setSelectedCity={setSelectedCity} position={position}
+                            <ChoosingCitiesOnMap refWindowChooseMapCity={refWindowChooseMapCity} setSelectedCity={setSelectedCity} position={position}
                                 setMapCity={setMapCity} mapCity={mapCity} />
                         </WrapperChoosingCities>
                     )}
@@ -671,7 +728,7 @@ const HomePage = () => {
                                 </span>
                             </MessageList>
                             {isOnline && !isLoadingMessages ? (
-                                <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 max-sm:absolute ${changeMessageState.isChange && 'z-100'}`}>
+                                <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 absolute ${changeMessageState.isChange && 'z-100'}`}>
                                     <UploadMenuWithButtonAction
                                         setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
                                         setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}

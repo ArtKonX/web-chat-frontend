@@ -73,3 +73,11 @@ export const selectMessagesState = createSelector(
         ...messagesState
     })
 );
+
+export const selectWindowState = createSelector(
+    (state: RootState) => state.windowSlice,
+
+    (windowState) => ({
+        ...windowState
+    })
+);

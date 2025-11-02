@@ -17,9 +17,10 @@ import bgColors from '../../data/bg-colors.json';
 import useUrl from "@/hooks/useUrl";
 import { SettingsWindowProps } from "@/interfaces/components/settings-window";
 import CloseBtn from "../ui/CloseBtn/CloseBtn";
+import { toggleIsWindow } from '@/redux/slices/windowSlice';
 
 const SettingsWindow = (
-    { isFade }: SettingsWindowProps) => {
+    { isFade, refWindowSettings }: SettingsWindowProps) => {
 
     const bgColor = useSelector(selectbackgroundState);
 
@@ -34,8 +35,7 @@ const SettingsWindow = (
 
     const newParams = useRef<URLSearchParams | null>(null);
 
-    const refForm = useRef<HTMLFormElement | null>(null);
-    const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
+    // const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.location.search) {
@@ -43,14 +43,14 @@ const SettingsWindow = (
         }
     }, [window.location.search, searchParams?.get('tab')]);
 
-    useEffect(() => {
-        if (refForm.current && closeBtnBlockRef.current) {
-            const imgRect = refForm.current.getBoundingClientRect();
-            const btnRect = closeBtnBlockRef.current.getBoundingClientRect();
-            closeBtnBlockRef.current.style.top = `${imgRect.top - (btnRect.height / 2)}px`;
-            closeBtnBlockRef.current.style.left = `${imgRect.right - (btnRect.width / 2)}px`;
-        }
-    }, [url]);
+    // useEffect(() => {
+    //     if (refForm.current && closeBtnBlockRef.current) {
+    //         const imgRect = refForm.current.getBoundingClientRect();
+    //         const btnRect = closeBtnBlockRef.current.getBoundingClientRect();
+    //         closeBtnBlockRef.current.style.top = `${imgRect.top - (btnRect.height / 2)}px`;
+    //         closeBtnBlockRef.current.style.left = `${imgRect.right - (btnRect.width / 2)}px`;
+    //     }
+    // }, [url]);
 
     useEffect(() => {
         const divBgView = document.querySelector('.bg-view') as HTMLElement | null;
@@ -83,6 +83,7 @@ const SettingsWindow = (
 
     const onClose = () => {
         if (searchParams && url) {
+
             if (searchParams?.get('tab')) {
                 const tab = searchParams?.get('tab') as string
                 url.searchParams.set('tab', tab)
@@ -106,6 +107,8 @@ const SettingsWindow = (
             url.searchParams.delete('settings');
 
             router.push(url.href)
+
+            dispatch(toggleIsWindow())
         }
     }
 
@@ -114,8 +117,8 @@ const SettingsWindow = (
         h-full bg-black/60 transition-all duration-200 ease-out
         ${isFade ? 'opacity-100 scale-100 translate-y-0 flex-col' :
                 'opacity-0 scale-95 -translate-y-2 relative'}`}>
-            <form ref={refForm} className="flex p-5 bg-white rounded-2xl" onSubmit={onSubmit}>
-                <div ref={closeBtnBlockRef} className="absolute">
+            <form ref={refWindowSettings} className="flex p-5 bg-white rounded-2xl relative" onSubmit={onSubmit}>
+                <div className="absolute top-0 right-0">
                     <CloseBtn onClose={onClose} />
                 </div>
                 <HeadingWithTitle text="Цвет фона:">

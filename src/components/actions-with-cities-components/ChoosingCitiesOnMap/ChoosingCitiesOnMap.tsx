@@ -23,7 +23,8 @@ import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
 import useUrl from '@/hooks/useUrl';
 
 const ChoosingCitiesOnMap = (
-    { position, mapCity, setMapCity, setSelectedCity, testSetNewPosition }: СhoosingCitiesOnMapProps
+    { position, mapCity, setMapCity,
+        setSelectedCity, testSetNewPosition, refWindowChooseMapCity }: СhoosingCitiesOnMapProps
 ) => {
     const mapRef = useRef<HTMLDivElement | null>(null);
 
@@ -141,7 +142,7 @@ const ChoosingCitiesOnMap = (
     }
 
     return (
-        <div className="bg-white py-6 px-9 rounded-2xl
+        <div ref={refWindowChooseMapCity} className="bg-white py-6 px-9 rounded-2xl
                                     max-w-[650px] max-lg:max-w-13/14 max-sm:max-w-9/10 w-full flex
                                     flex-col items-center justify-center relative max-h-[97%]">
             <div className="absolute flex right-0 top-0">

@@ -13,7 +13,7 @@ import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
 const ChoosingCities = (
     { searchCity, cities,
         cityFromServer, setSearchCity,
-        setSelectedCity }: ChoosingCitiesProps
+        setSelectedCity, refWindowChooseCity }: ChoosingCitiesProps
 ) => {
     const router = useRouter();
     const url = new URL(window?.location?.href);
@@ -62,7 +62,7 @@ const ChoosingCities = (
     }
 
     return (
-        <div className="bg-white py-6 px-9 rounded-2xl
+        <div ref={refWindowChooseCity} className="bg-white py-6 px-9 rounded-2xl
         max-w-3/7 max-lg:max-w-9/11 max-sm:max-w-9/10
         w-full relative">
             <div className="absolute right-0 top-0">

@@ -8,6 +8,7 @@ import Btn from "@/components/ui/Btn/Btn";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUrl from "@/hooks/useUrl";
 import { MessagesListProps } from "@/interfaces/components/messages-components";
+import { useMediaPredicate } from 'react-media-hook';
 
 const MessageList = (
     { messages, wsMessages, currentUser,
@@ -23,6 +24,8 @@ const MessageList = (
     const router = useRouter();
 
     const searchParams = useSearchParams();
+
+    const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const [isScroll, setIsScroll] = useState(false);
 
@@ -67,7 +70,7 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative max-sm:-top-[2vh] max-sm:h-[90vh] max-md:h-[90vh] h-full`}
+            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative h-full ${isMobile ? 'pt-[40px]' : 'pt-[50px]'}`}
         >
             {dataNextLength?.isNextMessages && isOnline && !caсheMessages.length ? (
                 <li className="flex justify-center items-center my-5 pb-4 bg-amber-100/90 rounded-3xl">
@@ -83,7 +86,7 @@ const MessageList = (
                             id={String(indx)}
                             className={`flex ${currentUser?.id === message?.sender_id ?
                                 'justify-start' :
-                                'justify-end'} mb-15 mt-10`}
+                                'justify-end'} mb-15 ${indx !== 0 ? 'mt-10' : ''}`}
                         >
                             <MessageItem
                                 currentId={currentUser}
@@ -100,7 +103,7 @@ const MessageList = (
                                 id={String(indx)}
                                 className={`flex ${currentUser?.id === message?.sender_id ?
                                     'justify-start' :
-                                    'justify-end'} mb-15 mt-10`}
+                                    'justify-end'} mb-15 ${indx !== 0 ? 'mt-10' : ''}`}
                             >
                                 <MessageItem
                                     currentId={currentUser}

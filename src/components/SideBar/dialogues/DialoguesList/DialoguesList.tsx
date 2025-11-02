@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from 'react';
 
-import UserItem from "../Dialogue/Dialogue"
+import Dialogue from "../Dialogue/Dialogue"
 import { useSelector } from "@/hooks/useTypedSelector"
 import { DialoguesListProps } from "@/interfaces/components/side-bar"
 import { useSearchParams } from "next/navigation"
@@ -51,7 +51,7 @@ const DialoguesList = (
                 {
                     dialoguesData?.map((dialogue) => (
                         <li className='not-first:mt-10 first:mt-1' data-testid="dialogues-item" key={dialogue.userId}>
-                            <UserItem isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
+                            <Dialogue isCache={dialogue.isCache!} id={getUserRecipient(dialogue.sender_id, dialogue.recipient_id)} name={dialogue?.nameSender}
                                 quantityMessages={dialogue?.lengthMessages} lastMassage={dialogue.lastMessage}
                                 isActiveUser={getUserRecipient(dialogue.sender_id, dialogue.recipient_id) === searchParams?.get('user')}
                                 status={dialogue.status} profileColor={dialogue.colorProfile} />

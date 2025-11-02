@@ -39,7 +39,7 @@ const Dialogue = (
                     <span data-testid="user-name" className='font-bold'>
                         {name}
                     </span>
-                    <p className="text-start w-40 overflow-x-hidden max-lg:max-w-[200px] max-lg:w-full text-nowrap overflow-ellipsis">
+                    <p className="text-start w-37 overflow-x-hidden max-lg:max-w-[200px] max-lg:w-full text-nowrap overflow-ellipsis">
                         {lastMassage}
                     </p>
                 </div>

@@ -9,6 +9,7 @@ import authSlice from '../slices/authSlice';
 import changeMessageSlice from '../slices/changeMessageSlice';
 import imageSlice from '../slices/imageSlice';
 import messagesSlice from '../slices/messagesSlice';
+import windowSlice from '../slices/windowSlice';
 
 export const store = configureStore({
     reducer: {
@@ -22,7 +23,8 @@ export const store = configureStore({
         authState: authSlice,
         changeMessageSlice,
         imageSlice,
-        messagesSlice
+        messagesSlice,
+        windowSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
