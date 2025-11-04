@@ -47,7 +47,7 @@ const DialoguesList = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <ul data-testid="dialogues-list" className='max-h-[88%] h-full overflow-y-auto mt-5 pr-4'>
+            <ul data-testid="dialogues-list" className='w-full pr-[15px]'>
                 {
                     dialoguesData?.map((dialogue) => (
                         <li className='not-first:mt-10 first:mt-1' data-testid="dialogues-item" key={dialogue.userId}>

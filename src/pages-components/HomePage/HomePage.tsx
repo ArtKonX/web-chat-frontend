@@ -728,7 +728,7 @@ const HomePage = () => {
                                 </span>
                             </MessageList>
                             {isOnline && !isLoadingMessages ? (
-                                <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 absolute ${changeMessageState.isChange && 'z-100'}`}>
+                                <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 z-52 absolute ${changeMessageState.isChange && 'z-100'}`}>
                                     <UploadMenuWithButtonAction
                                         setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}
                                         setFileSrc={setFileSrc} isFormUploadFile={isFormUploadFile}

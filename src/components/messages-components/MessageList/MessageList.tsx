@@ -70,10 +70,10 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative h-full ${isMobile ? 'pt-[40px]' : 'pt-[50px]'}`}
+            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative h-full ${dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && isMobile  ? 'pt-[12px]!' : dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && !isMobile ? 'pt-[23px]!' : ''} ${isMobile ? 'pt-[40px]' : 'pt-[50px]'}`}
         >
             {dataNextLength?.isNextMessages && isOnline && !caсheMessages.length ? (
-                <li className="flex justify-center items-center my-5 pb-4 bg-amber-100/90 rounded-3xl">
+                <li className="flex justify-center items-center pb-4 bg-amber-100/90 rounded-3xl mb-[34px]">
                     <Btn text="Показать больше" type="button" onAction={onOffset} />
                 </li>) : null
             }

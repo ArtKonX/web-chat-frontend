@@ -26,6 +26,7 @@ import { getCachedUser } from '@/cashe/userCache';
 import SkeletonLayoutList from '../sceleton-layout/SkeletonLayoutList/SkeletonLayoutList';
 import { addMessageLen } from '@/redux/slices/messagesSlice';
 import { useDispatch } from 'react-redux';
+import { useMediaPredicate } from 'react-media-hook';
 
 const Layout = (
     { children }: { children: ReactNode }
@@ -49,6 +50,10 @@ const Layout = (
     const { socket, wsInfoDialogues, setWsInfoDialogues, userStatus, setUserStatus } = WebSocketConnection();
     const [listDialogues, setListDialogues] = useState<DialogueData[] | null>(null);
     const [listCachedDialogues, setListCachedDialogues] = useState<DialogueData[] | null>(null);
+
+    const isMobile = useMediaPredicate('(max-width: 1470px)');
+
+    const isMobileOnMessages = useMediaPredicate('(max-width: 1050px)');
 
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
 
@@ -253,8 +258,8 @@ const Layout = (
                             onSearchUsers={onSearchUsers}
                             searchUsers={searchUsers}
                         >
-                            {(searchParams.get('tab') === 'users') && isFindUsersLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className='absolute top-0 pt-[170px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
-                            {(searchParams.get('tab') === 'chats') && !listDialogues?.length && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && !listCachedDialogues?.length && (<div className='absolute top-0 pt-[100px] max-lg:pt-[0px] w-full left-0'><SkeletonLayoutList length={3} /></div>)}
+                            {(searchParams.get('tab') === 'users') && isFindUsersLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && (<div className={`absolute top-0 pt-[125px] ${isMobile ? 'pt-[145px]' : ''} w-full left-0`}><SkeletonLayoutList length={1} /></div>)}
+                            {(searchParams.get('tab') === 'chats') && !listDialogues?.length && isListInfoDialoguesLoading && sideBarState.isShow && !isDemoHeader && (userInfo?.id || authData?.user.id) && !listCachedDialogues?.length && (<div className={`absolute top-0 pt-[35px] ${isMobileOnMessages ? 'pt-[65px]' : ''} w-full left-0`}><SkeletonLayoutList length={3} /></div>)}
                         </SideBar>
                     )}
                     {children}

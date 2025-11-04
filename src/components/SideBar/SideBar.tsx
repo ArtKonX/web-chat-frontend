@@ -37,14 +37,18 @@ const SideBar = (
                         <SideBarInputSearch onSearchUsers={onSearchUsers} searchUsers={searchUsers} />
                     )}
                     {searchParams!.get('tab') == 'users' && findUsers && (
-                        <div className="w-full h-full flex justify-center">
-                            <div className="mt-10 w-full">
+                        <div className="w-full h-full flex justify-center pb-45">
+                            <div className="mt-5 w-full mb-100 px-2 py-3 h-[calc(100%)] overflow-y-auto">
                                 <SearchUsersWithActionList usersData={findUsers} />
                             </div>
                         </div>
                     )}
                     {searchParams!.get('tab') == 'chats' && dialoguesData?.length > 0 ? (
-                        <DialoguesList dialoguesData={dialoguesData} />
+                        <div className="w-full h-full flex justify-center pb-30">
+                            <div className="mt-5 w-full mb-100 px-2 py-3 h-[calc(100%)] overflow-y-auto">
+                                <DialoguesList dialoguesData={dialoguesData} />
+                            </div>
+                        </div>
                     ) : searchParams!.get('tab') === 'users' ? null : !isListInfoDialoguesLoading ? <span className="w-full flex justify-center mt-5 font-bold max-sm:text-[18px] max-sm:text-center">У вас нет сообщений(</span> : null}
                     <div className="w-full absolute bottom-0 pb-1 pt-2 flex justify-around border-t-2 bg-white">
                         <SideBarActionLink isActive={searchParams!.get('tab') === 'chats'} icon={messageIcon} alt='сообщения' href='/?tab=chats' />
