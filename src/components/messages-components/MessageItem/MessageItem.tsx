@@ -16,11 +16,13 @@ import { useMediaPredicate } from 'react-media-hook';
 
 const MessageItem = (
     { currentId, message,
-        anotherAuthorName, setIsScroll, isCache }: MessageItemProps
+        anotherAuthorName, setIsScroll, isCache, setIsOverflow }: MessageItemProps
 ) => {
 
     const [showActionMessage, setShowActionMessage] = useState<ShowActionMessage | null>(null);
     const [isFade, setIsFade] = useState(false)
+
+    const [statusUpdated, setStatusUpdated] = useState(0);
 
     const tokenState = useSelector(selectTokenState);
 
@@ -29,7 +31,7 @@ const MessageItem = (
     // для вычисления ширины сообщения
     const refMessageItem = useRef<HTMLDivElement | null>(null);
 
-    const refActions = useRef<HTMLUListElement | null>(null);
+    const refActions = useRef<HTMLDivElement | null>(null);
 
     const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
@@ -93,8 +95,11 @@ const MessageItem = (
 
     useEffect(() => {
         if (!messageChangeData.isChange) {
+            setStatusUpdated(2)
+            setIsOverflow(false)
             const timeoutId = setTimeout(() => {
-                setIsFade(false)
+                // setIsFade(false)
+                setStatusUpdated(0)
             }, 100)
 
             return () => clearTimeout(timeoutId)
@@ -102,19 +107,31 @@ const MessageItem = (
     }, [messageChangeData.isChange])
 
     useEffect(() => {
+        console.log('messageChangeData', messageChangeData)
+    }, [messageChangeData])
 
-        if (showActionMessage?.isShow) {
-            setIsFade(true)
+    // useEffect(() => {
+
+    //     if (showActionMessage?.isShow) {
+    //         setIsFade(true)
+    //     } else {
+
+    //         const timeoutId = setTimeout(() => {
+    //             setIsFade(false)
+    //         }, 100)
+
+    //         return () => clearTimeout(timeoutId)
+    //     }
+
+    // }, [showActionMessage, setShowActionMessage])
+
+    useEffect(() => {
+        if (!showActionMessage?.isShow) {
+            setIsFade(false);
         } else {
-
-            const timeoutId = setTimeout(() => {
-                setIsFade(false)
-            }, 100)
-
-            return () => clearTimeout(timeoutId)
+            setIsFade(true);
         }
-
-    }, [showActionMessage, setShowActionMessage])
+    }, [showActionMessage?.isShow]);
 
     useEffect(() => {
         if (!isLoadingDeleteMessage && deleteMessageData?.status === 'ok') {
@@ -131,6 +148,7 @@ const MessageItem = (
 
     const onClose = (id?: string) => {
         setIsFade(false)
+        setIsOverflow(false)
         setTimeout(() => {
             setShowActionMessage({ id: id, isShow: false })
         }, 400)
@@ -140,11 +158,15 @@ const MessageItem = (
         if (id) {
             cacheDeleteMessage(id)
             deleteMessage({ messageId: id, userId: authData?.user?.id, token: tokenState.token })
+            setIsScroll(false)
+            setIsOverflow(false)
         }
     }
 
     const onChange = () => {
         dispatch(addDataChangeMessage({ message: message.message, id: message.id }))
+        setStatusUpdated(1)
+        setIsOverflow(true)
     }
 
     const renderFileByType = (type?: string, url?: string) => {
@@ -186,9 +208,9 @@ const MessageItem = (
         ${isFade ? 'opacity-60 scale-100 translate-y-0 flex-col' :
                     'opacity-0 scale-95 -translate-y-2'}`}>
             </div>) : null}
-            {showActionMessage?.isShow && !messageChangeData.isChange && isFade && (
-                <div className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
-                    <ul ref={refActions} className='bg-white rounded-4xl border-2 border-black'>
+            {(showActionMessage?.isShow && statusUpdated === 0) && isFade && (
+                <div ref={refActions} className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
+                    <ul className='bg-white rounded-4xl border-2 border-black'>
                         {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
                             <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?
@@ -219,7 +241,7 @@ const MessageItem = (
         border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow && !isMobile) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
                 {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-1'>
-                    <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }) }} className='bg-white pt-[4px] pb-[14px] px-3
+                    <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }); setIsOverflow(true) }} className='bg-white pt-[4px] pb-[14px] px-3
                 rounded-full text-2xl font-bold cursor-pointer hover:opacity-85 duration-500 z-51'>
                         …
                     </button>

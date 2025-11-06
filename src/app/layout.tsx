@@ -53,6 +53,17 @@ export default function RootLayout({
     };
   }, []);
 
+  useEffect(() => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      document.documentElement.classList.add('is-mobile');
+      document.documentElement.classList.remove('is-desktop');
+    } else {
+      document.documentElement.classList.remove('is-mobile');
+      document.documentElement.classList.add('is-desktop');
+    }
+  }, []);
+
   return (
     <html lang="ru">
       <body data-testid="body">

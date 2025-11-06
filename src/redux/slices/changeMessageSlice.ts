@@ -27,9 +27,9 @@ const ChangeMessageSlice = createSliceWithThunk({
         addDataChangeMessage: create.reducer((state, action: PayloadAction<{ message: string, id?: string }>) => {
             const { message, id } = action.payload;
 
+            state.id = id
             state.isChange = true
             state.message = message;
-            state.id = id
         }),
         addIsChange: create.reducer((state) => {
 
@@ -38,6 +38,7 @@ const ChangeMessageSlice = createSliceWithThunk({
         resetDataChangeMessage: create.reducer((state) => {
             state.isChange = false;
             state.message = '';
+            state.id = '0'
         }),
     }),
 });

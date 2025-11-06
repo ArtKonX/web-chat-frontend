@@ -218,7 +218,6 @@ const WebSocketConnection = () => {
 
                         if (newMessage.type === 'info-about-chat' && privatKey) {
                             let decMessage;
-                            console.log('newMessage', newMessage)
 
                             try {
                                 if (newMessage.lastMessage) {
@@ -277,7 +276,7 @@ const WebSocketConnection = () => {
         if (userId) {
             initWebSocket();
         }
-    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey,]);
+    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey, setPrivatKey,]);
 
     useEffect(() => {
 

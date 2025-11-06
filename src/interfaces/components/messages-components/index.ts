@@ -28,7 +28,8 @@ export interface MessageItemProps {
     message: MessageInfo,
     anotherAuthorName?: UserData,
     setIsScroll: (isScroll: boolean) => void,
-    isCache?: boolean
+    isCache?: boolean,
+    setIsOverflow: (isOverflow: boolean) => void
 }
 
 export interface ShowActionMessage {

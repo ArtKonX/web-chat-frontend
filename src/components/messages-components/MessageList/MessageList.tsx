@@ -9,6 +9,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useUrl from "@/hooks/useUrl";
 import { MessagesListProps } from "@/interfaces/components/messages-components";
 import { useMediaPredicate } from 'react-media-hook';
+import { selectChangeMessageState } from '@/selectors/selectors';
+import { useSelector } from '@/hooks/useTypedSelector';
 
 const MessageList = (
     { messages, wsMessages, currentUser,
@@ -23,15 +25,20 @@ const MessageList = (
 
     const router = useRouter();
 
+
+    const changeMessageState = useSelector(selectChangeMessageState);
+
     const searchParams = useSearchParams();
 
     const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const [isScroll, setIsScroll] = useState(false);
+    const [isOverflow, setIsOverflow] = useState(false)
 
     // функция для автоматической плавной прокрутки при получении нового сообщения
     // либо если сообщения не влезают в область видимости
     const scrollToBottom = () => {
+        console.log(isScroll)
         if (messagesListRef.current && typeof messagesListRef.current.scroll === 'function') {
             messagesListRef.current.scroll({
                 top: messagesListRef.current.scrollHeight,
@@ -43,7 +50,6 @@ const MessageList = (
     };
 
     const onOffset = () => {
-        console.log(isScroll)
         if (url && userId) {
             const offSet = searchParams?.get('offset');
 
@@ -70,7 +76,7 @@ const MessageList = (
     return (
         <ul data-testid="message-list"
             ref={messagesListRef}
-            className={`message-list overflow-y-auto max-sm:mx-2 max-sm:pr-0 mx-12 pr-6 relative h-full ${dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && isMobile  ? 'pt-[12px]!' : dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && !isMobile ? 'pt-[23px]!' : ''} ${isMobile ? 'pt-[40px]' : 'pt-[50px]'}`}
+            className={`message-list overflow-y-auto ${isOverflow || changeMessageState.isChange ? 'overflow-y-hidden overflow-x-hidden' : ''} max-sm:mx-2 max-sm:pr-0 mx-8 mr-2 pr-6 ${isMobile ? 'ml-4! mr-0! pr-4!' : ''} relative h-full ${dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && isMobile ? 'pt-[12px]!' : dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && !isMobile ? 'pt-[23px]!' : ''} ${isMobile ? 'pt-[31px]' : 'pt-[23px]'}`}
         >
             {dataNextLength?.isNextMessages && isOnline && !caсheMessages.length ? (
                 <li className="flex justify-center items-center pb-4 bg-amber-100/90 rounded-3xl mb-[34px]">
@@ -89,6 +95,7 @@ const MessageList = (
                                 'justify-end'} mb-15 ${indx !== 0 ? 'mt-10' : ''}`}
                         >
                             <MessageItem
+                                setIsOverflow={setIsOverflow}
                                 currentId={currentUser}
                                 message={message}
                                 anotherAuthorName={anotherAuthorName}
@@ -101,11 +108,12 @@ const MessageList = (
                             <li
                                 key={message.id}
                                 id={String(indx)}
-                                className={`flex ${currentUser?.id === message?.sender_id ?
+                                className={`flex ${(currentUser?.id === message?.sender_id) && indx === 0 ? 'message-current-user' : (currentUser?.id !== message?.sender_id) && indx === 0 ? 'message-another-user' : ''} ${currentUser?.id === message?.sender_id ?
                                     'justify-start' :
                                     'justify-end'} mb-15 ${indx !== 0 ? 'mt-10' : ''}`}
                             >
                                 <MessageItem
+                                    setIsOverflow={setIsOverflow}
                                     currentId={currentUser}
                                     message={message}
                                     anotherAuthorName={anotherAuthorName}

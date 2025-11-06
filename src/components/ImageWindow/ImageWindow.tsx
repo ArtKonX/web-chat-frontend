@@ -2,12 +2,15 @@ import React, { useEffect, useRef } from 'react';
 
 import { useDispatch } from "react-redux"
 import { resetUrl } from "@/redux/slices/imageSlice";
+import { useMediaPredicate } from 'react-media-hook';
 
 const ImageWindow = (
     { url }: { url: string }) => {
 
     const refImg = useRef<HTMLImageElement | null>(null);
     const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
+
+    const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const dispatch = useDispatch();
 
@@ -40,7 +43,7 @@ const ImageWindow = (
             <div className="w-full h-full flex flex-col items-center justify-center relative">
                 <div className="w-[100%] h-[100%]">
                     <div className="w-full h-full relative flex items-center justify-center">
-                        <img ref={refImg} className="max-w-[40%] max-h-[600px] w-full object-contain" src={url} alt={url} />
+                        <img ref={refImg} className={`max-w-[50%] max-h-[600px] ${isMobile ? 'max-w-[80%]' : ''} w-full object-contain`} src={url} alt={url} />
                     </div>
                 </div>
             </div>
