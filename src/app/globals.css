@@ -80,6 +80,14 @@ body::after {
   margin-top: 0px;
 }
 
+.is-desktop .cache-first-messages-current-user-desktop {
+  margin-top: 1.6rem;
+}
+
+.is-desktop .cache-first-messages-another-user-desktop {
+  margin-top: 0px;
+}
+
 @media only screen and (max-width: 1050px) {
   body {
     padding-bottom: calc(1.4rem + env(safe-area-inset-bottom));
@@ -98,6 +106,26 @@ body::after {
   }
 
   .is-desktop .message-another-user {
+    margin-top: calc(1.3rem + env(safe-area-inset-bottom));
+  }
+
+  .is-desktop .cache-first-messages-current-user-mobile {
+    margin-top: calc(2.7rem + env(safe-area-inset-bottom));
+  }
+
+  .is-desktop .cache-first-messages-another-user-mobile {
+    margin-top: calc(1.3rem + env(safe-area-inset-bottom));
+  }
+
+  .cache-messages-list-mobile {
+    margin-top: calc(1.3rem + env(safe-area-inset-bottom));
+  }
+
+  .is-mobile .cache-first-messages-current-user-mobile {
+    margin-top: calc(2.7rem + env(safe-area-inset-bottom));
+  }
+
+  .is-mobile .cache-first-messages-another-user-mobile {
     margin-top: calc(1.3rem + env(safe-area-inset-bottom));
   }
 
