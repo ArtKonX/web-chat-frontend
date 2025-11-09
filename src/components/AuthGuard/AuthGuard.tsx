@@ -3,26 +3,39 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
 
-import { useCheckAuthQuery, useUpdateCityMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useLogoutMutation, useUpdateCityMutation } from "@/redux/services/authApi";
 import { selectbackgroundState, selectTokenState } from "@/selectors/selectors";
 import { ReactNode, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import urlBg from '../../../public/backgrounds/background.svg'
 import fetchCityFromCoors from "@/utils/fetchCityFromCoors";
 import getGeoCoors from "@/utils/getGeoCoors";
 import { Coordinates } from "@/interfaces/position";
-import { cacheUser, getCachedUser } from '@/cashe/userCache';
+import { cacheUser, clearCachedUser, getCachedUser } from '@/cashe/userCache';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Loader from '../ui/Loader/Loader';
+import { removeToken } from '@/redux/slices/tokenSlice';
+import { clearCachedDialogues } from '@/cashe/dialoguesCache';
+import { clearCachedMessages } from '@/cashe/messageCache';
+
+interface CheckAuthError {
+    data: {
+        status: string,
+        message: string
+    },
+    status: number
+}
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
     const tokenState = useSelector(selectTokenState);
 
-    const { data: authData, isLoading: isLoadingAuth, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData, isLoading: isLoadingAuth, error: errorAuth, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
     const [updateCity, { data: updateCityData, isLoading: isLoadingUpdateCity }] = useUpdateCityMutation();
 
     const bgColor = useSelector(selectbackgroundState);
+
+    const dispatch = useDispatch();
 
     const searchParams = useSearchParams();
 
@@ -33,9 +46,29 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
 
+    const [logout, { data: logoutData }] = useLogoutMutation();
+
     useEffect(() => {
         authRefetch()
     }, [])
+
+    useEffect(() => {
+        const errorAuthData = errorAuth as CheckAuthError
+
+        if (errorAuthData && errorAuthData.data && errorAuthData.data.message.includes('jwt expired') && errorAuthData.data.status === 'error' && errorAuthData.status === 400) {
+            logout({});
+        }
+    }, [errorAuth])
+
+    useEffect(() => {
+        if (logoutData?.status === 'ok') {
+            dispatch(removeToken())
+            clearCachedDialogues()
+            clearCachedMessages()
+            clearCachedUser()
+            window.location.reload()
+        }
+    }, [logoutData])
 
     useEffect(() => {
 
