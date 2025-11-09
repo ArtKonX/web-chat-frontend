@@ -71,7 +71,7 @@ const MessageList = (
     useEffect(() => {
 
         scrollToBottom();
-    }, [searchParams?.get('user'), wsMessages.length,]);
+    }, [searchParams?.get('user'), wsMessages.length, caсheMessages.length]);
 
     return (
         <ul data-testid="message-list"

@@ -81,7 +81,7 @@ body::after {
 }
 
 .is-desktop .cache-first-messages-current-user-desktop {
-  margin-top: 1.6rem;
+  padding-top: 3.02rem;
 }
 
 .is-desktop .cache-first-messages-another-user-desktop {

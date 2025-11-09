@@ -177,21 +177,21 @@ const MessageItem = (
                 return (
                     <button className="relative w-full h-60 hover:opacity-80
                     duration-300 transition-opacity cursor-pointer" onClick={() => onShowImage(url)}>
-                        <img className='w-160 h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
+                        <img className='w-auto max-w-[500px] h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
                     </button>
                 )
             } else if (type.includes('video')) {
                 return (
                     <div className="relative w-full h-60">
-                        <video className='w-full h-60 object-cover' src={url} controls />
+                        <video className='max-w-auto w-auto h-60 object-contain' src={url} controls />
                     </div>
                 )
             } else if (type.includes('audio')) {
                 return (
-                    <div className="relative w-full min-w-full flex flex-col items-center h-52">
-                        <div className='w-full flex bg-amber-600/50 rounded-3xl mb-2 items-center justify-around px-1 box-border'>
+                    <div className="relative w-full min-w-full flex flex-col items-center h-auto">
+                        <div className='w-full flex bg-amber-600/50 rounded-3xl mb-2 items-center justify-around px-1 py-2 box-border'>
                             <img className='w-40 h-40' src={imgAudio.src} alt="обложка песни" />
-                            <p className='mx-1 text-[black] font-bold whitespace-pre-line'>{message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ')}</p>
+                            <p className='mx-1 text-[black] font-bold whitespace-pre-line'>{message.message.split('\n')[0].length > 48 ? message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ').slice(0, 45) + '...' : message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ')}</p>
                         </div>
                         <audio className='w-full h-10 object-cover' src={url} controls />
                     </div>
@@ -237,7 +237,7 @@ const MessageItem = (
                     </ul>
                 </div>
             )}
-            <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-10 pl-4 rounded-3xl
+            <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-4 pl-4 rounded-3xl
         border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow && !isMobile) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
                     'bg-amber-200' : 'bg-white'}`}>
                 {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-1'>
@@ -252,7 +252,7 @@ const MessageItem = (
                 {
                     message.message.length ? (
                         <div className='my-1'>
-                            {!message.file_type?.includes('audio/mpeg') ? <p className="font-bold">{message.message.split('\n')[0]}</p> : null}
+                            {!message.file_type?.includes('audio/mpeg') ? <p className="font-bold">{message.message.split('\n')[0].length > 28 ? message.message.split('\n')[0].slice(0, 25) + '...' : message.message.split('\n')[0]}</p> : null}
                             {message.message.split('\n')[1]?.trim() ? <p className="font-bold">{message.message.split('\n')[1]}</p> : null}
                         </div>
                     ) : <p className="font-bold my-1 whitespace-pre-wrap">{message.message}</p>
