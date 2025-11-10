@@ -162,7 +162,7 @@ const Layout = (
                             }
                             if (decMessage) {
                                 const allMessage = messageList[0].trim() + ' \n ' + decMessage;
-                                return { ...dialogue, lastMessage: allMessage };
+                                return { ...dialogue, lengthMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, lastMessage: allMessage };
                             }
                         } else {
                             try {
@@ -173,6 +173,7 @@ const Layout = (
                                 decMessage = dialogue.lastMessage;
                             }
 
+                            console.log('dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length', dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, new Date(String(privatKey.date)).getTime())
                             if (decMessage) {
                                 dispatch(addMessageLen({ id: dialogue.userId, numberMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length }))
                                 return { ...dialogue, lengthMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, lastMessage: decMessage };
@@ -191,6 +192,7 @@ const Layout = (
                 } catch (error) {
                     console.error('Ошибка при сохранении в кеш:', error);
                 }
+
                 setListDialogues(decListDialogues)
 
             }

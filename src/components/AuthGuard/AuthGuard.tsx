@@ -58,7 +58,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         if (errorAuthData && errorAuthData.data && errorAuthData.data.message.includes('jwt expired') && errorAuthData.data.status === 'error' && errorAuthData.status === 400) {
             logout({});
         }
-    }, [errorAuth])
+    }, [errorAuth,])
 
     useEffect(() => {
         if (logoutData?.status === 'ok') {
@@ -109,7 +109,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
             const user = authData?.user;
 
             try {
-                if (user) {
+                if (user && !errorAuth) {
                     const cached = await getCachedUser();
 
                     if (!cached.length) {

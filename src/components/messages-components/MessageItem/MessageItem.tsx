@@ -106,10 +106,6 @@ const MessageItem = (
         }
     }, [messageChangeData.isChange])
 
-    useEffect(() => {
-        console.log('messageChangeData', messageChangeData)
-    }, [messageChangeData])
-
     // useEffect(() => {
 
     //     if (showActionMessage?.isShow) {
@@ -252,7 +248,7 @@ const MessageItem = (
                 {
                     message.message.length ? (
                         <div className='my-1'>
-                            {!message.file_type?.includes('audio/mpeg') ? <p className="font-bold">{message.message.split('\n')[0].length > 28 ? message.message.split('\n')[0].slice(0, 25) + '...' : message.message.split('\n')[0]}</p> : null}
+                            {!message.file_type?.includes('audio/mpeg') ? <p className="font-bold break-words break-all">{message.message.split('\n')[0]}</p> : null}
                             {message.message.split('\n')[1]?.trim() ? <p className="font-bold">{message.message.split('\n')[1]}</p> : null}
                         </div>
                     ) : <p className="font-bold my-1 whitespace-pre-wrap">{message.message}</p>

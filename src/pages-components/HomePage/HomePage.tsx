@@ -79,6 +79,8 @@ const HomePage = () => {
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>();
     const [countFirstRender, setCountFirstRender] = useState(0);
 
+    const [isNoMessages, setIsNoMessages] = useState(false);
+
     const [publicKey, setPublicKey] = useState<JWK | null>(null)
     const [isSubmitUpdatePublicKey, setIsSubmitUpdatePublicKey] = useState<boolean>(false)
 
@@ -136,7 +138,17 @@ const HomePage = () => {
         if (typeof window !== 'undefined' && window.location.search) {
             newParams.current = new URLSearchParams(window.location.search);
         }
-    }, [window.location.search, searchParams?.get('tab')]);
+    }, [window.location.search, searchParams?.get('tab'), searchParams?.get('offset')]);
+
+    useEffect(() => {
+        if (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length) {
+            if (document.querySelector('#no-messages')) {
+                setIsNoMessages(true)
+            }
+        } else {
+            setIsNoMessages(false)
+        }
+    }, [isLoadingMessages, wsMessages, messages, caсheMessages, messagesData?.messages])
 
     const onSubmitUpdatePublicKey = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -353,9 +365,11 @@ const HomePage = () => {
     useEffect(() => {
 
         if (url && searchParams?.get('user')) {
-            url?.searchParams.set('offset', String(currentOffSet))
-            url?.searchParams.set('user', String(searchParams?.get('user')))
-            router?.push(url.href);
+            newParams.current.set('offset', String(currentOffSet))
+
+            const newUrl = `${urlWindow.pathname}?${newParams.current.toString()}`;
+
+            router.push(newUrl);
         }
     }, [url, setCurrentOffSet, currentOffSet])
 
@@ -705,7 +719,7 @@ const HomePage = () => {
                         <>
                             {
                                 (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length) ? (
-                                    <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" />
+                                    <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
                                 ) : null}
                             <MessageList
                                 isOnline={isOnline}
@@ -724,10 +738,10 @@ const HomePage = () => {
                                         isLoadingMessages && !(Number(dataNextLenMesages) < 0) ? 0 : Number(dataNextLenMesages) && !messages.length && !caсheMessages.length ?
                                             <SkeletonMessagesList length={5} /> :
                                             isLoadingMessages ? <SkeletonMessagesList length={5} /> : null} */}
-                                    {isLoadingMessages && !caсheMessages.length ? <SkeletonMessagesList length={itemCount} /> : null}
+                                    {isLoadingMessages && ![...wsMessages, ...caсheMessages].length && !isNoMessages ? <SkeletonMessagesList length={itemCount} /> : null}
                                 </span>
                             </MessageList>
-                            {isOnline && !isLoadingMessages ? (
+                            {isOnline && ![...caсheMessages].length && !isLoadingMessages ? (
                                 <div className={`bg-white w-full flex justify-center items-center pt-1 border-t-2 z-52 absolute ${changeMessageState.isChange && 'z-100'}`}>
                                     <UploadMenuWithButtonAction
                                         setIsFormUploadFade={setIsFormUploadFade} setFile={setFile}

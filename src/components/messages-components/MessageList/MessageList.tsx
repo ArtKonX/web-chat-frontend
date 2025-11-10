@@ -35,6 +35,21 @@ const MessageList = (
     const [isScroll, setIsScroll] = useState(false);
     const [isOverflow, setIsOverflow] = useState(false)
 
+    const newParams = useRef<URLSearchParams>(new URLSearchParams());
+    const newPathname = useRef<string>('/');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.search) {
+            newParams.current = new URLSearchParams(window.location.search);
+        }
+    }, [window.location.search, searchParams?.get('tab'), searchParams?.get('offset')]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.pathname) {
+            newPathname.current = window.location.pathname;
+        }
+    }, [window.location.pathname]);
+
     // функция для автоматической плавной прокрутки при получении нового сообщения
     // либо если сообщения не влезают в область видимости
     const scrollToBottom = () => {
@@ -50,19 +65,31 @@ const MessageList = (
     };
 
     const onOffset = () => {
-        if (url && userId) {
+        if (url && newParams.current && userId) {
+
+            // if (newParams.current.get('settings')) {
+            //     newParams.current.delete('settings');
+            // } else {
+            //     newParams.current.set('settings', 'true');
+            // }
+
             const offSet = searchParams?.get('offset');
 
             if (offSet) {
-                url.searchParams.set('user', userId)
-                url?.searchParams.set('offset', String(Number(offSet) + 10))
+                // url.searchParams.set('user', userId)
+                newParams.current.set('offset', String(Number(offSet) + 10))
 
-                router.push(url.href);
+                const newUrl = `${newPathname.current.toString()}?${newParams.current.toString()}`;
+
+                router.push(newUrl);
                 setCurrentOffSet(String(Number(offSet) + 10))
             } else {
-                url.searchParams.set('user', userId)
-                url?.searchParams.set('offset', '10')
-                router.push(url.href);
+                // url.searchParams.set('user', userId)
+                newParams.current.set('offset', '10')
+                // url?.searchParams.set('offset', '10')
+                const newUrl = `${newPathname.current.toString()}?${newParams.current.toString()}`;
+
+                router.push(newUrl);
                 setCurrentOffSet('10')
             }
         }

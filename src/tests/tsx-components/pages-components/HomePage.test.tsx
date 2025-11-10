@@ -10,42 +10,54 @@ import * as usersApi from '@/redux/services/usersApi'
 import * as citiesApi from '@/redux/services/citiesApi'
 import getProviderWithStore from '@/utils/tests-utils/getProviderWithStore';
 
-jest.mock('next/navigation')
+jest.mock('next/navigation', () => ({
+    ...jest.requireActual('next/navigation'),
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        pathname: '/',
+        query: {},
+        asPath: '/',
+    }),
+    useSearchParams: jest.fn(() => ({
+        get: jest.fn(),
+    })),
+}));
 
 declare global {
-  interface ResizeObserver {
-    observe(element: Element): void;
-    unobserve(element: Element): void;
-    disconnect(): void;
-  }
+    interface ResizeObserver {
+        observe(element: Element): void;
+        unobserve(element: Element): void;
+        disconnect(): void;
+    }
 
-  interface ResizeObserverEntry {
-    readonly target: Element;
-    readonly contentRect: DOMRectReadOnly;
-  }
+    interface ResizeObserverEntry {
+        readonly target: Element;
+        readonly contentRect: DOMRectReadOnly;
+    }
 }
 
 global.ResizeObserver = class ResizeObserver implements globalThis.ResizeObserver {
-  private callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
+    private callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
 
-  constructor(callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void) {
-    this.callback = callback;
-  }
+    constructor(callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void) {
+        this.callback = callback;
+    }
 
-  observe(element: Element) {
-    const entry: ResizeObserverEntry = {
-        target: element,
-        contentRect: element.getBoundingClientRect() as DOMRectReadOnly,
-        borderBoxSize: [],
-        contentBoxSize: [],
-        devicePixelContentBoxSize: []
-    };
+    observe(element: Element) {
+        const entry: ResizeObserverEntry = {
+            target: element,
+            contentRect: element.getBoundingClientRect() as DOMRectReadOnly,
+            borderBoxSize: [],
+            contentBoxSize: [],
+            devicePixelContentBoxSize: []
+        };
 
-    this.callback([entry], this);
-  }
+        this.callback([entry], this);
+    }
 
-  unobserve() {}
-  disconnect() {}
+    unobserve() { }
+    disconnect() { }
 };
 
 interface IDBOpenDBRequest {

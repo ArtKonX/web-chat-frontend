@@ -3,10 +3,10 @@ import React from 'react';
 import { WindowWithInfoProps } from "@/interfaces/components/window-with-info"
 
 const WindowWithInfo = (
-    { title, text }: WindowWithInfoProps) => {
+    { title, text, id }: WindowWithInfoProps) => {
 
     return (
-        <div className="h-full w-full flex justify-center items-center absolute">
+        <div id={id} className="h-full w-full flex justify-center items-center absolute">
             <div className="bg-amber-200 p-8 text-3xl flex
             flex-col items-center font-bold rounded-3xl border-3 max-sm:text-[21px] max-sm:p-3 m-2">
                 {title}
