@@ -46,7 +46,7 @@ import SkeletonMessagesList from '@/components/skeleton-messages/SkeletonMessage
 
 const HomePage = () => {
     // Для работы вебсокета
-    const { socket, setWsMessages, wsMessages, deleteMessageId, setDeleteMessageId, updatedMessage, setUpdatedMessage } = WebSocketConnection();
+    const { socket, setWsMessages, wsMessages, deleteMessageId, setDeleteMessageId, updatedMessage, setUpdatedMessage, isLastMessage, setIsLastMessage } = WebSocketConnection();
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -85,6 +85,8 @@ const HomePage = () => {
     const [isSubmitUpdatePublicKey, setIsSubmitUpdatePublicKey] = useState<boolean>(false)
 
     const [isReloaded, setIsReloaded] = useState(false);
+
+    const [isDecoding, setIsDecoding] = useState(false)
 
     const tokenState = useSelector(selectTokenState);
 
@@ -139,6 +141,10 @@ const HomePage = () => {
             newParams.current = new URLSearchParams(window.location.search);
         }
     }, [window.location.search, searchParams?.get('tab'), searchParams?.get('offset')]);
+
+    useEffect(() => {
+        setIsLastMessage(false)
+    }, [window.location.search, searchParams?.get('user')])
 
     useEffect(() => {
         if (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length) {
@@ -388,11 +394,11 @@ const HomePage = () => {
 
     useEffect(() => {
         if (!isLoadingMessages && messagesData?.messages?.length && privatKey) {
+            setIsDecoding(true);
             (async () => {
                 const accessListMessages = messagesData?.messages.filter(message => (new Date(String(message.created_at)).getTime() > new Date(privatKey.date).getTime()))
                 const messagesDataAll = await Promise.all(accessListMessages.map(async (message) => {
                     if (message.file_type) {
-
                         const encryptedFile = await loadFile(
                             message.file_url, message.file_type, message.file_name
                         );
@@ -500,12 +506,15 @@ const HomePage = () => {
                     if (uniqueMessages.length) {
                         // Убираем сообщения для первоначального отображения из кеша
                         setCaсheMessages([])
-
                         setMessages([...uniqueMessages]);
                     }
                 }
             })()
+            setIsDecoding(false);
+        }
 
+        if (!isLoadingMessages && !messagesData?.messages?.length) {
+            setIsDecoding(true);
         }
 
         if (!messagesData && !isOnline) {
@@ -717,10 +726,25 @@ const HomePage = () => {
                     )}
                     {searchParams?.get('tab') === 'chats' && searchParams?.get('user') && (
                         <>
-                            {
+                            {/* {
+                                (!isLoadingMessages && (![...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length)) ? (
+                                    <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
+                                ) :
+                                    (!isLoadingMessages && (![...messages, ...wsMessages].length && [...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length)) ? (
+                                        <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
+                                    ) : null} */}
+                            {/* {!isMessages ? (<WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />) : null} */}
+                            {/* {
+                                (!isLoadingMessages && (([...(messagesData && messagesData.messages.length ? messagesData?.messages : [])]).length && !isDecoding && !([...wsMessages, ...messages, ...caсheMessages]).length)) ? (
+                                    <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
+                                ) : !isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length ? (<WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />) : null} */}
+                            {/* {
                                 (!isLoadingMessages && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData && messagesData.messages.length ? messagesData?.messages : [])].length) ? (
                                     <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
-                                ) : null}
+                                ) : null} */}
+                            {!isLoadingMessages && ((isDecoding && ![...wsMessages, ...messages, ...caсheMessages, ...(messagesData?.messages || [])].length) || isLastMessage) ? (
+                                <WindowWithInfo title="Сообщений нет(" text="Напиши первым!" id='no-messages' />
+                            ) : null}
                             <MessageList
                                 isOnline={isOnline}
                                 userId={searchParams?.get('user')}

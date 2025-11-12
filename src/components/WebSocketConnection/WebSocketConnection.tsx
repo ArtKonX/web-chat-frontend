@@ -33,6 +33,8 @@ const WebSocketConnection = () => {
     const [updatedMessage, setUpdatedMessage] = useState<MessageInfo | null>(null);
     const [userStatus, setUserStatus] = useState<UserStatus | null>(null)
 
+    const [isLastMessage, setIsLastMessage] = useState(false)
+
     const [userId, setUserId] = useState<string | null>(null)
 
     const { data: dataAuth, isLoading: isAuthLoading, refetch: authRefetch } = useCheckAuthQuery({ token: tokenState?.token });
@@ -89,9 +91,9 @@ const WebSocketConnection = () => {
                     // или отправителя
                     if (((newMessage.sender_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.recipient_id === dataAuth?.user?.id)
                         || (newMessage.recipient_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.sender_id === dataAuth?.user?.id) || (((newMessage.sender_id !== '0f000000-000c-00d0-00d0-0d0000e00000') && (newMessage.recipient_id !== '0f000000-000c-00d0-00d0-0d0000e00000') && (currentUser !== '0f000000-000c-00d0-00d0-0d0000e00000')) && (newMessage.sender_id === currentUser
-                        && newMessage.recipient_id === dataAuth?.user?.id) ||
-                        (newMessage.sender_id === dataAuth?.user?.id
-                            && currentUser !== '0f000000-000c-00d0-00d0-0d0000e00000') && newMessage.recipient_id === currentUser))
+                            && newMessage.recipient_id === dataAuth?.user?.id) ||
+                            (newMessage.sender_id === dataAuth?.user?.id
+                                && currentUser !== '0f000000-000c-00d0-00d0-0d0000e00000') && newMessage.recipient_id === currentUser))
                     ) {
                         if (newMessage.type === 'message') {
                             if (!wsMessages.find(message => message.id === newMessage.id)) {
@@ -190,10 +192,10 @@ const WebSocketConnection = () => {
                                                 }, 400)
                                             }
                                         }
-
                                         fetchMessage();
                                     }
                                 }
+                                setIsLastMessage(false)
                             }
 
                         }
@@ -201,8 +203,11 @@ const WebSocketConnection = () => {
                         // Если сообщение удалено
                         if (newMessage.type === 'delete-message') {
 
+                            console.log('newMessage.isLastMessage', newMessage.isLastMessage)
+
                             await cacheDeleteMessage(newMessage.idMessage)
                             setDeleteMessageId(newMessage.idMessage)
+                            setIsLastMessage(newMessage.isLastMessage)
                         }
 
                         // Если сообщение обновлено
@@ -211,6 +216,7 @@ const WebSocketConnection = () => {
                             const decMessage = await decryptText(arrBufferMessage, privatKey.data)
 
                             if (decMessage) {
+                                setIsLastMessage(false)
                                 await cacheUpdateMessage(decMessage, newMessage.idMessage)
                                 setUpdatedMessage({ idMessage: newMessage.idMessage, message: decMessage })
                             }
@@ -293,7 +299,8 @@ const WebSocketConnection = () => {
         setWsInfoDialogues, deleteMessageId,
         setDeleteMessageId, updatedMessage,
         setUpdatedMessage, userStatus,
-        setUserStatus
+        setUserStatus, isLastMessage,
+        setIsLastMessage
     };
 };
 

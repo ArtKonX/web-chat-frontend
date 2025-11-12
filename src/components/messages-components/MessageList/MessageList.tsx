@@ -102,6 +102,7 @@ const MessageList = (
 
     return (
         <ul data-testid="message-list"
+            id='messages-list'
             ref={messagesListRef}
             className={`message-list overflow-y-auto ${isOverflow || changeMessageState.isChange ? 'overflow-y-hidden overflow-x-hidden' : ''} max-sm:mx-2 max-sm:pr-0 mx-8 mr-2 pr-6 ${isMobile ? 'ml-4! mr-0! pr-4!' : ''} relative h-full ${dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && isMobile ? 'pt-[12px]!' : dataNextLength?.isNextMessages && isOnline && !caсheMessages.length && !isMobile ? 'pt-[23px]!' : ''} ${isMobile ? 'pt-[31px]' : 'pt-[23px]'} ${caсheMessages.length && isMobile ? `cache-messages-list-mobile cache-first-messages-${currentUser?.id === caсheMessages[0]?.sender_id ? 'current' : 'another'}-user-mobile` : caсheMessages.length && !isMobile ? `cache-messages-list-desktop cache-first-messages-${currentUser?.id === caсheMessages[0]?.sender_id ? 'current' : 'another'}-user-desktop` : ''}`}
         >
@@ -116,7 +117,7 @@ const MessageList = (
                     caсheMessages.map((message, indx) => (
                         <li
                             key={message.id}
-                            id={String(indx)}
+                            id={String(indx === 0 ? 'first-message' : indx)}
                             className={`flex ${currentUser?.id === message?.sender_id ?
                                 'justify-start' :
                                 'justify-end'} mb-15 ${indx !== 0 ? 'mt-10' : ''}`}

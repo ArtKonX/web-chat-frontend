@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useMediaPredicate } from 'react-media-hook';
 import { useDispatch } from 'react-redux';
 import { toggleSideBar } from '@/redux/slices/sideBarSlice';
+import WebSocketConnection from '@/components/WebSocketConnection/WebSocketConnection';
 
 const Dialogue = (
     { id, name, isActiveUser,
@@ -16,13 +17,20 @@ const Dialogue = (
 
     const dispatch = useDispatch();
 
+    const { setIsLastMessage, isLastMessage } = WebSocketConnection();
+
     const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     const closeSideBarMobile = () => {
+        setIsLastMessage(false)
         if (isMobile) {
             dispatch(toggleSideBar());
         }
     }
+
+    useEffect(() => {
+        console.log('isLastMessageisLastMessageisLastMessage', isLastMessage)
+    }, [isLastMessage])
 
     return (
         <Link href={`/?tab=chats&user=${id}`}
