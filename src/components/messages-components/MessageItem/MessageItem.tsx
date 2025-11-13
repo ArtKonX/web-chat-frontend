@@ -47,6 +47,7 @@ const MessageItem = (
             refActions.current &&
             !refActions.current.contains(event.target as Node)
         ) {
+            setIsOverflow(false)
             setShowActionMessage({ id: message.id, isShow: false });
         }
     }, [showActionMessage, refActions, message.id]);
@@ -105,21 +106,6 @@ const MessageItem = (
             return () => clearTimeout(timeoutId)
         }
     }, [messageChangeData.isChange])
-
-    // useEffect(() => {
-
-    //     if (showActionMessage?.isShow) {
-    //         setIsFade(true)
-    //     } else {
-
-    //         const timeoutId = setTimeout(() => {
-    //             setIsFade(false)
-    //         }, 100)
-
-    //         return () => clearTimeout(timeoutId)
-    //     }
-
-    // }, [showActionMessage, setShowActionMessage])
 
     useEffect(() => {
         if (!showActionMessage?.isShow) {

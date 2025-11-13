@@ -48,6 +48,8 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
 
     const [logout, { data: logoutData }] = useLogoutMutation();
 
+    const [isReload, setIsReload] = useState(false)
+
     useEffect(() => {
         authRefetch()
     }, [])
@@ -74,8 +76,16 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
 
         if (!isLoadingUpdateCity && updateCityData?.status === 'ok') {
             authRefetch()
+            setIsReload(true)
         }
     }, [updateCityData, isLoadingUpdateCity, tokenState])
+
+    useEffect(() => {
+        if (isReload && authData?.user?.id) {
+            setIsReload(false)
+            window.location.reload()
+        }
+    }, [authRefetch, setIsReload, isReload])
 
     useEffect(() => {
         const body = document.querySelector('body');
@@ -149,7 +159,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
 
     return (
         <>
-            {(isLoadingUpdateCity || isLoadingAuth) && <Loader isFade={true} />}
+            {(isLoadingUpdateCity || isLoadingAuth || (!isLoadingAuth && authData?.user.id && !authData?.user.city)) && <Loader isFade={true} />}
             {children}
         </>
     );

@@ -84,9 +84,16 @@ const WebSocketConnection = () => {
 
             // Создаем обработчик обмена сообщениями
             currentSocket.onmessage = async (event) => {
+
                 try {
                     const currentUser = currentUserRef.current;
                     const newMessage = JSON.parse(event.data);
+
+                    if (!privatKey || !privatKey.data) {
+                        console.log('Приватный ключ не загружен. Пропускаем обработку.');
+                        return;
+                    }
+
                     // Фильтруем сообщения, чтобы они были только по id от получателя
                     // или отправителя
                     if (((newMessage.sender_id === '0f000000-000c-00d0-00d0-0d0000e00000' && newMessage.recipient_id === dataAuth?.user?.id)
@@ -222,9 +229,8 @@ const WebSocketConnection = () => {
                             }
                         }
 
-                        if (newMessage.type === 'info-about-chat' && privatKey) {
+                        if (newMessage.type === 'info-about-chat' && privatKey && privatKey.data) {
                             let decMessage;
-
                             try {
                                 if (newMessage.lastMessage) {
                                     const arrBufferMessage = base64ToArrayBuffer(JSON.parse(newMessage.lastMessage));
@@ -246,7 +252,8 @@ const WebSocketConnection = () => {
                     }
 
                     if ((newMessage.sender_id === dataAuth?.user?.id || newMessage.recipient_id === dataAuth?.user?.id)) {
-                        if (newMessage.type === 'info-about-chat' && privatKey) {
+
+                        if (newMessage.type === 'info-about-chat' && privatKey && privatKey.data) {
                             let decMessage;
 
                             try {
@@ -260,9 +267,11 @@ const WebSocketConnection = () => {
                             }
 
                             if (decMessage) {
+                                console.log(3, { ...newMessage, lastMessage: decMessage })
                                 await cacheDialogue({ ...newMessage, lastMessage: decMessage })
                                 setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
                             } else {
+                                console.log(4, { ...newMessage, lastMessage: null })
                                 await cacheDeleteDialogue(newMessage.userId)
                                 setWsInfoDialogues({ ...newMessage, lastMessage: null })
                             }
@@ -279,10 +288,11 @@ const WebSocketConnection = () => {
             }
         };
 
-        if (userId) {
+        if (privatKey && privatKey.data && dataAuth?.user?.id) {
             initWebSocket();
         }
-    }, [userId, dataAuth?.user, dataAuth?.user?.id, userRef.current, privatKey, setPrivatKey,]);
+
+    }, [userId, userRef.current, privatKey, setPrivatKey, privatKey?.data]);
 
     useEffect(() => {
 

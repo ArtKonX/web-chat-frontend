@@ -320,13 +320,19 @@ const HomePage = () => {
     }, [selectedCity, setSelectedCity])
 
     useEffect(() => {
-        if (updateCityData?.status === 'ok' && url) {
-            refetch();
-            url.searchParams.delete('showSelectedCities');
-            url.searchParams.delete('showMapCities');
 
-            router?.push(url.href)
+        if (updateCityData?.status === 'ok' && url) {
+            if (searchParams && newParams.current) {
+                refetch();
+                newParams.current.delete('showSelectedCities');
+                newParams.current.delete('showMapCities');
+
+                const newUrl = `${urlWindow.pathname}?${newParams.current.toString()}`;
+
+                router.push(newUrl);
+            }
         }
+
     }, [updateCityData])
 
     useEffect(() => {

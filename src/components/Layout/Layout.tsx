@@ -90,9 +90,12 @@ const Layout = (
     }, [])
 
     useEffect(() => {
+
         const fetchDialogues = async () => {
+           
             if (socket && authData?.user?.id) {
                 let allListDialogues = [];
+
                 if (wsInfoDialogues && privatKey) {
 
                     // Если есть диалоги и если нет
@@ -105,7 +108,9 @@ const Layout = (
                     const filteredAllListDialogues = allListDialogues.filter(dialogue =>
                         (dialogue.lastMessage && ![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.recipient_id))
                         || (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.sender_id))) as DialogueData[]
+                    console.log('filteredAllListDialogues', filteredAllListDialogues)
                     if (wsInfoDialogues.lastMessage) {
+                        console.log('filteredAllListDialogueddds', wsInfoDialogues)
                         filteredAllListDialogues.unshift(wsInfoDialogues)
                     }
 
@@ -118,7 +123,7 @@ const Layout = (
 
 
         fetchDialogues()
-    }, [wsInfoDialogues, setWsInfoDialogues])
+    }, [wsInfoDialogues, wsInfoDialogues?.dateMessage, setWsInfoDialogues, listInfoDialogues, isListInfoDialoguesLoading,])
 
     useEffect(() => {
         if (listDialogues && userStatus) {
@@ -173,7 +178,6 @@ const Layout = (
                                 decMessage = dialogue.lastMessage;
                             }
 
-                            console.log('dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length', dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, new Date(String(privatKey.date)).getTime())
                             if (decMessage) {
                                 dispatch(addMessageLen({ id: dialogue.userId, numberMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length }))
                                 return { ...dialogue, lengthMessages: dialogue.listDates.filter(item => new Date(String(item)).getTime() > new Date(String(privatKey.date)).getTime()).length, lastMessage: decMessage };
@@ -199,7 +203,7 @@ const Layout = (
 
             fetchDialogues()
         }
-    }, [listInfoDialogues?.data?.length, isListInfoDialoguesLoading,])
+    }, [listInfoDialogues?.data, isListInfoDialoguesLoading, privatKey,])
 
     useEffect(() => {
 
