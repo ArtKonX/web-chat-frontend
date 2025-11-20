@@ -42,6 +42,8 @@ const MessageList = (
         if (typeof window !== 'undefined' && window.location.search) {
             newParams.current = new URLSearchParams(window.location.search);
         }
+
+        console.log(isScroll)
     }, [window.location.search, searchParams?.get('tab'), searchParams?.get('offset')]);
 
     useEffect(() => {
