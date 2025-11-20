@@ -171,9 +171,9 @@ const MessageItem = (
             } else if (type.includes('audio')) {
                 return (
                     <div className="relative w-full min-w-full flex flex-col items-center h-auto">
-                        <div className='w-full flex bg-amber-600/50 rounded-3xl mb-2 items-center justify-around px-1 py-2 box-border'>
+                        <div className='w-full flex bg-amber-600/50 dark:bg-[#252325] rounded-3xl mb-2 items-center justify-around px-1 py-2 box-border'>
                             <img className='w-40 h-40' src={imgAudio.src} alt="обложка песни" />
-                            <p className='mx-1 text-[black] font-bold whitespace-pre-line'>{message.message.split('\n')[0].length > 48 ? message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ').slice(0, 45) + '...' : message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ')}</p>
+                            <p className='mx-1 text-[black] dark:text-[#E1E3E6] font-bold whitespace-pre-line'>{message.message.split('\n')[0].length > 48 ? message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ').slice(0, 45) + '...' : message.message.split('\n')[0].replace('Файл: ', 'Песня: ').replaceAll('_', ' ')}</p>
                         </div>
                         <audio className='w-full h-10 object-cover' src={url} controls />
                     </div>
@@ -192,9 +192,9 @@ const MessageItem = (
             </div>) : null}
             {(showActionMessage?.isShow && statusUpdated === 0) && isFade && (
                 <div ref={refActions} className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
-                    <ul className='bg-white rounded-4xl border-2 border-black'>
+                    <ul className='bg-white dark:bg-[#141414] rounded-4xl border-2 border-black'>
                         {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
-                            <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
+                            <li key={indx} className='not-last:mb-4 dark:text-[#E1E3E6] first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?
                                     (<button onClick={() => indx === 0 && !message.file_type?.includes('audio/mpeg') ? onChange() : indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
                                         {item}
@@ -207,7 +207,7 @@ const MessageItem = (
                                     </button>)}
                             </li>
                         ))) : (['Скачать файл', 'Удалить', 'Отмена'].filter(elem => Boolean(elem)).map((item, indx) => (
-                            <li key={indx} className='not-last:mb-4 first:mt-4 not-last:border-b-1 pb-4 px-7'>
+                            <li key={indx} className='not-last:mb-4 dark:text-[#E1E3E6] first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {[1, 2].includes(indx) ?
                                     (<button onClick={() => indx === 1 ? onDelete(message.id) : onClose(message.id)} className='text-xl font-bold hover:opacity-55 duration-500 cursor-pointer'>
                                         {item}
@@ -219,12 +219,12 @@ const MessageItem = (
                     </ul>
                 </div>
             )}
-            <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-4 pl-4 rounded-3xl
+            <div ref={showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow ? refMessageItem : null} className={`relative flex max-w-[80%] flex-col py-2 pr-4 pl-4 rounded-3xl dark:text-[#E1E3E6] dark:border-black
         border-2 ${isCache ? 'opacity-80 animate-pulse' : ''} ${(showActionMessage && showActionMessage.id === message.id && showActionMessage.isShow && !isMobile) && 'z-100 fixed'} ${currentId?.id === message?.sender_id ?
-                    'bg-amber-200' : 'bg-white'}`}>
+                    'bg-amber-200 dark:bg-[#eba118d9]' : 'bg-white dark:bg-[#222222]'}`}>
                 {isCache !== true && !messageChangeData.isChange && currentId?.id === message?.sender_id && !(showActionMessage?.isShow && showActionMessage.id === message.id) ? (<div className='absolute -top-7 -right-6 z-1'>
                     <button onClick={() => { setShowActionMessage({ id: message.id, isShow: true }); setIsOverflow(true) }} className='bg-white pt-[4px] pb-[14px] px-3
-                rounded-full text-2xl font-bold cursor-pointer hover:opacity-85 duration-500 z-51'>
+                rounded-full text-2xl font-bold cursor-pointer hover:opacity-85 duration-500 z-51 dark:bg-[#424242] dark:text-[#E1E3E6]'>
                         …
                     </button>
                 </div>) : null}

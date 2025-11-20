@@ -4,7 +4,7 @@
 import React from 'react';
 
 import { useCheckAuthQuery, useLogoutMutation, useUpdateCityMutation } from "@/redux/services/authApi";
-import { selectbackgroundState, selectTokenState } from "@/selectors/selectors";
+import { selectbackgroundState, selectNotFoundState, selectTokenState } from "@/selectors/selectors";
 import { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -35,6 +35,8 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
 
     const bgColor = useSelector(selectbackgroundState);
 
+    const notFound = useSelector(selectNotFoundState);
+
     const dispatch = useDispatch();
 
     const searchParams = useSearchParams();
@@ -60,7 +62,20 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         if (errorAuthData && errorAuthData.data && errorAuthData.data.message.includes('jwt expired') && errorAuthData.data.status === 'error' && errorAuthData.status === 400) {
             logout({});
         }
-    }, [errorAuth,])
+
+        (async () => {
+            const userData = await getCachedUser();
+
+            if (errorAuthData && errorAuthData.data && userData[0].id) {
+                logout({});
+            }
+
+            if (errorAuthData && errorAuthData.data && !userData[0].id && !authData?.user) {
+                logout({});
+            }
+        })()
+
+    }, [errorAuth, authData?.user,])
 
     useEffect(() => {
         if (logoutData?.status === 'ok') {
@@ -94,16 +109,16 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
             // Для фона чата
             body.style.background = `url('${urlBg.src}'), linear-gradient(135deg, ${bgColor.bgColor}, rgba(0, 0, 255, 0.3))`;
 
-            if (!searchParams.get('tab') && !pathname.includes('profile')) {
+            if (!searchParams.get('tab') && !pathname.includes('profile') && !pathname.split('/')[1]) {
                 router.push('/?tab=users')
             }
         }
 
         if (!isLoadingAuth && !authData) {
-            router?.push('/')
+            router?.push('/?tab=users')
         }
 
-    }, [bgColor, authData,])
+    }, [bgColor, authData, notFound?.isNotFound])
 
     useEffect(() => {
 

@@ -99,7 +99,7 @@ describe('FormSendMessages', () => {
             <FormSendMessages {...defaultProps} setMessage={setMessageMock} name="User" />
         )
         const input = screen.getByPlaceholderText(/сообщение/i)
-        const button = screen.getByRole('button', { name: /➤/i })
+        const button = screen.getByRole('button', { name: />/i })
 
         await userEvent.type(input, 'Hello world')
 

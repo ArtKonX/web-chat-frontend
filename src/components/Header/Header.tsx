@@ -136,7 +136,7 @@ const Header = (
     }
 
     return (
-        <div data-testid="header" className="w-full h-[64px] flex items-center bg-white p-2 px-10 max-sm:px-4 border-b-2 box-content fixed z-50">
+        <div data-testid="header" className="w-full h-[64px] flex items-center bg-white dark:bg-[#222222] p-2 px-10 max-sm:px-4 border-b-2 dark:border-black box-content fixed z-50">
             <div className="w-full m-auto flex justify-between
             items-center"
             >
@@ -161,7 +161,7 @@ const Header = (
                 {((!isWelcomePage && !isDemoHeader)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
                         <HeaderUserLinks isDisable={!isOnline} city={dataUser.city || userInfo!.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />
-                        <button data-testid="settings-button" onClick={showSendSettings} className="ml-5 text-6xl h-[40px] relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
+                        <button data-testid="settings-button" onClick={showSendSettings} className="ml-5 text-6xl h-[40px] dark:text-[#E1E3E6]! relative bottom-3 cursor-pointer hover:opacity-65 duration-700 max-sm:text-4xl max-sm:h-[15px] max-sm:ml-2">⚙</button>
                     </div>
                 )}
             </div>

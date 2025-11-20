@@ -81,3 +81,19 @@ export const selectWindowState = createSelector(
         ...windowState
     })
 );
+
+export const selectNotFoundState = createSelector(
+    (state: RootState) => state.notFoundSlice,
+
+    (notFoundState) => ({
+        ...notFoundState
+    })
+);
+
+export const selectIsCheckPinCodeState = createSelector(
+    (state: RootState) => state.isCheckPinCodeSlice,
+
+    (isCheckPinCodeState) => ({
+        ...isCheckPinCodeState
+    })
+);

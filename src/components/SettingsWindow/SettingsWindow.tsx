@@ -36,12 +36,6 @@ const SettingsWindow = (
     const newParams = useRef<URLSearchParams | null>(null);
 
     useEffect(() => {
-        console.log('bgColor', hex)
-    }, [hex])
-
-    // const closeBtnBlockRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
         if (typeof window !== 'undefined' && window.location.search) {
             newParams.current = new URLSearchParams(window.location.search);
         }
@@ -121,13 +115,13 @@ const SettingsWindow = (
         h-full bg-black/60 transition-all duration-200 ease-out
         ${isFade ? 'opacity-100 scale-100 translate-y-0 flex-col' :
                 'opacity-0 scale-95 -translate-y-2 relative'}`}>
-            <form ref={refWindowSettings} className="flex p-5 bg-white rounded-2xl relative" onSubmit={onSubmit}>
+            <form ref={refWindowSettings} className="flex p-5 dark:text-[#E1E3E6] dark:bg-[#222222] bg-white rounded-2xl relative" onSubmit={onSubmit}>
                 <div className="absolute top-0 right-0">
                     <CloseBtn onClose={onClose} />
                 </div>
                 <HeadingWithTitle text="Цвет фона:">
                     <div className="w-[280px] h-[280px] relative">
-                        <div className={'bg-view z-0 w-[280px] h-[280px] absolute top-0 left-0 opacity-70'} />
+                        <div className={'bg-view dark:bg-[#262626]! z-0 w-[280px] h-[280px] absolute top-0 left-0 opacity-70'} />
                         <img className="z-120 w-full h-full object-cover absolute" src={bg.src} alt="фон" />
                     </div>
 

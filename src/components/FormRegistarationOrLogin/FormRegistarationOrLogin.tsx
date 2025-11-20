@@ -16,8 +16,8 @@ const FormRegistrationOrLogin = (
         return (
             <form data-testid='form' noValidate className="" onSubmit={onSubmit}>
                 <HeadingWithTitle text='Регистрация в K-Чат'>
-                    <div className="mb-4 flex justify-end items-center">
-                        Уже есть K-ID? <Link className="text-amber-600/90 font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/login'}>Войти</Link>
+                    <div className="mb-4 flex justify-end items-center dark:text-[#E1E3E6]">
+                        Уже есть K-ID? <Link className="text-amber-600/90 dark:text-[#ebb318] font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/login'}>Войти</Link>
                     </div>
                     <InputWithLabelAndInfo text='Имя' type='text'
                         onChange={onChange}
@@ -50,8 +50,8 @@ const FormRegistrationOrLogin = (
         return (
             <form data-testid='form' onSubmit={onSubmit}>
                 <HeadingWithTitle text='Вход в K-Чат'>
-                    <div className="mb-4 flex justify-end items-center">
-                        Ещё нет K-ID? <Link className="text-amber-600/90 font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/registration'}>Регистрация</Link>
+                    <div className="mb-4 flex justify-end items-center dark:text-[#E1E3E6]">
+                        Ещё нет K-ID? <Link className="text-amber-600/90 dark:text-[#ebb318] font-bold text-lg ml-1 hover:opacity-70 transition-opacity duration-500" href={'/registration'}>Регистрация</Link>
                     </div>
                     <InputWithLabelAndInfo text='Ваша почта:' type='text'
                         onChange={onChange}

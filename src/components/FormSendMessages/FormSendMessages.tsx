@@ -127,13 +127,13 @@ const FormSendMessages = (
     }, [isLoadingUpdateMessage, updateMessageData])
 
     return (
-        <form onSubmit={onSendMessage} className="w-full h-full flex relative">
+        <form onSubmit={onSendMessage} className="w-full h-full flex relative dark:bg-[#212121]">
             <input placeholder='Сообщение...' type="text"
-                className="bg-white z-52 mb-1 w-[calc(100%-110px)] mr-5 p-2 rounded-xl px-3 outline-0 border-2
+                className="bg-white z-52 mb-1 w-[calc(100%-85px)] dark:text-[#E1E3E6] dark:bg-[#141414] mr-5 p-2 rounded-xl px-3 outline-0 border-2
         focus:border-amber-400/50 hover:border-amber-400/50
         transition-all duration-400 ml-6" name='message' onChange={onChangeMessage} value={message} />
             <button type="submit" className="mb-1 hover:text-amber-400/50 transition-all duration-400 text-4xl cursor-pointer">
-                ➤
+                {'>'}
             </button>
         </form>
     )

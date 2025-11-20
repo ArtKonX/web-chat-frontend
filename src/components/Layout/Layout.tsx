@@ -92,7 +92,7 @@ const Layout = (
     useEffect(() => {
 
         const fetchDialogues = async () => {
-           
+
             if (socket && authData?.user?.id) {
                 let allListDialogues = [];
 
@@ -108,9 +108,7 @@ const Layout = (
                     const filteredAllListDialogues = allListDialogues.filter(dialogue =>
                         (dialogue.lastMessage && ![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.recipient_id))
                         || (![wsInfoDialogues.recipient_id, wsInfoDialogues.sender_id].includes(dialogue.sender_id))) as DialogueData[]
-                    console.log('filteredAllListDialogues', filteredAllListDialogues)
                     if (wsInfoDialogues.lastMessage) {
-                        console.log('filteredAllListDialogueddds', wsInfoDialogues)
                         filteredAllListDialogues.unshift(wsInfoDialogues)
                     }
 
@@ -270,7 +268,7 @@ const Layout = (
                     )}
                     {children}
                 </div>
-                {!authData?.user?.id && !userInfo?.id && (
+                {(!authData?.user?.id && !userInfo?.id && ['/', '/about-us', '/login', '/registration', '/check-pin'].includes(String(pathname)) || (authData?.user?.id && userInfo?.id && !['/'].includes(String(pathname)))) && (
                     <div className="relative bottom-[41px]">
                         <Footer />
                     </div>

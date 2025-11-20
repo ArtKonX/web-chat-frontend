@@ -10,6 +10,8 @@ import changeMessageSlice from '../slices/changeMessageSlice';
 import imageSlice from '../slices/imageSlice';
 import messagesSlice from '../slices/messagesSlice';
 import windowSlice from '../slices/windowSlice';
+import notFoundSlice from '../slices/notFoundSlice';
+import isCheckPinCodeSlice from '../slices/isCheckPinCodeSlice';
 
 export const store = configureStore({
     reducer: {
@@ -24,7 +26,9 @@ export const store = configureStore({
         changeMessageSlice,
         imageSlice,
         messagesSlice,
-        windowSlice
+        windowSlice,
+        notFoundSlice,
+        isCheckPinCodeSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

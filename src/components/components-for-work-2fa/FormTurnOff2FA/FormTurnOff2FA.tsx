@@ -5,16 +5,16 @@ import CloseBtn from "@/components/ui/CloseBtn/CloseBtn";
 import HeadingWithTitle from "@/components/ui/HeadingWithTitle/HeadingWithTitle"
 import InputWithLabelAndInfo from "@/components/ui/InputWithLabelAndInfo/InputWithLabelAndInfo";
 import { FA2Data, FormTurnOff2FAProps } from "@/interfaces/components/components-for-work-2fa";
-import { useTurnOff2FAMutation } from "@/redux/services/authApi";
+import { useCheckAuthQuery, useLogoutMutation, useTurnOff2FAMutation } from "@/redux/services/authApi";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useSelector } from '@/hooks/useTypedSelector';
 import { selectTokenState } from '@/selectors/selectors';
 import { useDispatch } from 'react-redux';
-import { removeToken } from '@/redux/slices/tokenSlice';
+import { addToken } from '@/redux/slices/tokenSlice';
 import { useRouter } from 'next/navigation';
 
 const FormTurnOff2FA = (
-    { userId, closeShowTornOff2FAForm, authDataRefetch }: FormTurnOff2FAProps) => {
+    { userId, closeShowTornOff2FAForm, authDataRefetch, setIsShowWindowInfo }: FormTurnOff2FAProps) => {
 
     const tokenState = useSelector(selectTokenState);
 
@@ -25,6 +25,10 @@ const FormTurnOff2FA = (
     const [savePin, setSavePin] = useState('');
     const [attempt, setAttempt] = useState<null | number>(null);
     const [isErrorTurnOff2FA, setIsErrorTurnOff2FA] = useState(false);
+
+    const { refetch: authRefetch } = useCheckAuthQuery({ token: tokenState.token });
+
+    const [logout] = useLogoutMutation();
 
     const router = useRouter();
 
@@ -55,16 +59,24 @@ const FormTurnOff2FA = (
     useEffect(() => {
 
         if (errorTurnOff2FA?.data?.data?.succesPinCode === 'error') {
-            dispatch(removeToken());
             setSavePin('');
-            window.location.reload()
+            setIsShowWindowInfo(true)
+            const timoutId = setTimeout(() => {
+                dispatch(addToken({ token: JSON.stringify('error-success-token') }))
+                logout({})
+                setIsShowWindowInfo(false)
+                authRefetch()
+                router.push('/')
+
+                return () => clearTimeout(timoutId)
+            }, 7000)
         }
 
         if (turnOff2FAData?.status === 'ok') {
             closeShowTornOff2FAForm()
             setSavePin('');
             authDataRefetch()
-        } else {
+        } else if (errorTurnOff2FA?.data?.status === 'error') {
             setAttempt(errorTurnOff2FA?.data?.attempt)
             setIsErrorTurnOff2FA(Boolean(errorTurnOff2FA));
             setTimeout(() => {
@@ -76,10 +88,10 @@ const FormTurnOff2FA = (
 
     return (
         <form onSubmit={onActionTurnOff2FA}
-            className="z-100 bg-white py-6 px-9 rounded-2xl
+            className="form-turn-off-2fa z-100 bg-white py-6 px-9 rounded-2xl
         max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-9/10
-        w-full flex flex-col items-center relative">
-            <div className="absolute right-5 top-2">
+        w-full flex flex-col items-center relative dark:text-[#E1E3E6] dark:bg-[#212121]">
+            <div className="absolute right-0 top-0">
                 <CloseBtn onClose={closeShowTornOff2FAForm} />
             </div>
             <HeadingWithTitle text='Введите код для отключения двойной защиты:' >

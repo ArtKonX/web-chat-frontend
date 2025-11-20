@@ -12,6 +12,8 @@ import { selectTokenState } from "@/selectors/selectors";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import Loader from '@/components/ui/Loader/Loader';
+import { toggleIsCheckPinCode } from '@/redux/slices/isCheckPinCodeSlice';
 
 interface Errors {
     name: boolean;
@@ -144,6 +146,7 @@ const UpdateProfilePage = () => {
                 router.push('/profile');
             } else if (errorUpdate?.data?.status === 'not-pin-code') {
                 dispatch(addDataAuth({ id: authData?.user?.id, type: 'update', name: formState.name, password: formState.password }))
+                dispatch(toggleIsCheckPinCode())
                 router.push('/check-pin?action=update')
             }
         }
@@ -157,8 +160,8 @@ const UpdateProfilePage = () => {
 
     return (
         <div className="w-full min-h-[calc(100vh-82px)] flex items-center justify-center">
-            <div className="my-2 w-full flex-1 items-center flex flex-col">
-                <div className="bg-white py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-10/11 w-full flex flex-col items-center">
+            <div className="min-h-[calc(100%-442px)] pb-[40px] pt-[15px] justify-center my-2 w-full flex-1 items-center flex flex-col">
+                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#212121] py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-10/11 w-full flex flex-col items-center">
                     <form data-testid="form" noValidate className="w-full" onSubmit={onSubmit}>
                         <HeadingWithTitle text='Обновление данных'>
                             <InputWithLabelAndInfo text='Имя' type='text'
@@ -184,6 +187,7 @@ const UpdateProfilePage = () => {
                     </form>
                 </div>
             </div>
+             {(isUpdateLoading) && <Loader isFade={Boolean(isUpdateLoading)} />}
         </div>
     )
 }

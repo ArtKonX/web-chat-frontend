@@ -23,10 +23,10 @@ const SearchUserWithAction = (
 
     return (
         <Link href={`/?tab=chats&user=${id}`}
-            className='flex w-full justify-start items-center max-sm:items-end border-b-2 py-2 mb-5'
+            className='flex w-full justify-start items-center max-sm:items-end border-b-2 border-[#E1E3E6] py-2 mb-5'
             onClick={closeSideBarMobile}>
             <UserIcon nameFirstSymbol={name && name[0]} colorBackgroundIcon={color_profile} />
-            <div className='flex flex-col max-sm:text-[15px] ml-4'>
+            <div className='flex flex-col dark:text-[#E1E3E6] max-sm:text-[15px] ml-4'>
                 <span>
                     {name}
                 </span>

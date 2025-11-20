@@ -66,7 +66,7 @@ export default function RootLayout({
 
   return (
     <html lang="ru">
-      <body data-testid="body">
+      <body data-testid="body" className='dark:bg-[#262626]!'>
         <Provider store={store}>
           <Suspense fallback={<Loader isFade={true} />}>
             <AuthGuard>

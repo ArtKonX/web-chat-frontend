@@ -6,7 +6,7 @@ const GeoCityName = (
 
     return (
         <span
-            className="font-bold text-xl mr-4 max-sm:text-[17px]"
+            className="font-bold dark:text-[#E1E3E6]! text-xl mr-4 max-sm:text-[17px]"
         >
             ⚲ {city}
         </span>

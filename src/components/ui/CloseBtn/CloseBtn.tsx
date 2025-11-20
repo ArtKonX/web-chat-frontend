@@ -8,7 +8,7 @@ const CloseBtn = (
 
     return (
         <button type="button" onClick={onClose}
-            className="text-3xl hover:text-amber-500/90 transition-colors
+            className="text-3xl dark:bg-[#424242] dark:text-[#E1E3E6] hover:text-amber-500/90 transition-colors
         duration-300 cursor-pointer px-3 pb-1 z-100 rounded-full bg-white"
         >
             x

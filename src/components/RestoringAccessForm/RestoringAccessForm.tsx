@@ -17,7 +17,7 @@ const RestoringAccessForm = (
             h-full bg-black/60 transition-all duration-200 ease-out
             opacity-100 scale-100 translate-y-0`}>
             <div className="w-full h-full flex flex-col items-center justify-center relative">
-                <form onSubmit={onSubmitUpdatePublicKey} className="z-100 bg-white py-6 px-9 rounded-2xl max-w-2/5 max-sm:max-w-9/10 w-full flex flex-col items-center relative">
+                <form onSubmit={onSubmitUpdatePublicKey} className="z-100 bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-2/5 max-sm:max-w-9/10 w-full flex flex-col items-center relative">
                     <HeadingWithTitle text='Восстановите доступ к данным аккаунта!'>
                         <p className='font-bold text-[22px] mb-3 text-center text-red-500'>
                             К сожалению, приватный ключ потерян(

@@ -11,6 +11,47 @@ import getProviderWithStore from '@/utils/tests-utils/getProviderWithStore';
 
 jest.mock('next/navigation')
 
+interface IDBOpenDBRequest {
+    onsuccess: ((event: Event) => void) | null;
+    onerror: ((event: Event) => void) | null;
+    onupgradeneeded: ((event: Event) => void) | null;
+    result: IDBDatabase;
+}
+
+interface IDBDatabase {
+    createObjectStore: jest.Mock;
+    transaction: jest.Mock<IDBTransaction>;
+}
+
+interface IDBTransaction {
+    objectStore: jest.Mock<IDBObjectStore>;
+}
+
+interface IDBObjectStore {
+    put: jest.Mock;
+    get: jest.Mock;
+    delete: jest.Mock;
+}
+
+global.indexedDB = {
+    open: jest.fn(() => ({
+        onsuccess: null,
+        onerror: null,
+        onupgradeneeded: null,
+        result: {
+            createObjectStore: jest.fn(),
+            transaction: jest.fn(() => ({
+                objectStore: jest.fn(() => ({
+                    put: jest.fn(),
+                    get: jest.fn(),
+                    delete: jest.fn(),
+                }) as IDBObjectStore),
+            }) as IDBTransaction),
+        } as unknown as IDBOpenDBRequest,
+    })) as unknown as IDBOpenDBRequest,
+    deleteDatabase: jest.fn(),
+} as unknown as IDBFactory;
+
 jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
     useSearchParams: jest.fn(),
@@ -37,6 +78,7 @@ describe('CheckPinPage', () => {
     afterEach(() => {
         jest.resetModules();
         document.body.innerHTML = '';
+        jest.clearAllMocks()
     });
 
     beforeEach(() => {

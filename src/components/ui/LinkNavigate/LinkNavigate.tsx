@@ -11,7 +11,7 @@ const LinkNavigate = (
                 px-5 text-lg rounded-lg font-bold
                 hover:opacity-80 transition-opacity
                 duration-400 cursor-pointer
-                max-sm:px-2 max-sm:py-3 max-sm:text-[17px]">{text}</Link>
+                max-sm:px-2 max-sm:py-3 max-sm:text-[17px] dark:text-[#E1E3E6] dark:bg-[#ebaf18eb]">{text}</Link>
     )
 }
 

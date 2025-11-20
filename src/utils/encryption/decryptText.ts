@@ -14,8 +14,6 @@ export async function decryptText(
     const iv = data.slice(rsaKeySize * 2, rsaKeySize * 2 + ivSize);
     const encryptedData = data.slice(rsaKeySize * 2 + ivSize);
 
-    console.log(222220000000, encryptedSymmetricKey1, encryptedSymmetricKey2, iv, encryptedData, privateKey)
-
     try {
         // Параметры для дешифрования RSA
         const decryptParamsRSA = {
@@ -32,7 +30,7 @@ export async function decryptText(
                 privateKey,
                 encryptedSymmetricKey1
             );
-            console.log(222220000000, symmetricKeyBuffer)
+
         } catch (error) {
             console.error(error)
 
@@ -42,7 +40,7 @@ export async function decryptText(
                 privateKey,
                 encryptedSymmetricKey2
             );
-            console.log(1222220000000, symmetricKeyBuffer)
+
         }
 
         // Импортируем симметричный ключ
@@ -57,8 +55,6 @@ export async function decryptText(
             ['decrypt']
         );
 
-        console.log('d', symmetricKey)
-
         // Параметры для дешифрования AES
         const decryptParamsAES = {
             name: 'AES-CBC',
@@ -71,8 +67,6 @@ export async function decryptText(
             symmetricKey,
             encryptedData
         );
-
-        console.log('dd', decryptedData)
 
         // Преобразуем в строку
         const decoder = new TextDecoder();

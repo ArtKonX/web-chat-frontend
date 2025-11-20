@@ -23,9 +23,9 @@ const SideBar = (
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div data-testid="sidebar" className={`w-2/7 pt-[27px] max-sm:w-full bg-white h-full px-5 ${!isMobile ? 'border-r-2' : ''} max-lg:min-w-full z-1`}>
+            <div data-testid="sidebar" className={`w-2/7 pt-[27px] dark:border-black max-sm:w-full bg-white dark:bg-[#212121] h-full px-5 ${!isMobile ? 'border-r-2' : ''} max-lg:min-w-full z-1`}>
                 <div className="w-full h-full relative">
-                    <h3 data-testid="search-users-title" className={`text-center text-lg font-bold max-sm:text-[20px] ${isMobile ? 'pt-[20px]' : ''}`}>
+                    <h3 data-testid="search-users-title" className={`text-center text-lg dark:text-[#E1E3E6] font-bold max-sm:text-[20px] ${isMobile ? 'pt-[20px]' : ''}`}>
                         {searchParams!.get('tab') == 'chats' ?
                             'Все ваши сообщения:' : findUsers.length > 0 ?
                                 `Всего найдено пользователей ${findUsers.length}:` :
@@ -50,7 +50,7 @@ const SideBar = (
                             </div>
                         </div>
                     ) : searchParams!.get('tab') === 'users' ? null : !isListInfoDialoguesLoading ? <span className="w-full flex justify-center mt-5 font-bold max-sm:text-[18px] max-sm:text-center">У вас нет сообщений(</span> : null}
-                    <div className="w-full absolute bottom-0 pb-1 pt-2 flex justify-around border-t-2 bg-white">
+                    <div className="w-full absolute bottom-0 pb-1 pt-2 dark:mb-2 dark:bg-[#E1E3E6] dark:rounded-xl dark:border-[#E1E3E6] flex justify-around border-t-2 bg-white">
                         <SideBarActionLink isActive={searchParams!.get('tab') === 'chats'} icon={messageIcon} alt='сообщения' href='/?tab=chats' />
                         <SideBarActionLink isDisable={isDisableFindUsers} isActive={searchParams!.get('tab') === 'users'} icon={usersIcon} alt='пользователи' href='/?tab=users&q=' />
                     </div>

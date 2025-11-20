@@ -142,7 +142,7 @@ const ChoosingCitiesOnMap = (
     }
 
     return (
-        <div ref={refWindowChooseMapCity} className="bg-white py-6 px-9 rounded-2xl
+        <div ref={refWindowChooseMapCity} className="bg-white dark:text-[#E1E3E6] dark:bg-[#212121] py-6 px-9 rounded-2xl
                                     max-w-[650px] max-lg:max-w-13/14 max-sm:max-w-9/10 w-full flex
                                     flex-col items-center justify-center relative max-h-[97%]">
             <div className="absolute flex right-0 top-0">

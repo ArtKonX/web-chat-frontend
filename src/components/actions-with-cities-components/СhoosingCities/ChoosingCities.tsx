@@ -62,7 +62,7 @@ const ChoosingCities = (
     }
 
     return (
-        <div ref={refWindowChooseCity} className="bg-white py-6 px-9 rounded-2xl
+        <div ref={refWindowChooseCity} className="bg-white dark:text-[#E1E3E6] dark:bg-[#212121] py-6 px-9 rounded-2xl
         max-w-3/7 max-lg:max-w-9/11 max-sm:max-w-9/10
         w-full relative">
             <div className="absolute right-0 top-0">
@@ -70,7 +70,7 @@ const ChoosingCities = (
             </div>
             <HeadingWithTitle text='Выберите город'>
                 <input onChange={onSearchCity} value={searchCity}
-                    className="min-w-3/5 outline-0 bg-gray-100/90 border-1 border-transparent
+                    className="min-w-3/5 outline-0 dark:text-[#E1E3E6] dark:bg-[#141414] bg-gray-100/90 border-1 border-transparent
                 pt-2 pb-2 px-3 rounded-lg transition-all duration-900"
                     type="text" placeholder={cityFromServer} />
                 <span className="border-t-2 border-gray-400 mt-4 mb-2"></span>

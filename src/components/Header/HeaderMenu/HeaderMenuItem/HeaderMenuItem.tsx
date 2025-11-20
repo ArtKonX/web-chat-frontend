@@ -21,9 +21,9 @@ const HeaderMenuItem = (
     }
 
     return (
-        <Link className={`font-bold text-[19px] ${isActive() ?
-            'text-amber-600' :
-            'text-black'} max-sm:text-[18px]`} href={href}>{text}</ Link>
+        <Link className={`font-bold hover:opacity-65 hover:transition-opacity duration-300 text-[19px] ${isActive() ?
+            'text-amber-600 dark:text-[#ebb318]' :
+            'text-black dark:text-[#E1E3E6]'} max-sm:text-[18px]`} href={href}>{text}</ Link>
     )
 }
 

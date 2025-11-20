@@ -193,9 +193,9 @@ const RegistrationPage = () => {
     }
 
     return (
-        <div className="w-full h-[calc(100%-26px)] flex items-center">
+        <div className="w-full h-[calc(100%-26px)] bg-[#F6F7F8] dark:bg-[#141414] flex items-center">
             <div className="my-2 w-full flex justify-center">
-                <div className="bg-white py-6 px-9 rounded-2xl
+                <div className="bg-white dark:bg-[#222222] py-6 px-9 rounded-2xl
                 max-w-2/5 w-full max-sm:max-w-full max-sm:mx-4">
                     <FormRegistrationOrLogin
                         onSubmit={onSubmit} onChange={onChange}

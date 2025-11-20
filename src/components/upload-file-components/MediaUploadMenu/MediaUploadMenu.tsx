@@ -31,7 +31,7 @@ const MediaUploadMenu = (
     }
 
     return (
-        <div data-testid="media-upload-menu" className={`absolute z-40 -top-35 left-9 bg-white shadow-md p-4 rounded-2xl mt-2 w-40 transition-all
+        <div data-testid="media-upload-menu" className={`absolute z-40 -top-35 dark:bg-[#141414] left-9 bg-white shadow-md p-4 rounded-2xl mt-2 w-40 transition-all
         duration-200 ease-out  ${isSelectFileFade ? 'opacity-100 scale-100 translate-y-0' :
                 'opacity-0 scale-95 -translate-y-2'}`}>
             <ul>

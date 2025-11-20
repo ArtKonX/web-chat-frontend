@@ -267,11 +267,9 @@ const WebSocketConnection = () => {
                             }
 
                             if (decMessage) {
-                                console.log(3, { ...newMessage, lastMessage: decMessage })
                                 await cacheDialogue({ ...newMessage, lastMessage: decMessage })
                                 setWsInfoDialogues({ ...newMessage, lastMessage: decMessage })
                             } else {
-                                console.log(4, { ...newMessage, lastMessage: null })
                                 await cacheDeleteDialogue(newMessage.userId)
                                 setWsInfoDialogues({ ...newMessage, lastMessage: null })
                             }

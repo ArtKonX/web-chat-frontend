@@ -10,7 +10,7 @@ const Input = (
         <input
             data-testid={`${error ? 'name-error' : 'input'}`}
             className={`outline-0 bg-gray-100/90 border-1
-            border-transparent pt-4 pb-1
+            border-transparent pt-4 pb-1 dark:text-[#E1E3E6] dark:bg-[#141414]
             px-3 rounded-lg ${isFocused && 'bg-white border-black!'}
             ${error && 'border-red-500!'} transition-all duration-900`}
             onChange={onChange} value={value}

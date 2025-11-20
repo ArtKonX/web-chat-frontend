@@ -53,7 +53,6 @@ const MessageList = (
     // функция для автоматической плавной прокрутки при получении нового сообщения
     // либо если сообщения не влезают в область видимости
     const scrollToBottom = () => {
-        console.log(isScroll)
         if (messagesListRef.current && typeof messagesListRef.current.scroll === 'function') {
             messagesListRef.current.scroll({
                 top: messagesListRef.current.scrollHeight,

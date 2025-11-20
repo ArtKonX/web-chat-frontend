@@ -66,6 +66,7 @@ describe('FormTurnOff2FA', () => {
     it('проверка рендера', () => {
         getProviderWithStore(<AuthGuard>
             <FormTurnOff2FA
+                setIsShowWindowInfo={jest.fn()}
                 userId={mockUserId}
                 closeShowTornOff2FAForm={mockCloseShowTornOff2FAForm}
                 authDataRefetch={mockAuthDataRefetch}
@@ -80,6 +81,7 @@ describe('FormTurnOff2FA', () => {
     it('изменение значения инпута "Код"', async () => {
         getProviderWithStore(<AuthGuard>
             <FormTurnOff2FA
+                setIsShowWindowInfo={jest.fn()}
                 userId={mockUserId}
                 closeShowTornOff2FAForm={mockCloseShowTornOff2FAForm}
                 authDataRefetch={mockAuthDataRefetch}
@@ -100,6 +102,7 @@ describe('FormTurnOff2FA', () => {
 
         getProviderWithStore(<AuthGuard>
             <FormTurnOff2FA
+                setIsShowWindowInfo={jest.fn()}
                 userId={mockUserId}
                 closeShowTornOff2FAForm={mockCloseShowTornOff2FAForm}
                 authDataRefetch={mockAuthDataRefetch}
@@ -130,9 +133,7 @@ describe('FormTurnOff2FA', () => {
                 error: {
                     data: {
                         attempt: 2,
-                        data: {
-                            succesPinCode: 'error',
-                        },
+                        status: 'error'
                     },
                 },
             },
@@ -140,6 +141,7 @@ describe('FormTurnOff2FA', () => {
 
         getProviderWithStore(<AuthGuard>
             <FormTurnOff2FA
+                setIsShowWindowInfo={jest.fn()}
                 userId={mockUserId}
                 closeShowTornOff2FAForm={mockCloseShowTornOff2FAForm}
                 authDataRefetch={mockAuthDataRefetch}
@@ -161,6 +163,7 @@ describe('FormTurnOff2FA', () => {
 
         getProviderWithStore(<AuthGuard>
             <FormTurnOff2FA
+                setIsShowWindowInfo={jest.fn()}
                 userId={mockUserId}
                 closeShowTornOff2FAForm={mockCloseShowTornOff2FAForm}
                 authDataRefetch={mockAuthDataRefetch}

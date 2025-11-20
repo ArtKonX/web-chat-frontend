@@ -1,7 +1,8 @@
 export interface FormTurnOff2FAProps {
     userId?: string,
     closeShowTornOff2FAForm: () => void,
-    authDataRefetch: () => void
+    authDataRefetch: () => void,
+    setIsShowWindowInfo: (isShowWindowInfo: boolean) => void
 }
 
 export interface FA2Data {
@@ -9,12 +10,13 @@ export interface FA2Data {
     data: {
         data: {
             attempt: number,
-            pinCode: number
+            pinCode: number,
         },
         status: string
     },
     error: {
         data: {
+            status: string,
             attempt: number,
             data: {
                 succesPinCode: string

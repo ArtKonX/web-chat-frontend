@@ -13,6 +13,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToken } from '@/redux/slices/tokenSlice';
 import { selectTokenState } from '@/selectors/selectors';
+import { toggleIsCheckPinCode } from '@/redux/slices/isCheckPinCodeSlice';
 
 interface Errors {
     email: boolean;
@@ -71,6 +72,7 @@ const LoginPage = () => {
             location.reload()
         } else if (errorLogin?.data?.status === 'not-pin-code') {
             dispatch(addDataAuth({ type: 'login', email: formState.email, password: formState.password }))
+            dispatch(toggleIsCheckPinCode())
             router.push('/check-pin?action=login')
         }
     }, [dataLogin, authData, errorLogin])
@@ -146,10 +148,10 @@ const LoginPage = () => {
 
 
     return (
-        <div className="w-full h-[calc(100%-26px)] flex items-center">
+        <div className="w-full h-[calc(100%-26px)] bg-[#F6F7F8] dark:bg-[#141414] flex items-center">
             {isDataLoading && <Loader isFade={true} />}
             <div className="my-2 w-full flex justify-center">
-                <div className="bg-white py-6 px-9 max-sm:mx-4 rounded-2xl
+                <div className="bg-white dark:bg-[#222222] py-6 px-9 max-sm:mx-4 rounded-2xl
                 max-w-2/5 w-full max-sm:max-w-full">
                     <FormRegistrationOrLogin
                         onSubmit={onSubmit} onChange={onChange}

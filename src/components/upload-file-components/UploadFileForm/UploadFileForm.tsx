@@ -112,10 +112,10 @@ const UploadFileForm = (
 
     return (
         <>
-            <form data-testid="upload-file-form" onSubmit={onUploadFile} className="bg-white py-3 px-5 rounded-2xl
+            <form data-testid="upload-file-form" onSubmit={onUploadFile} className="bg-white dark:bg-[#212121] py-3 px-5 rounded-2xl
                                     max-w-2/6 max-lg:max-w-9/11 max-sm::max-w-10/11 w-full flex flex-col items-center justify-center">
                 <div className="w-full flex justify-between items-center mb-4 z-200">
-                    <h3 className='overflow-hidden whitespace-nowrap text-ellipsis'>
+                    <h3 className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-[#E1E3E6]!'>
                         {typeFile.includes('image') ? 'Изображение' :
                             typeFile.includes('video') ? 'Видео' : typeFile.includes('audio') ?
                                 'Аудио' : 'Не распознан формат'}: {file?.name}
@@ -123,13 +123,13 @@ const UploadFileForm = (
                     <CloseBtn onClose={closeFileForm} />
                 </div>
                 {renderViewFile(typeFile, fileSrc)}
-                <div className="w-full border-t-2 relative pt-2">
-                    <input className={`w-[calc(100%-22px)] focus:outline-0 text-lg`}
+                <div className="w-full border-t-2 border-[#E1E3E6] relative pt-2">
+                    <input className={`w-[calc(100%-14px)] dark:text-[#E1E3E6] focus:outline-0 text-lg`}
                         type="text" placeholder="Добавить описание..."
                         onChange={onChangeMessFile} value={String(messageToFile)} />
-                    <button type="submit" data-testid="mock-upload-button" className="hover:text-amber-400/50 transition-all
+                    <button type="submit" data-testid="mock-upload-button" className="hover:text-amber-400/50 transition-all dark:text-[#E1E3E6]
                 duration-400 text-2xl cursor-pointer">
-                        ➤
+                        {'>'}
                     </button>
                 </div>
             </form >

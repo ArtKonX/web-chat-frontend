@@ -17,7 +17,8 @@ import { useSelector } from '@/hooks/useTypedSelector';
 import { selectTokenState } from '@/selectors/selectors';
 import { clearCachedDialogues } from '@/cashe/dialoguesCache';
 import { clearCachedMessages } from '@/cashe/messageCache';
-import { clearCachedUser } from '@/cashe/userCache';
+import { clearCachedUser, getCachedUser } from '@/cashe/userCache';
+import WarningWindow from '@/components/WarningWindow/WarningWindow';
 
 interface ProfileDataState {
     name?: string,
@@ -51,6 +52,8 @@ const ProfilePage = () => {
     const [isShow2FAFade, setIsShow2FAFade] = useState(false);
     const [isShowTurnOff2FA, setIsShowTurnOff2FA] = useState(false);
     const [isShowTurnOff2FAFade, setIsTurnOff2FAFade] = useState(false);
+
+    const [isShowWindowInfo, setIsShowWindowInfo] = useState(false)
 
     const dispatch = useDispatch();
 
@@ -113,6 +116,16 @@ const ProfilePage = () => {
         }
     }, [authData])
 
+    useEffect(() => {
+        (async () => {
+            const userData = await getCachedUser();
+
+            if (!isAuthDataLoading && !userData.length && !authData?.user) {
+                router.push('/?tab=users')
+            }
+        })()
+    }, [authData, isAuthDataLoading, logoutData])
+
     const onActionTurnOn2FA = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -144,9 +157,10 @@ const ProfilePage = () => {
     if (isAuthDataLoading || errorAuthData) return <Loader isFade={true} />
 
     return (
-        <div className="w-full min-h-[calc(100vh-130px)] flex items-center justify-center">
-            <div className="my-2 w-full flex-1 items-center flex flex-col">
-                <div className="bg-white py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-9/10 w-full flex flex-col items-center">
+        <div className="w-full min-h-[calc(100vh-442px)] pb-[40px] pt-[15px] flex items-center justify-center">
+            {isShowWindowInfo ? (<WarningWindow title='Доступ к Вашему аккаунту ограничен!' text='К сожалению, все возможные попытки закончились! Ваш аккаунт заблокирован на 2 недели из-за подозрения!' timeCount={7} />) : null}
+            {(!isShowTurnOff2FA && !isShow2FA) && !isShowWindowInfo && <div className="my-2 w-full flex-1 items-center flex flex-col">
+                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-9/10 w-full flex flex-col items-center">
                     <div className="mb-5 flex justify-center">
                         <UserIcon nameFirstSymbol={profileData?.name && profileData?.name[0]} colorBackgroundIcon={profileData?.color} />
                     </div>
@@ -181,16 +195,19 @@ const ProfilePage = () => {
                         <Btn text='Выйти' type='button' onAction={onLogout} />
                     </div>
                 </div>
-            </div>
-            {isShowTurnOff2FA && (
-                <div className={`flex justify-center items-center fixed top-0 left-0 w-full h-full
-                            bg-black/50 transition-all duration-200 ease-out
+            </div>}
+            {isShowTurnOff2FA && !isShowWindowInfo && (
+                <div className={`flex z-100 justify-center items-center fixed top-0 left-0 w-full h-full
+                            bg-black/50 transition-all duration-200 ease-out pt-[65px]
                             ${isShowTurnOff2FAFade ? 'opacity-100 scale-100 translate-y-0'
                         : 'opacity-0 scale-95 -translate-y-2'}`}
                 >
-                    <FormTurnOff2FA userId={authData?.user?.id}
-                        closeShowTornOff2FAForm={closeShowTurnOff2FAForm}
-                        authDataRefetch={authDataRefetch} />
+                    <div className='min-h-[calc(100%-442px)] w-full pb-[40px] pt-[15px] flex justify-center'>
+                        <FormTurnOff2FA userId={authData?.user?.id}
+                            setIsShowWindowInfo={setIsShowWindowInfo}
+                            closeShowTornOff2FAForm={closeShowTurnOff2FAForm}
+                            authDataRefetch={authDataRefetch} />
+                    </div>
                 </div>
             )}
             {isShow2FA &&

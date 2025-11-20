@@ -137,3 +137,7 @@ body::after {
     margin-top: calc(1.3rem + env(safe-area-inset-bottom));
   }
 }
+
+.form-turn-off-2fa {
+  box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+}

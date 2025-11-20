@@ -8,7 +8,7 @@ const HeadingWithTitle = (
 
     return (
         <div className="flex flex-col relative h-full">
-            <h1 className="text-2xl font-bold text-center mb-6 max-sm:text-[22px]">
+            <h1 className="text-2xl dark:text-[#E1E3E6] font-bold text-center mb-6 max-sm:text-[22px]">
                 {text}
             </h1>
             {children}
