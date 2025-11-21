@@ -42,16 +42,18 @@ const WebSocketConnection = () => {
     const [privatKey, setPrivatKey] = useState<PrivatKey | null>(null)
 
     useEffect(() => {
-        const getPrivatKey = async () => {
-            const privatKeyCurrent = await getPrivateKeyFromIndexedDB();
+        const getPrivatKey = async (id: string) => {
+            const privatKeyCurrent = await getPrivateKeyFromIndexedDB(id);
 
             if (privatKeyCurrent) {
                 setPrivatKey(privatKeyCurrent)
             }
         }
 
-        getPrivatKey();
-    }, [])
+        if (dataAuth?.user.id) {
+            getPrivatKey(dataAuth?.user.id);
+        }
+    }, [dataAuth?.user.id])
 
     useEffect(() => {
         userRef.current = searchParams?.get('user')

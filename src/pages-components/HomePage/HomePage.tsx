@@ -386,8 +386,8 @@ const HomePage = () => {
     }, [url, setCurrentOffSet, currentOffSet])
 
     useEffect(() => {
-        const getPrivatKey = async () => {
-            const privatKeyCurrent = await getPrivateKeyFromIndexedDB();
+        const getPrivatKey = async (id: string) => {
+            const privatKeyCurrent = await getPrivateKeyFromIndexedDB(id);
             if (privatKeyCurrent) {
                 setPrivatKey(privatKeyCurrent)
             } else {
@@ -395,8 +395,10 @@ const HomePage = () => {
             }
         }
 
-        getPrivatKey();
-    }, [])
+        if (authState?.user.id) {
+            getPrivatKey(authState?.user.id);
+        }
+    }, [authState?.user.id])
 
     useEffect(() => {
         if (!isLoadingMessages && messagesData?.messages?.length && privatKey) {
@@ -629,18 +631,18 @@ const HomePage = () => {
     }, [authState?.user,])
 
     useEffect(() => {
-        const fetchKeys = async () => {
+        const fetchKeys = async (id: string) => {
             const { publicKey, privateKey } = await generateKeyPair();
 
-            savePrivateKeyToIndexedDB(privateKey);
+            savePrivateKeyToIndexedDB(privateKey, id);
             setPublicKey(publicKey)
         }
 
-        if (isSubmitUpdatePublicKey) {
-            fetchKeys()
+        if (isSubmitUpdatePublicKey && authState?.user.id) {
+            fetchKeys(authState?.user.id)
         }
 
-    }, [isSubmitUpdatePublicKey])
+    }, [isSubmitUpdatePublicKey, authState?.user.id])
 
     useEffect(() => {
         if (publicKey && isSubmitUpdatePublicKey && authState?.user.id) {

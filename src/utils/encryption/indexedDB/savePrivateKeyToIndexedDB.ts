@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 
-export async function savePrivateKeyToIndexedDB(encryptedKeyData: CryptoKey) {
+export async function savePrivateKeyToIndexedDB(encryptedKeyData: CryptoKey, userId: string) {
     try {
         const db = await openDB('keyStore', 2, {
             upgrade(db) {
@@ -20,7 +20,7 @@ export async function savePrivateKeyToIndexedDB(encryptedKeyData: CryptoKey) {
             // сохраняем приватный ключ
             await db.transaction('keys', 'readwrite')
                 .objectStore('keys')
-                .put({ id: 'privateKey', data: encryptedKeyData, date: new Date() });
+                .put({ id: userId, data: encryptedKeyData, date: new Date() });
         } else {
             throw new Error('Хранилище keys не сущаствует');
         }

@@ -1,7 +1,7 @@
 import { PrivatKey } from '@/interfaces/encryption';
 import { openDB } from 'idb';
 
-export async function getPrivateKeyFromIndexedDB(): Promise<PrivatKey | null> {
+export async function getPrivateKeyFromIndexedDB(id: string): Promise<PrivatKey | null> {
     try {
         // Открываем базу данных
         const db = await openDB('keyStore');
@@ -16,7 +16,7 @@ export async function getPrivateKeyFromIndexedDB(): Promise<PrivatKey | null> {
             const store = transaction.objectStore('keys');
 
             // отдаем приватный ключ из хранилища
-            return await store.get('privateKey');
+            return await store.get(id);
         } else {
             console.error('Keys не существует(');
             return null;

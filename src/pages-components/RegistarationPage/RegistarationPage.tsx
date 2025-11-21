@@ -85,7 +85,7 @@ const RegistrationPage = () => {
         const fetchKeys = async () => {
             const { publicKey, privateKey } = await generateKeyPair();
 
-            savePrivateKeyToIndexedDB(privateKey);
+            savePrivateKeyToIndexedDB(privateKey, id);
             setPublicKey(publicKey)
         }
 

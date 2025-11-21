@@ -78,16 +78,18 @@ const Layout = (
     }, [authData?.user,])
 
     useEffect(() => {
-        const getPrivatKey = async () => {
-            const privatKeyCurrent = await getPrivateKeyFromIndexedDB();
+        const getPrivatKey = async (id: string) => {
+            const privatKeyCurrent = await getPrivateKeyFromIndexedDB(id);
 
             if (privatKeyCurrent) {
                 setPrivatKey(privatKeyCurrent)
             }
         }
 
-        getPrivatKey();
-    }, [])
+        if (authData?.user.id) {
+            getPrivatKey(authData?.user.id);
+        }
+    }, [authData?.user.id])
 
     useEffect(() => {
 
@@ -268,7 +270,7 @@ const Layout = (
                     )}
                     {children}
                 </div>
-                {(!authData?.user?.id && !userInfo?.id && ['/', '/about-us', '/login', '/registration', '/check-pin'].includes(String(pathname)) || (authData?.user?.id && userInfo?.id && !['/'].includes(String(pathname)))) && (
+                {(!authData?.user?.id && !userInfo?.id && ['/', '/about-us', '/login', '/registration', '/check-pin'].includes(String(pathname)) || (['/login', '/registration', '/check-pin'].includes(String(pathname))) || (authData?.user?.id && userInfo?.id && !['/'].includes(String(pathname)))) && (
                     <div className="relative bottom-[41px]">
                         <Footer />
                     </div>
@@ -277,5 +279,7 @@ const Layout = (
         </Suspense>
     )
 }
+
+// При выходе из аккаунта у нас ключ остается старый и не стирается
 
 export default Layout
