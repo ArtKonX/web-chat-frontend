@@ -20,6 +20,7 @@ import { Coordinates } from '@/interfaces/position';
 import fetchCityFromCoors from '@/utils/fetchCityFromCoors';
 import { useDispatch } from 'react-redux';
 import { addToken } from '@/redux/slices/tokenSlice';
+import { useTestWorkServerQuery } from '@/redux/services/testWorkServerApi';
 
 interface Errors {
     name: boolean;
@@ -30,9 +31,10 @@ interface Errors {
 
 const RegistrationPage = () => {
 
-    const id = uuidv4();
     const router = useRouter();
     const [register, { data: dataRegister, isLoading: isLoadingRegister, error: registerError }] = useRegistarationMutation();
+
+    const [id, setId] = useState<string>()
 
     const tokenState = useSelector(selectTokenState);
 
@@ -60,6 +62,31 @@ const RegistrationPage = () => {
     const [dataPosition, setDataPosition] = useState({ id: '', city: '', token: '' })
     const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
 
+    const { data: dataTestServer, isLoading: isLoadingTestServer, error: errorTestServer, refetch: refetchTestServer } = useTestWorkServerQuery({})
+    const [isServerOpen, setIsServerOpen] = useState(false)
+
+    useEffect(() => {
+
+        let intervalId;
+
+        if (dataTestServer && !isLoadingTestServer && intervalId) {
+            clearInterval(intervalId)
+            setIsServerOpen(true)
+        } else {
+            setIsServerOpen(false)
+            intervalId = setInterval(() => {
+                refetchTestServer()
+            }, 3000)
+        }
+
+        return () => clearInterval(intervalId)
+    }, [dataTestServer, isLoadingTestServer])
+
+    useEffect(() => {
+        const userId = uuidv4();
+        setId(userId)
+    }, [])
+
     useEffect(() => {
         // Отправляем пользователя на главную страницу если успешная
         // регистрация или он уже входил
@@ -82,18 +109,18 @@ const RegistrationPage = () => {
     }, [isLoadingUpdateCity, updateCityData])
 
     useEffect(() => {
-        const fetchKeys = async () => {
+        const fetchKeys = async (id: string) => {
             const { publicKey, privateKey } = await generateKeyPair();
 
             savePrivateKeyToIndexedDB(privateKey, id);
             setPublicKey(publicKey)
         }
 
-        if (isSubmit) {
-            fetchKeys()
+        if (isSubmit && id) {
+            fetchKeys(id)
         }
 
-    }, [isSubmit])
+    }, [isSubmit, id])
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -139,10 +166,10 @@ const RegistrationPage = () => {
     };
 
     useEffect(() => {
-        if (publicKey && isSubmit) {
+        if (publicKey && isSubmit && id) {
             if (!Object.values(errors).some(Boolean)) {
                 register({
-                    id: id,
+                    id,
                     name: formState.name,
                     email: formState.email,
                     password: formState.password,
@@ -154,7 +181,7 @@ const RegistrationPage = () => {
                 setIsSubmit(false)
             }
         }
-    }, [publicKey, errors])
+    }, [publicKey, errors, id])
 
     useEffect(() => {
         getGeoCoors().then(geoCoors => {
@@ -198,6 +225,7 @@ const RegistrationPage = () => {
                 <div className="bg-white dark:bg-[#222222] py-6 px-9 rounded-2xl
                 max-w-2/5 w-full max-sm:max-w-full max-sm:mx-4">
                     <FormRegistrationOrLogin
+                        disable={isServerOpen || Boolean(errorTestServer)}
                         onSubmit={onSubmit} onChange={onChange}
                         typeForm='reg' formState={formState}
                         errors={errors}

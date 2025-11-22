@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import * as authApi from '@/redux/services/authApi';
+import * as testServerApi from '@/redux/services/testWorkServerApi';
 import LoginPage from '@/pages-components/LoginPage/LoginPage';
 import * as useSelector from '@/hooks/useTypedSelector'
 import * as selectors from '@/selectors/selectors'
@@ -39,6 +41,26 @@ describe('LoginPage', () => {
         mockResponses.getMessages = { success: true };
         jest.resetModules();
         document.body.innerHTML = '';
+
+        const mockTestServer = jest.fn().mockResolvedValue({
+            error: {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                }
+            }
+        });
+
+        jest.spyOn(testServerApi as unknown as any, 'useTestWorkServerQuery').mockReturnValue([
+            mockTestServer,
+            {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                },
+                isLoading: false
+            }
+        ]);
     });
 
     beforeEach(() => {
@@ -78,6 +100,26 @@ describe('LoginPage', () => {
             isLoading: false,
             refetch: jest.fn(),
         });
+
+        const mockTestServer = jest.fn().mockResolvedValue({
+            error: {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                }
+            }
+        });
+
+        jest.spyOn(testServerApi as unknown as any, 'useTestWorkServerQuery').mockReturnValue([
+            mockTestServer,
+            {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                },
+                isLoading: false
+            }
+        ]);
     });
 
     test('перенаправляет на главную, если пользователь аутентифицирован', () => {
@@ -87,7 +129,7 @@ describe('LoginPage', () => {
             <LoginPage />
         );
 
-        expect(mockRouter.push).toHaveBeenCalledWith('/');
+        expect(mockRouter.push).toHaveBeenCalledWith('/?tab=users');
     });
 
     test('обрабатывает изменение формы', () => {

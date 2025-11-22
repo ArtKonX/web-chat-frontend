@@ -4,6 +4,7 @@ import authApi from '../services/authApi';
 import usersApi from '../services/usersApi';
 import messagesApi from '../services/messagesApi';
 import citiesApi from '../services/citiesApi';
+import testWorkServerApi from '../services/testWorkServerApi';
 import { persistbackgroundReducer, persistSideBarReducer, persistTokenReducer } from '../persist/persistSideBarReducer';
 import authSlice from '../slices/authSlice';
 import changeMessageSlice from '../slices/changeMessageSlice';
@@ -19,6 +20,7 @@ export const store = configureStore({
         [usersApi.reducerPath]: usersApi.reducer,
         [messagesApi.reducerPath]: messagesApi.reducer,
         [citiesApi.reducerPath]: citiesApi.reducer,
+        [testWorkServerApi.reducerPath]: testWorkServerApi.reducer,
         sideBarState: persistSideBarReducer,
         backgroundState: persistbackgroundReducer,
         tokenState: persistTokenReducer,
@@ -39,7 +41,8 @@ export const store = configureStore({
                 authApi.middleware,
                 usersApi.middleware,
                 messagesApi.middleware,
-                citiesApi.middleware
+                citiesApi.middleware,
+                testWorkServerApi.middleware
             )
 });
 

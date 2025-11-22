@@ -8,7 +8,7 @@ import Link from "next/link"
 
 // Компонент, который может представлять, как регистрацию так и вход в систему
 const FormRegistrationOrLogin = (
-    { onSubmit, onChange, typeForm, formState, errors }:
+    { onSubmit, onChange, typeForm, formState, errors, disable }:
         FormRegistrationOrLoginProps
 ) => {
 
@@ -41,7 +41,7 @@ const FormRegistrationOrLogin = (
                         error={errors['checkPassword']!}
                     />
                     <div className="text-end">
-                        <Btn type="submit" text='Зарегистрироваться' disable={Object.values(errors).some(error => error)} />
+                        <Btn type="submit" text='Зарегистрироваться' disable={Object.values(errors).some(error => error) || disable} />
                     </div>
                 </HeadingWithTitle>
             </form>
@@ -64,7 +64,7 @@ const FormRegistrationOrLogin = (
                         error={errors['password']}
                     />
                     <div className="text-end">
-                        <Btn type="submit" text='Войти' disable={Object.values(errors).some(error => error)} />
+                        <Btn type="submit" text='Войти' disable={Object.values(errors).some(error => error) || disable} />
                     </div>
                 </HeadingWithTitle>
             </form>

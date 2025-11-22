@@ -5,11 +5,32 @@ import LinkNavigate from "@/components/ui/LinkNavigate/LinkNavigate";
 import { useEffect, useState } from "react"
 
 import dataInfoChat from '../../data/data-info-char.json';
+import { useTestWorkServerQuery } from '@/redux/services/testWorkServerApi';
 
 const HomeWelcomePage = () => {
 
     const [titleTextCount, setTitleTextCount] = useState(0);
     const [isFadeTitle, setIsFadeTitle] = useState(0);
+
+    const { data: dataTestServer, isLoading: isLoadingTestServer, error: errorTestServer, refetch: refetchTestServer } = useTestWorkServerQuery({})
+    const [isServerOpen, setIsServerOpen] = useState(false)
+
+    useEffect(() => {
+
+        let intervalId;
+
+        if (dataTestServer && !isLoadingTestServer && intervalId) {
+            clearInterval(intervalId)
+            setIsServerOpen(true)
+        } else {
+            setIsServerOpen(false)
+            intervalId = setInterval(() => {
+                refetchTestServer()
+            }, 3000)
+        }
+
+        return () => clearInterval(intervalId)
+    }, [dataTestServer, isLoadingTestServer])
 
     useEffect(() => {
         setIsFadeTitle(100)
@@ -52,7 +73,7 @@ const HomeWelcomePage = () => {
                 </div>
                 <div className="mt-14 flex items-center justify-center max-sm:flex-col">
                     <p className="font-bold text-xl mt-3 mr-3 max-sm:mr-0 dark:text-[#E1E3E6]">Не трать время впустую,</p>
-                    <LinkNavigate path="/registration" text='Зарегистрируйся!' />
+                    <LinkNavigate disable={isServerOpen || Boolean(errorTestServer)} path="/registration" text='Зарегистрируйся!' />
                 </div>
             </div>
         </div>

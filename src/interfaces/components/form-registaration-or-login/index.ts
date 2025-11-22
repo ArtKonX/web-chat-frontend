@@ -19,5 +19,6 @@ export interface FormRegistrationOrLoginProps {
     onChange: (e: ChangeEvent<HTMLInputElement>) => void,
     typeForm: 'reg' | 'log',
     formState: FormState,
-    errors: ErrorsState
+    errors: ErrorsState,
+    disable?: boolean
 }

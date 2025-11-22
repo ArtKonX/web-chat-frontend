@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { addToken } from '@/redux/slices/tokenSlice';
 import { selectTokenState } from '@/selectors/selectors';
 import { toggleIsCheckPinCode } from '@/redux/slices/isCheckPinCodeSlice';
+import { useTestWorkServerQuery } from '@/redux/services/testWorkServerApi';
 
 interface Errors {
     email: boolean;
@@ -50,6 +51,26 @@ const LoginPage = () => {
     const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
     const dispatch = useDispatch();
 
+    const { data: dataTestServer, isLoading: isLoadingTestServer, error: errorTestServer, refetch: refetchTestServer } = useTestWorkServerQuery({})
+    const [isServerOpen, setIsServerOpen] = useState(false)
+
+    useEffect(() => {
+
+        let intervalId;
+
+        if (dataTestServer && !isLoadingTestServer && intervalId) {
+            clearInterval(intervalId)
+            setIsServerOpen(true)
+        } else {
+            setIsServerOpen(false)
+            intervalId = setInterval(() => {
+                refetchTestServer()
+            }, 3000)
+        }
+
+        return () => clearInterval(intervalId)
+    }, [dataTestServer, isLoadingTestServer])
+
     const [isSubmit, setIsSubmit] = useState(false);
 
     const [formState, setFormState] = useState({
@@ -61,7 +82,7 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (authData?.user?.id) {
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [authData])
 
@@ -154,6 +175,7 @@ const LoginPage = () => {
                 <div className="bg-white dark:bg-[#222222] py-6 px-9 max-sm:mx-4 rounded-2xl
                 max-w-2/5 w-full max-sm:max-w-full">
                     <FormRegistrationOrLogin
+                        disable={isServerOpen || Boolean(errorTestServer)}
                         onSubmit={onSubmit} onChange={onChange}
                         typeForm='log' formState={formState}
                         errors={errors}

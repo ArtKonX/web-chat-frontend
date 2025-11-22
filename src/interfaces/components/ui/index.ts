@@ -40,7 +40,8 @@ export interface InputWithLabelAndInfoProps extends InputProps {
 
 export interface LinkNavigateProps {
     path: string,
-    text: string
+    text: string,
+    disable?: boolean
 }
 
 export interface UserIconProps {

@@ -49,7 +49,7 @@ const WebSocketConnection = () => {
                 setPrivatKey(privatKeyCurrent)
             }
         }
-
+// ошибка при регистрации окошко о востановлении приватного ключа и при входе перенаправляет на /
         if (dataAuth?.user.id) {
             getPrivatKey(dataAuth?.user.id);
         }

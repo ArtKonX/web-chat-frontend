@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import RegistrationPage from '@/pages-components/RegistarationPage/RegistarationPage';
@@ -6,6 +7,7 @@ import * as authApi from '@/redux/services/authApi';
 import * as selectors from '@/selectors/selectors';
 import * as useSelector from '@/hooks/useTypedSelector';
 import * as NavigateNext from 'next/navigation';
+import * as testServerApi from '@/redux/services/testWorkServerApi';
 import * as validateEmail from '@/utils/validateEmail';
 import * as generateKeyPair from '@/utils/encryption/generateKeyPair';
 import * as savePrivateKeyToIndexedDB from '@/utils/encryption/indexedDB/savePrivateKeyToIndexedDB';
@@ -94,6 +96,26 @@ describe('RegistrationPage', () => {
 
         response.registration = { success: true };
         response.updateCity = { success: true };
+
+        const mockTestServer = jest.fn().mockResolvedValue({
+            error: {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                }
+            }
+        });
+
+        jest.spyOn(testServerApi as unknown as any, 'useTestWorkServerQuery').mockReturnValue([
+            mockTestServer,
+            {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                },
+                isLoading: false
+            }
+        ]);
     });
 
     beforeEach(() => {
@@ -169,6 +191,26 @@ describe('RegistrationPage', () => {
 
         response.registration = { success: true };
         response.updateCity = { success: true };
+
+        const mockTestServer = jest.fn().mockResolvedValue({
+            error: {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                }
+            }
+        });
+
+        jest.spyOn(testServerApi as unknown as any, 'useTestWorkServerQuery').mockReturnValue([
+            mockTestServer,
+            {
+                data: {
+                    status: 'ok',
+                    message: 'Успешное соединение с сервером'
+                },
+                isLoading: false
+            }
+        ]);
     });
 
     test('корректно рендерит страницу регистрации', () => {
