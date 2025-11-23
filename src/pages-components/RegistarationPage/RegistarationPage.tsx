@@ -38,7 +38,7 @@ const RegistrationPage = () => {
 
     const tokenState = useSelector(selectTokenState);
 
-    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData, isLoading: isLoadingAuth } = useCheckAuthQuery({ token: tokenState.token });
 
     const [successRegister, setSuccessRegister] = useState(false);
 
@@ -64,6 +64,12 @@ const RegistrationPage = () => {
 
     const { data: dataTestServer, isLoading: isLoadingTestServer, error: errorTestServer, refetch: refetchTestServer } = useTestWorkServerQuery({})
     const [isServerOpen, setIsServerOpen] = useState(false)
+
+    useEffect(() => {
+        if (!isLoadingAuth && authData?.user.city) {
+            router.push('/?tab=users')
+        }
+    }, [authData?.user.city, isLoadingAuth])
 
     useEffect(() => {
 
@@ -104,7 +110,7 @@ const RegistrationPage = () => {
 
     useEffect(() => {
         if (!isLoadingUpdateCity && updateCityData?.status === 'ok') {
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [isLoadingUpdateCity, updateCityData])
 

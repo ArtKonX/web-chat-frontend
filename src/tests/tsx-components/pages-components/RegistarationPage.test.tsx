@@ -302,7 +302,7 @@ describe('RegistrationPage', () => {
                 expect(mockGenerateKeyPair).toHaveBeenCalled();
                 expect(mockSavePrivateKeyToIndexedDB).toHaveBeenCalled();
                 expect(dispatchMock).toHaveBeenCalledWith({ type: 'tokenState/addToken', payload: { token: JSON.stringify('new-token') } });
-                expect(mockPush).toHaveBeenCalledWith('/');
+                expect(mockPush).toHaveBeenCalledWith('/?tab=users');
             })
         });
     });
