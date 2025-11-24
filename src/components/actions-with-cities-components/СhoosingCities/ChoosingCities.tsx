@@ -53,6 +53,8 @@ const ChoosingCities = (
     const onClose = () => {
         if (searchParams && newParams.current) {
 
+            setSearchCity('');
+
             newParams.current.delete('showSelectedCities');
 
             const newUrl = `${url.pathname}?${newParams.current.toString()}`;

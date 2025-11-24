@@ -84,9 +84,9 @@ const Loader = (
         h-full bg-black/60 transition-all duration-200 ease-out
         ${isFade ? 'opacity-100 scale-100 translate-y-0 flex-col' :
                 'opacity-0 scale-95 -translate-y-2'}`}>
-            <div className="z-70 flex flex-col bg-amber-400/50 dark:text-black dark:border-black dark:bg-[#ebb318] max-w-25 h-25 w-25
+            <div className="z-70 flex flex-col bg-amber-400/80 dark:text-black dark:border-black dark:bg-[#ebb318] max-w-25 h-25 w-25
         rounded-b-full rounded-t-xl items-center justify-center
-        border-4 cursor-pointer animate-pulse relative">
+        border-4 cursor-pointer relative">
                 <span className="font-bold text-4xl z-10 absolute top-0 mt-2">
                     K
                 </span>
