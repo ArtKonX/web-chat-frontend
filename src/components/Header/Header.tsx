@@ -157,7 +157,7 @@ const Header = (
                         </div>
                     </div>
                 )}
-                {userName && (<span className={`text-[18px] font-bold ${!isOnline && 'text-red-600/90'} ${isMobile ? 'absolute w-full flex justify-center -bottom-[28px] left-0 bg-amber-100' : ''}`}>{!isOnline ? 'Нет соединения с интернетом(' : userName}</span>)}
+                {userName && (<span className={`text-[18px] font-bold ${!isOnline && 'text-red-600/90'} ${isOnline && userName ? 'dark:text-black' : ''} ${isMobile ? 'absolute w-full flex justify-center -bottom-[28px] left-0 bg-amber-100' : ''}`}>{!isOnline ? 'Нет соединения с интернетом(' : userName}</span>)}
                 {((!isWelcomePage && !isDemoHeader)) && (
                     <div className="flex items-center mr-19 max-sm:mr-8 z-50">
                         <HeaderUserLinks isDisable={!isOnline} city={dataUser.city || userInfo!.city} colorBackgroundIcon={dataUser.colorBackgroundIcon} userName={dataUser.userName} />

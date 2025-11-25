@@ -100,7 +100,7 @@ const Loader = (
                         duration-500`}>
                         🗡️
                     </span> */}
-                    <span className="w-full flex justify-center relative -bottom-4 font-bold text-5xl">
+                    <span className="w-full flex justify-center relative -bottom-4 font-bold text-4xl">
                         ⚔️
                     </span>
                 </div>
