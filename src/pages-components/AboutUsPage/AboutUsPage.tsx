@@ -1,12 +1,16 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import HeaderLogo from "@/components/Header/HeaderLogo/HeaderLogo"
 
 import authorImg from '../../../public/images/img-author.jpg';
 import Link from "next/link";
 import { useMediaPredicate } from 'react-media-hook';
+import { useRouter } from 'next/navigation';
+import { useCheckAuthQuery } from '@/redux/services/authApi';
+import { selectTokenState } from '@/selectors/selectors';
+import { useSelector } from '@/hooks/useTypedSelector';
 
 const features = [
     {
@@ -42,6 +46,18 @@ const features = [
 const AboutUsPage = () => {
 
     const isMobile = useMediaPredicate('(max-width: 1050px)');
+
+    const tokenState = useSelector(selectTokenState);
+
+    const { data: authData, isLoading: isLoadingAuth } = useCheckAuthQuery({ token: tokenState.token });
+
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isLoadingAuth && authData?.user?.id) {
+            router.push('/?tab=users')
+        }
+    }, [authData])
 
     return (
         <div className="w-full">

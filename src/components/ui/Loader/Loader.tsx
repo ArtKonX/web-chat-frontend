@@ -3,7 +3,6 @@
 import React from 'react';
 
 import { useEffect, useState } from 'react';
-import styles from './Loader.module.scss';
 
 const dataLoader = [
     {
@@ -87,11 +86,11 @@ const Loader = (
             <div className="z-70 flex flex-col bg-amber-400 dark:text-black dark:border-black dark:bg-[#ebb318] max-w-25 h-25 w-25
         rounded-b-full rounded-t-xl items-center justify-center
         border-4 cursor-pointer relative">
-                <span className="font-bold text-4xl z-10 absolute top-0 mt-2">
+                <span className="font-bold animate-pulse text-4xl z-10 absolute top-0 mt-2">
                     K
                 </span>
-                <div className='z-10'>
-                    <span className={`absolute mb-1.5 right-4.5
+                <div className='z-10 animate-pulse'>
+                    {/* <span className={`absolute mb-1.5 right-4.5
                         bottom-1 font-bold text-5xl rotate-135 ${styles['animate-rotate-45']}
                         transition-transform duration-500`}>
                         🗡️
@@ -100,6 +99,9 @@ const Loader = (
                         rotate-135 ${styles['animate-rotate-315']} transition-transform
                         duration-500`}>
                         🗡️
+                    </span> */}
+                    <span className="w-full flex justify-center relative -bottom-4 font-bold text-5xl">
+                        ⚔️
                     </span>
                 </div>
             </div>

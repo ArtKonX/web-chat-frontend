@@ -152,7 +152,7 @@ const CheckPinPage = () => {
             dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
             dispatch(resetDataAuth())
             window.location.reload();
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [dataLogin, loginError])
 

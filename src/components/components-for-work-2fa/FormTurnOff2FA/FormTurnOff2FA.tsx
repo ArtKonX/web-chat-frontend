@@ -52,7 +52,7 @@ const FormTurnOff2FA = (
 
     useEffect(() => {
         if (!tokenState.token) {
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [tokenState.token])
 
@@ -66,7 +66,7 @@ const FormTurnOff2FA = (
                 logout({})
                 setIsShowWindowInfo(false)
                 authRefetch()
-                router.push('/')
+                router.push('/?tab=users')
 
                 return () => clearTimeout(timoutId)
             }, 7000)

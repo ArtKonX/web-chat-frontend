@@ -66,7 +66,7 @@ const ProfilePage = () => {
     useEffect(() => {
 
         if (!isAuthDataLoading && errorAuthData) {
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [isAuthDataLoading, errorAuthData])
 
@@ -112,7 +112,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (!authData && !isAuthDataLoading) {
-            router.push('/')
+            router.push('/?tab=users')
         }
     }, [authData])
 
@@ -202,7 +202,7 @@ const ProfilePage = () => {
                             ${isShowTurnOff2FAFade ? 'opacity-100 scale-100 translate-y-0'
                         : 'opacity-0 scale-95 -translate-y-2'}`}
                 >
-                    <div className='min-h-[calc(100%-442px)] w-full pb-[40px] pt-[15px] flex justify-center'>
+                    <div className='min-h-[calc(100%-442px)] w-full pb-[40px] pt-[15px] flex justify-center items-center'>
                         <FormTurnOff2FA userId={authData?.user?.id}
                             setIsShowWindowInfo={setIsShowWindowInfo}
                             closeShowTornOff2FAForm={closeShowTurnOff2FAForm}

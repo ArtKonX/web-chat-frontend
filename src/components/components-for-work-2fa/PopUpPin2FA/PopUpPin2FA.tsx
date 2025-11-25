@@ -24,8 +24,8 @@ const PopUpPin2FA = (
                             ${isShow2FAFade ? 'opacity-100 scale-100 translate-y-0'
                 : 'opacity-0 scale-95 -translate-y-2'}`}
         >
-            <div className='min-h-[calc(100%-442px)] pb-[40px] pt-[15px] w-full flex justify-center'>
-                <div className="z-100 bg-white dark:text-[#E1E3E6] dark:bg-[#212121] py-6 px-9 rounded-2xl max-w-2/5 max-sm:max-w-9/10 w-full flex flex-col items-center relative">
+            <div className='min-h-[calc(100%-442px)] pb-[40px] pt-[15px] w-full flex justify-center items-center'>
+                <div className="z-100 bg-white h-auto dark:text-[#E1E3E6] dark:bg-[#212121] py-6 px-9 rounded-2xl max-w-2/5 max-sm:max-w-9/10 w-full flex flex-col items-center relative">
                     <div className="absolute top-0 right-0">
                         <CloseBtn onClose={closeShow2FACode} />
                     </div>
