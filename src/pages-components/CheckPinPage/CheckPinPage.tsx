@@ -213,7 +213,7 @@ const CheckPinPage = () => {
                                 <InputWithLabelAndInfo error={false} text='Код' type='text' value={pin} onChange={onChange} />
                                 <span>
                                     Введите код, который был Вам предоставлен при подключении двойной защиты
-                                    {loginError ? String(loginError?.data?.data?.attempt) : null}
+                                    {/* {loginError ? String(loginError?.data?.data?.attempt) : null} */}
                                     {/* {dataLogin && String(Object.keys(dataLogin).join(' '))} */}
                                 </span>
                                 <div className="w-full text-end">

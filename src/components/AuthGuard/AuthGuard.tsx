@@ -72,7 +72,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
         (async () => {
             const userData = await getCachedUser();
 
-            if (errorAuthData && errorAuthData.data && userData[0].id) {
+            if (errorAuthData && errorAuthData.data && userData[0]?.id) {
                 logout({});
             }
 

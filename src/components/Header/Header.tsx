@@ -72,7 +72,7 @@ const Header = (
 
                 if (authData?.user?.id) {
                     setUserInfo(authData!.user)
-                } else if (userData[0].id) {
+                } else if (userData[0]?.id) {
                     setUserInfo(userData[0])
                 }
             } catch (err) {
