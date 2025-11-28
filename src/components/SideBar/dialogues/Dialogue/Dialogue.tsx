@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
@@ -17,9 +17,9 @@ const Dialogue = (
 
     const dispatch = useDispatch();
 
-    const { setIsLastMessage, isLastMessage } = WebSocketConnection();
+    const { setIsLastMessage } = WebSocketConnection();
 
-    const isMobile = useMediaPredicate('(max-width: 1050px)');
+    const isMobile = useMediaPredicate('(max-width: 1023px)');
 
     const closeSideBarMobile = () => {
         setIsLastMessage(false)
@@ -27,10 +27,6 @@ const Dialogue = (
             dispatch(toggleSideBar());
         }
     }
-
-    useEffect(() => {
-        console.log('isLastMessageisLastMessageisLastMessage', isLastMessage)
-    }, [isLastMessage])
 
     return (
         <Link href={`/?tab=chats&user=${id}`}
@@ -43,12 +39,12 @@ const Dialogue = (
                     nameFirstSymbol={name?.length ?
                         String(name[0]) : ''}
                     colorBackgroundIcon={profileColor} />
-                <div className='flex flex-col justify-start items-start ml-4 max-lg:ml-10'>
+                <div className='flex flex-col justify-start items-start ml-2 max-lg:ml-10'>
                     <span data-testid="user-name" className='font-bold'>
-                        {name}
+                        {!isMobile && name?.length > 20 ? name.slice(0, 15) + '...' : isMobile && name?.length > 20 ? name.slice(0, 16) + '...' : name}
                     </span>
-                    <p className="text-start w-37 overflow-x-hidden max-lg:max-w-[200px] max-lg:w-full text-nowrap overflow-ellipsis">
-                        {lastMassage}
+                    <p className="text-start w-37 overflow-x-hidden max-lg:max-w-[full] max-lg:w-full text-nowrap">
+                        {!isMobile && lastMassage?.length > 20 ? lastMassage.slice(0, 15) + '...' : isMobile && lastMassage?.length > 30 ? lastMassage.slice(0, 20) + '...' : lastMassage}
                     </p>
                 </div>
             </div>

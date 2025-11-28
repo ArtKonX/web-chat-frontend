@@ -137,6 +137,10 @@ const HomePage = () => {
     const newParams = useRef<URLSearchParams>(new URLSearchParams());
 
     useEffect(() => {
+        setSearchCity(selectedCity)
+    }, [selectedCity])
+
+    useEffect(() => {
         if (typeof window !== 'undefined' && window.location.search) {
             newParams.current = new URLSearchParams(window.location.search);
         }
@@ -298,6 +302,7 @@ const HomePage = () => {
 
     useEffect(() => {
         if (authState?.user?.city) {
+            console.log('authState?.user?.city', authState?.user?.city)
             setSearchCity(authState?.user?.city)
         }
     }, [authState?.user?.city])
@@ -612,7 +617,7 @@ const HomePage = () => {
         if (coors && citiesData?.cities[0].name === authState?.user?.city) {
             setPosition({ latitude: Number(coors[0]), longitude: Number(coors[1]) });
         }
-    }, [citiesData]);
+    }, [citiesData, authState?.user?.city]);
 
     useEffect(() => {
         (async () => {

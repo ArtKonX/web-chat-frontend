@@ -38,7 +38,10 @@ export interface RegistarationResponse {
         email: string,
         token: string
     },
-    status: string
+    status: string,
+    data: {
+        statusError: string
+    }
 }
 export interface RegistarationData {
     email: string,

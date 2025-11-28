@@ -19,11 +19,11 @@ const SideBar = (
 
     const searchParams = useSearchParams()
 
-    const isMobile = useMediaPredicate('(max-width: 1050px)');
+    const isMobile = useMediaPredicate('(max-width: 1033px)');
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
-            <div data-testid="sidebar" className={`w-2/7 pt-[27px] dark:border-black max-sm:w-full bg-white dark:bg-[#212121] h-full px-5 ${!isMobile ? 'border-r-2' : ''} max-lg:min-w-full z-1`}>
+            <div data-testid="sidebar" className={`min-w-2/7 pt-[27px] dark:border-black max-sm:w-full bg-white dark:bg-[#212121] h-full px-5 ${!isMobile ? 'border-r-2' : ''} max-lg:min-w-full z-1`}>
                 <div className="w-full h-full relative">
                     <h3 data-testid="search-users-title" className={`text-center text-lg dark:text-[#E1E3E6] font-bold max-sm:text-[20px] ${isMobile ? 'pt-[20px]' : ''}`}>
                         {searchParams!.get('tab') == 'chats' ?

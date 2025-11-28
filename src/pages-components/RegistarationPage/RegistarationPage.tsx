@@ -29,6 +29,12 @@ interface Errors {
     checkPassword: boolean;
 };
 
+interface RegistrationError {
+    data: {
+        statusError: string
+    }
+}
+
 const RegistrationPage = () => {
 
     const router = useRouter();
@@ -172,6 +178,21 @@ const RegistrationPage = () => {
     };
 
     useEffect(() => {
+        const errorRegistration = registerError as RegistrationError;
+        if (errorRegistration?.data?.statusError === 'error-duplicate') {
+            setErrors((prev) => ({ ...prev, email: true }));
+
+            setTimeout(() => {
+                const errorsInputs = Object.fromEntries(
+                    Object.entries(errors).map((key) => key, false)
+                ) as Errors;
+
+                setErrors({ ...errorsInputs });
+            }, 2000);
+        }
+    }, [registerError])
+
+    useEffect(() => {
         if (publicKey && isSubmit && id) {
             if (!Object.values(errors).some(Boolean)) {
                 register({
@@ -238,7 +259,7 @@ const RegistrationPage = () => {
                     />
                 </div>
             </div>
-            {(isLoadingRegister || isLoadingUpdateCity || registerError) && <Loader isFade={Boolean(isLoadingRegister || isLoadingUpdateCity || registerError)} />}
+            {(isLoadingRegister || isLoadingUpdateCity) && <Loader isFade={Boolean(isLoadingRegister || isLoadingUpdateCity)} />}
         </div>
     )
 }
