@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import UserIcon from "@/components/ui/UserIcon/UserIcon"
 import { DialogueProps } from "@/interfaces/components/side-bar"
@@ -17,6 +17,9 @@ const Dialogue = (
 
     const dispatch = useDispatch();
 
+    const refLink = useRef<HTMLAnchorElement | null>(null);
+    const [containerWidth, setContainerWidth] = useState(185);
+
     const { setIsLastMessage } = WebSocketConnection();
 
     const isMobile = useMediaPredicate('(max-width: 1023px)');
@@ -28,9 +31,22 @@ const Dialogue = (
         }
     }
 
+    useEffect(() => {
+        if (!refLink.current) return;
+
+        const observer = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                setContainerWidth(entry.contentRect.width);
+            }
+        });
+
+        observer.observe(refLink.current);
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <Link href={`/?tab=chats&user=${id}`}
-            className={`hover:opacity-60 flex transition-opacity max-lg:justify-between duration-700 cursor-pointer relative
+        <Link ref={refLink} href={`/?tab=chats&user=${id}`}
+            className={`hover:opacity-60 flex transition-opacity max-lg:justify-between justify-between duration-700 cursor-pointer relative
         ${isActiveUser ? 'border-amber-400 opacity-50 pointer-events-none' :
                     'border-black'} pb-2 flex items-center border-b-2 justify-around max-lg:w-full ${isCache ? 'opacity-50 pointer-events-none' : ''}`}
             onClick={closeSideBarMobile}>
@@ -40,11 +56,11 @@ const Dialogue = (
                         String(name[0]) : ''}
                     colorBackgroundIcon={profileColor} />
                 <div className='flex flex-col justify-start items-start ml-2 max-lg:ml-10'>
-                    <span data-testid="user-name" className='font-bold'>
-                        {!isMobile && name?.length > 20 ? name.slice(0, 15) + '...' : isMobile && name?.length > 20 ? name.slice(0, 16) + '...' : name}
+                    <span style={{ width: containerWidth - 110 }} data-testid="user-name" className='font-bold text-start overflow-x-hidden overflow-ellipsis max-lg:max-w-[full] max-lg:w-full text-nowrap'>
+                        {name}
                     </span>
-                    <p className="text-start w-37 overflow-x-hidden max-lg:max-w-[full] max-lg:w-full text-nowrap">
-                        {!isMobile && lastMassage?.length > 20 ? lastMassage.slice(0, 15) + '...' : isMobile && lastMassage?.length > 30 ? lastMassage.slice(0, 20) + '...' : lastMassage}
+                    <p style={{ width: containerWidth - 110 }} className={`text-start overflow-x-hidden overflow-ellipsis max-lg:max-w-[full] max-lg:w-full text-nowrap`}>
+                        {lastMassage}
                     </p>
                 </div>
             </div>

@@ -35,9 +35,45 @@ type AuthQueryResult = {
 };
 
 type MockValue = {
-    mockReturnValue: jest.Mock
-    mockResolvedValue:jest.Mock
+  mockReturnValue: jest.Mock
+  mockResolvedValue: jest.Mock
 }
+
+declare global {
+  interface ResizeObserver {
+    observe(element: Element): void;
+    unobserve(element: Element): void;
+    disconnect(): void;
+  }
+
+  interface ResizeObserverEntry {
+    readonly target: Element;
+    readonly contentRect: DOMRectReadOnly;
+  }
+}
+
+global.ResizeObserver = class ResizeObserver implements globalThis.ResizeObserver {
+  private callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
+
+  constructor(callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void) {
+    this.callback = callback;
+  }
+
+  observe(element: Element) {
+    const entry: ResizeObserverEntry = {
+      target: element,
+      contentRect: element.getBoundingClientRect() as DOMRectReadOnly,
+      borderBoxSize: [],
+      contentBoxSize: [],
+      devicePixelContentBoxSize: []
+    };
+
+    this.callback([entry], this);
+  }
+
+  unobserve() { }
+  disconnect() { }
+};
 
 describe('Layout', () => {
 

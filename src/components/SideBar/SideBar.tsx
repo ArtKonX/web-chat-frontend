@@ -19,7 +19,7 @@ const SideBar = (
 
     const searchParams = useSearchParams()
 
-    const isMobile = useMediaPredicate('(max-width: 1033px)');
+    const isMobile = useMediaPredicate('(max-width: 1050px)');
 
     return (
         <Suspense fallback={<Loader isFade={true} />}>
