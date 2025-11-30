@@ -36,8 +36,16 @@ const FormTurnOff2FA = (
         e.preventDefault();
 
         try {
-            if (userId) {
-                turnOff2FA({ id: userId, pin: savePin, token: tokenState.token });
+            if (savePin) {
+                if (userId) {
+                    turnOff2FA({ id: userId, pin: savePin, token: tokenState.token });
+                    setSavePin('');
+                }
+            } else {
+                setIsErrorTurnOff2FA(true);
+                setTimeout(() => {
+                    setIsErrorTurnOff2FA(false);
+                }, 2000)
             }
         } catch (err) {
             console.error('Ошибка отключения 2FA ', err)

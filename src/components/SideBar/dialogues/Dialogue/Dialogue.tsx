@@ -55,7 +55,7 @@ const Dialogue = (
                     nameFirstSymbol={name?.length ?
                         String(name[0]) : ''}
                     colorBackgroundIcon={profileColor} />
-                <div className='flex flex-col justify-start items-start ml-2 max-lg:ml-10'>
+                <div className='flex flex-col justify-start items-start ml-4 max-lg:ml-10'>
                     <span style={{ width: containerWidth - 110 }} data-testid="user-name" className='font-bold text-start overflow-x-hidden overflow-ellipsis max-lg:max-w-[full] max-lg:w-full text-nowrap'>
                         {name}
                     </span>

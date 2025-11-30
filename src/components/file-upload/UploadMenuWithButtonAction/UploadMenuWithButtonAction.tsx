@@ -32,16 +32,23 @@ const UploadMenuWithButtonAction = (
     }
 
     const onSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target && e.target.files?.length) {
+        const files = e.target?.files;
+
+        if (files && files.length > 0) {
             if (!isFormUploadFile) {
                 onShowSelectTypeFile();
                 setIsFormUploadFile(true)
                 setTimeout(() => {
                     setIsFormUploadFade(true)
                 }, 100)
-                setFile(e.target.files[0]);
-                setFileSrc(URL.createObjectURL(e.target.files[0]))
+                setFile(files[0]);
+                setFileSrc(URL.createObjectURL(files[0]))
             }
+        } else {
+            setIsSelectFilesFade(false);
+            setTimeout(() => {
+                setIsOpenMenuFiles(false);
+            }, 100);
         }
     }
 

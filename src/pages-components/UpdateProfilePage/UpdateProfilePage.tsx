@@ -100,6 +100,14 @@ const UpdateProfilePage = () => {
             });
         }
 
+        if (formState.name === authData?.user.name && !formState.password.trim() && !formState.checkPassword.trim()) {
+            setErrors({
+                ...errors,
+                ...errorsInputs,
+                name: true
+            });
+        }
+
         setTimeout(() => {
             const errorsInputs = Object.fromEntries(
                 Object.entries(errors).map((key) => key, false)

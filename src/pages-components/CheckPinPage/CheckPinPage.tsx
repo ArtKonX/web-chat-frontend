@@ -65,6 +65,8 @@ const CheckPinPage = () => {
 
     const isCheckPinCodeState = useSelector(selectIsCheckPinCodeState)
 
+    const [isErrorAction, setIsErrorAction] = useState(false);
+
     const [login, { data: dataLogin, isLoading: isLoginLoading, error: loginError }] = useLoginMutation<LoginMutation>();
     const [updateUser, { data: updateData, isLoading: isUpdateLoading, error: updateError }] = useUpdateUserMutation<UpdateMutation>();
 
@@ -111,25 +113,33 @@ const CheckPinPage = () => {
 
     const onSendPin = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setPin('');
-        console.log('Отправляем форму');
 
-        if (searchParams?.get('action') === 'login') {
-            console.log('Вызываем login мутацию');
-            login({
-                email: auth.email,
-                password: auth.password,
-                pin: pin
-            });
-        } else if (searchParams?.get('action') === 'update') {
+        if (pin) {
+            setPin('');
+            console.log('Отправляем форму');
 
-            updateUser({
-                id: auth.id,
-                name: auth.name ? auth.name : null,
-                password: auth.password ? auth.password : null,
-                pin: pin,
-                token: tokenState.token
-            })
+            if (searchParams?.get('action') === 'login') {
+                console.log('Вызываем login мутацию');
+                login({
+                    email: auth.email,
+                    password: auth.password,
+                    pin: pin
+                });
+            } else if (searchParams?.get('action') === 'update') {
+
+                updateUser({
+                    id: auth.id,
+                    name: auth.name ? auth.name : null,
+                    password: auth.password ? auth.password : null,
+                    pin: pin,
+                    token: tokenState.token
+                })
+            }
+        } else {
+            setIsErrorAction(true);
+            setTimeout(() => {
+                setIsErrorAction(false);
+            }, 2000)
         }
     }
 
@@ -146,48 +156,66 @@ const CheckPinPage = () => {
     }, [auth])
 
     useEffect(() => {
-        if (loginError?.data?.status === 'error') {
-            setAttempt(loginError?.data?.data?.attempt)
-        } else if (dataLogin?.status === 'ok' && dataLogin?.user?.token) {
-            dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
-            dispatch(resetDataAuth())
-            window.location.reload();
-            router.push('/?tab=users')
+        if (!isLoginLoading) {
+            if (loginError?.data?.status === 'error') {
+                setPin('');
+                setAttempt(loginError?.data?.data?.attempt)
+                setIsErrorAction(true);
+                setTimeout(() => {
+                    setIsErrorAction(false);
+                }, 2000)
+            } else if (dataLogin?.status === 'ok' && dataLogin?.user?.token) {
+                setPin('');
+                dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
+                dispatch(resetDataAuth())
+                window.location.reload();
+                router.push('/?tab=users')
+            }
         }
-    }, [dataLogin, loginError])
+    }, [dataLogin, loginError, isLoginLoading])
 
     useEffect(() => {
 
-        if (!isUpdateLoading && updateError?.data?.status === 'error-with-pin-code') {
-            setIsShowWindowInfo(true)
+        if (!isUpdateLoading) {
 
-            const timoutId = setTimeout(() => {
-                setIsShowWindowInfo(false)
-                dispatch(addToken({ token: JSON.stringify('error-success-token') }))
-                logout({})
-                authRefetch()
-            }, 7000)
-
-            return () => clearTimeout(timoutId)
-        }
-        if (updateError?.data?.status === 'error') {
-            if (updateError?.data?.data?.succesPinCode === 'error') {
+            if (!isUpdateLoading && updateError?.data?.status === 'error-with-pin-code') {
                 setIsShowWindowInfo(true)
+                setPin('');
 
                 const timoutId = setTimeout(() => {
                     setIsShowWindowInfo(false)
                     dispatch(addToken({ token: JSON.stringify('error-success-token') }))
                     logout({})
+                    authRefetch()
                 }, 7000)
 
                 return () => clearTimeout(timoutId)
             }
-            setAttempt(updateError?.data?.data?.attempt)
-        } else if (updateData?.status === 'ok') {
-            dispatch(resetDataAuth())
-            router.push('/profile')
+            if (updateError?.data?.status === 'error') {
+                if (updateError?.data?.data?.succesPinCode === 'error') {
+                    setIsShowWindowInfo(true)
+                    setPin('');
+
+                    const timoutId = setTimeout(() => {
+                        setIsShowWindowInfo(false)
+                        dispatch(addToken({ token: JSON.stringify('error-success-token') }))
+                        logout({})
+                    }, 7000)
+
+                    return () => clearTimeout(timoutId)
+                }
+                setIsErrorAction(true);
+                setTimeout(() => {
+                    setIsErrorAction(false);
+                }, 2000)
+                setAttempt(updateError?.data?.data?.attempt)
+            } else if (updateData?.status === 'ok') {
+                setPin('');
+                dispatch(resetDataAuth())
+                router.push('/profile')
+            }
         }
-    }, [updateData, updateError])
+    }, [updateData, updateError, isUpdateLoading])
 
     return (
         <div className="w-full min-h-[calc(100vh-442px)] pb-[40px] pt-[15px] flex items-center justify-center">
@@ -210,7 +238,7 @@ const CheckPinPage = () => {
                                         Осталось попыток: {attempt}
                                     </span>)
                                 }
-                                <InputWithLabelAndInfo error={false} text='Код' type='text' value={pin} onChange={onChange} />
+                                <InputWithLabelAndInfo error={isErrorAction} text='Код' type='text' value={pin} onChange={onChange} />
                                 <span>
                                     Введите код, который был Вам предоставлен при подключении двойной защиты
                                     {/* {loginError ? String(loginError?.data?.data?.attempt) : null} */}
