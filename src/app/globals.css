@@ -13,19 +13,19 @@
 }
 
 ::selection {
-  color: white;
+  color: black;
   background-color: #FFDE8B;
 }
 
 /* Для старых версий Firefox */
 ::-moz-selection {
-  color: white;
+  color: black;
   background-color: #FFDE8B;
 }
 
 /* Для старых версий Safari/Chrome */
 ::-webkit-selection {
-  color: white;
+  color: black;
   background-color: #FFDE8B;
 }
 

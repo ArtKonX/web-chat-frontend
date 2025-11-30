@@ -159,7 +159,7 @@ const MessageItem = (
                 return (
                     <button className="relative w-full h-60 hover:opacity-80
                     duration-300 transition-opacity cursor-pointer" onClick={() => onShowImage(url)}>
-                        <img className='w-auto max-w-[500px] h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
+                        <img className='w-full max-w-[500px] h-60 object-cover' src={url} alt='Не прогрузилось изображение' />
                     </button>
                 )
             } else if (type.includes('video')) {
