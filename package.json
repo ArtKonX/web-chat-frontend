@@ -2,6 +2,7 @@
   "name": "t-chat-frontend",
   "version": "0.1.0",
   "private": false,
+  "homepage": "/",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
