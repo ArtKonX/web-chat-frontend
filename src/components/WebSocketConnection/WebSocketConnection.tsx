@@ -64,7 +64,7 @@ const WebSocketConnection = () => {
 
     useEffect(() => {
         currentUserRef.current = searchParams?.get('user');
-    }, [searchParams]);
+    }, [searchParams?.get('user')]);
 
     useEffect(() => {
 
@@ -160,8 +160,8 @@ const WebSocketConnection = () => {
                                                     };
 
                                                     if (searchParams.get('user')) {
-
-                                                        await cacheMessage(updatedMessage, String(searchParams.get('user')))
+                                                        
+                                                        await cacheMessage(updatedMessage, String(currentUser))
                                                     }
                                                     // Добавляем обновленное сообщение в список
                                                     setWsMessages(prev =>
@@ -193,7 +193,7 @@ const WebSocketConnection = () => {
 
                                                 if (searchParams.get('user')) {
 
-                                                    await cacheMessage(newMessageDec, String(searchParams.get('user')))
+                                                    await cacheMessage(newMessageDec, String(currentUser))
                                                 }
 
                                                 setTimeout(() => {

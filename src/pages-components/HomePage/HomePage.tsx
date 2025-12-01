@@ -136,6 +136,12 @@ const HomePage = () => {
 
     const newParams = useRef<URLSearchParams>(new URLSearchParams());
 
+    const currentUserRef = useRef(searchParams?.get('user'));
+
+    useEffect(() => {
+        currentUserRef.current = searchParams?.get('user');
+    }, [searchParams?.get('user')]);
+
     useEffect(() => {
         setSearchCity(selectedCity)
     }, [selectedCity])
@@ -500,7 +506,7 @@ const HomePage = () => {
                     return 0
                 });
 
-                const userId = searchParams?.get('user');
+                const userId = currentUserRef.current;
 
                 try {
                     if ([...messagesSort, ...messages].length && userId) {

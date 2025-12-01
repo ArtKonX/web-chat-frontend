@@ -92,7 +92,7 @@ const CheckPinPage = () => {
                 router.push('/?tab=users')
             }
 
-            if (!auth.email && userData.length && authData?.user && !isCheckPinCodeState.isCheckPinCode) {
+            if (!isLoadingAuth && !auth.email && userData.length && !authData?.user && !isCheckPinCodeState.isCheckPinCode) {
 
                 router.push('/?tab=users')
             }

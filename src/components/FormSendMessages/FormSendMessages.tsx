@@ -36,7 +36,13 @@ const FormSendMessages = (
     const [encMessage, setEncMessage] = useState<ArrayBuffer | null>(null);
     const [isSubmit, setIsSubmit] = useState(false)
 
+    const [isDisable, setIsDisable] = useState(true);
+
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setIsDisable(message.trim() === '')
+    }, [message.length])
 
     const onChangeMessage = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -101,10 +107,10 @@ const FormSendMessages = (
             }
         }
 
-        if (isSubmit) {
+        if (isSubmit && message.trim()) {
             submitForm()
         }
-    }, [isSubmit, encMessage])
+    }, [isSubmit, encMessage, message])
 
     const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -132,7 +138,7 @@ const FormSendMessages = (
                 className="bg-white z-52 mb-1 w-[calc(100%-85px)] dark:text-[#E1E3E6] dark:bg-[#141414] mr-5 p-2 rounded-xl px-3 outline-0 border-2
         focus:border-amber-400/50 hover:border-amber-400/50
         transition-all duration-400 ml-6" name='message' onChange={onChangeMessage} value={message} />
-            <button type="submit" className="mb-1 hover:text-amber-400/50 transition-all duration-400 text-4xl cursor-pointer">
+            <button disabled={isDisable} type="submit" className="mb-1 hover:text-amber-400/50 transition-all duration-400 text-4xl cursor-pointer disabled:opacity-45 disabled:cursor-auto disabled:hover:text-black text-black">
                 {'>'}
             </button>
         </form>
