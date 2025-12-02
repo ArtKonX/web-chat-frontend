@@ -88,6 +88,8 @@ const FormSendMessages = (
                             })
                             // Убираем пользовательский ввод при отправке
                             setMessage('')
+                            setIsSubmit(false)
+                            setEncMessage(null)
                         } else {
                             if (currentUserid) {
                                 sendMessage({
