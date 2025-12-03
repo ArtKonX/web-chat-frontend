@@ -96,8 +96,13 @@ const CheckPinPage = () => {
 
                 router.push('/?tab=users')
             }
+
+            if (authData && searchParams?.get('action') === 'login') {
+                router.push('/?tab=users')
+                console.log('authData', authData)
+            }
         })()
-    }, [authData, isLoadingAuth, logoutData, auth])
+    }, [authData, isLoadingAuth, logoutData, auth, searchParams?.get('action')])
 
     useEffect(() => {
         if (!isLoadingAuth && loginError?.data?.data.succesPinCode === 'error') {

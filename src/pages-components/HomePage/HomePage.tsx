@@ -538,7 +538,7 @@ const HomePage = () => {
 
         if (!messagesData && !isOnline) {
             (async () => {
-                const userId = searchParams?.get('user');
+                const userId = currentUserRef.current;
 
                 if (userId) {
                     const cached = await getCachedMessages(userId);
@@ -555,14 +555,13 @@ const HomePage = () => {
         }
 
         (async () => {
-            const userId = searchParams?.get('user');
+            const userId = currentUserRef.current;
 
             if (userId && Number(currentOffSet) < 10) {
                 const cached = await getCachedMessages(userId);
                 if (cached.length > 0 && !messagesData?.messages.length && privatKey) {
                     const sortedMessagesCashed = cached.toSorted((a, b) => Number(new Date(String(a!.created_at)).getTime()) - Number(new Date(String(b!.created_at)).getTime()))
                     const accessSortedMessagesCashed = sortedMessagesCashed.filter(message => (new Date(String(message.created_at)).getTime() > new Date(privatKey.date).getTime()))
-
                     setCaсheMessages([...accessSortedMessagesCashed]);
                     console.log('Загружены сообщения из кеша для первоначального отображения:', accessSortedMessagesCashed, cached.length);
                 }
@@ -601,6 +600,7 @@ const HomePage = () => {
             window.location.reload()
             setIsReloaded(false)
         }
+
     }, [isOnline, searchParams?.get('user'),])
 
     useEffect(() => {

@@ -65,7 +65,7 @@ const AuthGuard = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const errorAuthData = errorAuth as CheckAuthError
 
-        if (errorAuthData && errorAuthData.data && errorAuthData.data.message.includes('jwt expired') && errorAuthData.data.status === 'error' && errorAuthData.status === 400) {
+        if (errorAuthData && errorAuthData.data && errorAuthData.data.message && errorAuthData.data.message.includes('jwt expired') && errorAuthData.data.status === 'error' && errorAuthData.status === 400) {
             logout({});
         }
 
