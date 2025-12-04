@@ -140,3 +140,11 @@ body::after {
 .form-turn-off-2fa {
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
 }
+
+@media (max-width: 580px) {
+
+  input,
+  select {
+    font-size: 16px;
+  }
+}
