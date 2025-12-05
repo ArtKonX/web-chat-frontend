@@ -160,7 +160,7 @@ const WebSocketConnection = () => {
                                                     };
 
                                                     if (searchParams.get('user')) {
-                                                        
+
                                                         await cacheMessage(updatedMessage, String(currentUser))
                                                     }
                                                     // Добавляем обновленное сообщение в список
@@ -277,9 +277,10 @@ const WebSocketConnection = () => {
                             }
                         }
                     }
-
+                    console.log('newMessag22222e', newMessage)
                     if (newMessage.type === 'user-status') {
                         setUserStatus(newMessage)
+                        console.log('newMessag22222e', newMessage)
                     }
                 }
                 catch (err) {

@@ -51,6 +51,8 @@ const Loader = (
     const [isFadeText, setIsFadeText] = useState(0);
 
     useEffect(() => {
+        console.log(textCount, isFadeText)
+
         setIsFadeText(100)
         const timeoutIdOut = setTimeout(() => {
             setIsFadeText(0)
@@ -105,10 +107,10 @@ const Loader = (
                     </span>
                 </div>
             </div>
-            <p className=
+            {/* <p className=
                 {`opacity-${isFadeText} duration-500 transition-opacity mt-5 text-white font-bold text-3xl`}>
                 {dataLoader[textCount].text}
-            </p>
+            </p> */}
         </div>
     )
 }

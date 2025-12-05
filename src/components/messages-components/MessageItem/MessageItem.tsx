@@ -33,6 +33,8 @@ const MessageItem = (
 
     const refActions = useRef<HTMLDivElement | null>(null);
 
+    const refList = useRef<HTMLUListElement | null>(null)
+
     const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
 
     const dispatch = useDispatch();
@@ -45,12 +47,13 @@ const MessageItem = (
         if (
             showActionMessage &&
             refActions.current &&
-            !refActions.current.contains(event.target as Node)
+            refList.current &&
+            !refList.current.contains(event.target as Node)
         ) {
             setIsOverflow(false)
             setShowActionMessage({ id: message.id, isShow: false });
         }
-    }, [showActionMessage, refActions, message.id]);
+    }, [showActionMessage, refActions, refList, message.id]);
 
     useEffect(() => {
         if (showActionMessage?.isShow) {
@@ -192,7 +195,7 @@ const MessageItem = (
             </div>) : null}
             {(showActionMessage?.isShow && statusUpdated === 0) && isFade && (
                 <div ref={refActions} className={`${isMobile ? 'fixed top-[50%]' : ''} absolute w-full z-110 flex items-center justify-center`}>
-                    <ul className='bg-white dark:bg-[#141414] rounded-4xl border-2 border-black'>
+                    <ul ref={refList} className='bg-white dark:bg-[#141414] rounded-4xl border-2 border-black'>
                         {!message.file_type?.includes('audio/mpeg') ? (['Изменить', 'Удалить', message.file_url ? 'Скачать файл' : null, 'Отмена'].filter(elem => Boolean(elem)).map((item, indx, arr) => (
                             <li key={indx} className='not-last:mb-4 dark:text-[#E1E3E6] first:mt-4 not-last:border-b-1 pb-4 px-7'>
                                 {arr.length === 4 ? [0, 1].includes(indx) || 3 === indx ?

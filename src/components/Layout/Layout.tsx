@@ -126,6 +126,7 @@ const Layout = (
     }, [wsInfoDialogues, wsInfoDialogues?.dateMessage, setWsInfoDialogues, listInfoDialogues, isListInfoDialoguesLoading,])
 
     useEffect(() => {
+        console.log('userStatus', userStatus)
         if (listDialogues && userStatus) {
             const findIndexDialogue = listDialogues.findIndex(dialogue => dialogue.userId === userStatus.userId);
 
