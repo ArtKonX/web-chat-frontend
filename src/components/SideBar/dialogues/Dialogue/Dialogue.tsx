@@ -64,10 +64,10 @@ const Dialogue = (
                     </p>
                 </div>
             </div>
-            <span className={`px-3.5 py-1.5 text-xl rounded-full border-2 font-bold ${isActiveUser ?
+            <span className={`px-3.5 py-1.5 text-xl ${Number(quantityMessages) > 9 ? 'relative right-[5px]' : Number(quantityMessages) > 99 ? 'relative right-[17px]' : ''} rounded-full border-2 font-bold ${isActiveUser ?
                 'bg-black text-amber-400/50 border-amber-400/50' :
                 'bg-amber-400/50 border-black'}`}>
-                {quantityMessages}
+                {Number(quantityMessages) > 99 ? '99+' : quantityMessages}
             </span>
         </Link>
     )

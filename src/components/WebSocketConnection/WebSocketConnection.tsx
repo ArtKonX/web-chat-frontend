@@ -212,8 +212,6 @@ const WebSocketConnection = () => {
                         // Если сообщение удалено
                         if (newMessage.type === 'delete-message') {
 
-                            console.log('newMessage.isLastMessage', newMessage.isLastMessage)
-
                             await cacheDeleteMessage(newMessage.idMessage)
                             setDeleteMessageId(newMessage.idMessage)
                             setIsLastMessage(newMessage.isLastMessage)
@@ -277,10 +275,9 @@ const WebSocketConnection = () => {
                             }
                         }
                     }
-                    console.log('newMessag22222e', newMessage)
+
                     if (newMessage.type === 'user-status') {
                         setUserStatus(newMessage)
-                        console.log('newMessag22222e', newMessage)
                     }
                 }
                 catch (err) {

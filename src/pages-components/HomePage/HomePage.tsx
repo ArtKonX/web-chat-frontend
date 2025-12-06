@@ -308,7 +308,6 @@ const HomePage = () => {
 
     useEffect(() => {
         if (authState?.user?.city) {
-            console.log('authState?.user?.city', authState?.user?.city)
             setSearchCity(authState?.user?.city)
         }
     }, [authState?.user?.city])
