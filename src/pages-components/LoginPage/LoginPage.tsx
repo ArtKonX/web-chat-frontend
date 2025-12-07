@@ -48,7 +48,7 @@ const LoginPage = () => {
     const tokenState = useSelector(selectTokenState);
 
     const [login, { data: dataLogin, isLoading: isDataLoading, error: errorLogin }] = useLoginMutation<LoginMutation>();
-    const { data: authData } = useCheckAuthQuery({ token: tokenState.token });
+    const { data: authData, isLoading: isLoadingAuthData } = useCheckAuthQuery({ token: tokenState.token });
     const dispatch = useDispatch();
 
     const { data: dataTestServer, isLoading: isLoadingTestServer, error: errorTestServer, refetch: refetchTestServer } = useTestWorkServerQuery({})
@@ -88,15 +88,17 @@ const LoginPage = () => {
 
     useEffect(() => {
         console.log(dataLogin)
-        if ((dataLogin?.status === 'ok' && dataLogin?.user?.token)) {
-            dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
-            location.reload()
-        } else if (errorLogin?.data?.status === 'not-pin-code') {
-            dispatch(addDataAuth({ type: 'login', email: formState.email, password: formState.password }))
-            dispatch(toggleIsCheckPinCode())
-            router.push('/check-pin?action=login')
+        if (!isDataLoading) {
+            if ((dataLogin?.status === 'ok' && dataLogin?.user?.token)) {
+                dispatch(addToken({ token: JSON.stringify(dataLogin?.user?.token) }))
+                location.reload()
+            } else if (errorLogin?.data?.status === 'not-pin-code') {
+                dispatch(addDataAuth({ type: 'login', email: formState.email, password: formState.password }))
+                dispatch(toggleIsCheckPinCode())
+                router.push('/check-pin?action=login')
+            }
         }
-    }, [dataLogin, authData, errorLogin])
+    }, [dataLogin, authData, errorLogin, isDataLoading])
 
     const onSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -167,6 +169,7 @@ const LoginPage = () => {
         setFormState({ ...formState, [name]: value })
     }
 
+    if (!isLoadingAuthData && (!isDataLoading && (!dataLogin && !errorLogin)) && authData?.user?.id) return
 
     return (
         <div className="w-full h-[calc(100%-26px)] bg-[#F6F7F8] dark:bg-[#141414] flex items-center">

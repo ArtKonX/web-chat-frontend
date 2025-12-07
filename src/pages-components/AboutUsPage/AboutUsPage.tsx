@@ -59,6 +59,8 @@ const AboutUsPage = () => {
         }
     }, [authData])
 
+    if (!isLoadingAuth && authData?.user?.id) return
+
     return (
         <div className="w-full">
             <div className={`bg-[#F6F7F8] dark:bg-[#141414] dark:border-black w-full h-[calc(100%-41px)] max-lg:h-[100%] max-sm:h-full max-sm:py-[90px] ${isMobile ? 'py-[45px]!' : ''} flex flex-col py-10 px-10 max-lg:pt-[100px] max-lg:px-10 max-sm:px-4 overflow-y-auto`}>

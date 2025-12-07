@@ -246,6 +246,8 @@ const RegistrationPage = () => {
         setFormState({ ...formState, [name]: value })
     }
 
+    if (!isLoadingAuth && authData?.user?.id) return
+
     return (
         <div className="w-full h-[calc(100%-26px)] bg-[#F6F7F8] dark:bg-[#141414] flex items-center">
             <div className="my-2 w-full flex justify-center">

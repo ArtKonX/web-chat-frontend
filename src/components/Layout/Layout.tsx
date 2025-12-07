@@ -37,7 +37,7 @@ const Layout = (
     const sideBarState = useSelector(selectSideBarState);
     const tokenState = useSelector(selectTokenState)
 
-    const { data: authData } = useCheckAuthQuery({ token: tokenState?.token });
+    const { data: authData, isLoading: isLoadingAuthData } = useCheckAuthQuery({ token: tokenState?.token });
 
     const dispatch = useDispatch();
 
@@ -271,7 +271,7 @@ const Layout = (
                     )}
                     {children}
                 </div>
-                {(!authData?.user?.id && !userInfo?.id && ['/', '/about-us', '/login', '/registration', '/check-pin'].includes(String(pathname)) || (['/login', '/registration', '/check-pin'].includes(String(pathname))) || (authData?.user?.id && userInfo?.id && !['/'].includes(String(pathname)))) && (
+                {(!authData?.user?.id && !userInfo?.id && ['/', '/about-us', '/login', '/registration', '/check-pin'].includes(String(pathname)) || (['/login', '/registration', '/check-pin'].includes(String(pathname))) || (['/login', '/registration', '/check-pin', '/profile'].includes(String(pathname))) || (!isLoadingAuthData && authData?.user?.id && userInfo?.id && !['/'].includes(String(pathname)))) && (
                     <div className="relative bottom-[41px]">
                         <Footer />
                     </div>
@@ -280,7 +280,5 @@ const Layout = (
         </Suspense>
     )
 }
-
-// При выходе из аккаунта у нас ключ остается старый и не стирается
 
 export default Layout
