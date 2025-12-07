@@ -160,7 +160,7 @@ const ProfilePage = () => {
         <div className="w-full min-h-[calc(100vh-442px)] pb-[40px] pt-[15px] flex items-center justify-center">
             {isShowWindowInfo ? (<WarningWindow title='Доступ к Вашему аккаунту ограничен!' text='К сожалению, все возможные попытки закончились! Ваш аккаунт заблокирован на 2 недели из-за подозрения!' timeCount={7} />) : null}
             {(!isShowTurnOff2FA && !isShow2FA) && !isShowWindowInfo && <div className="my-2 w-full flex-1 items-center flex flex-col">
-                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-2/5 max-lg:max-w-9/11 max-sm:max-w-9/10 w-full flex flex-col items-center">
+                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-[512px] max-lg:max-w-8/11 max-sm:max-w-9/10 w-full flex flex-col items-center">
                     <div className="mb-5 flex justify-center">
                         <UserIcon nameFirstSymbol={profileData?.name && profileData?.name[0]} colorBackgroundIcon={profileData?.color} />
                     </div>

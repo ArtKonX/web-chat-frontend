@@ -61,7 +61,7 @@ const AboutUsPage = () => {
 
     return (
         <div className="w-full">
-            <div className={`bg-[#F6F7F8] dark:bg-[#141414] dark:border-black w-full h-[calc(100%-41px)] max-lg:h-[100%] max-sm:h-full max-sm:py-[90px] ${isMobile ? 'py-[45px]!' : ''} flex flex-col py-10 px-48 max-lg:pt-[100px] max-lg:px-4 max-sm:px-4 overflow-y-auto`}>
+            <div className={`bg-[#F6F7F8] dark:bg-[#141414] dark:border-black w-full h-[calc(100%-41px)] max-lg:h-[100%] max-sm:h-full max-sm:py-[90px] ${isMobile ? 'py-[45px]!' : ''} flex flex-col py-10 px-10 max-lg:pt-[100px] max-lg:px-10 max-sm:px-4 overflow-y-auto`}>
                 <div className="flex items-center justify-center text-center max-sm:flex-col">
                     <h1 className='text-[36px] dark:text-[#E1E3E6] max-sm:text-[26px] max-sm:whitespace-nowrap font-bold mr-3 max-sm:mr-0'>
                         О веб-приложении K-Чат
