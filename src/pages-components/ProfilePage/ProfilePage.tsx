@@ -80,6 +80,12 @@ const ProfilePage = () => {
     }, []);
 
     useEffect(() => {
+        if (refInfo.current) {
+            setInfoWidth(refInfo.current.offsetWidth);
+        }
+    }, [refInfo?.current?.offsetWidth])
+
+    useEffect(() => {
         authDataRefetch()
     }, [])
 
