@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useRef } from 'react';
 
 import FormTurnOff2FA from "@/components/components-for-work-2fa/FormTurnOff2FA/FormTurnOff2FA";
 import PopUpPin2FA from "@/components/components-for-work-2fa/PopUpPin2FA/PopUpPin2FA";
@@ -55,9 +55,29 @@ const ProfilePage = () => {
 
     const [isShowWindowInfo, setIsShowWindowInfo] = useState(false)
 
+    const [infoWidth, setInfoWidth] = useState<number | null>(null);
+
+    const refInfo = useRef<HTMLDivElement | null>(null)
+
     const dispatch = useDispatch();
 
     const router = useRouter();
+
+    useEffect(() => {
+        const updateWidth = () => {
+            if (refInfo.current) {
+                setInfoWidth(refInfo.current.offsetWidth);
+            }
+        };
+
+        updateWidth();
+
+        window.addEventListener('resize', updateWidth);
+
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
 
     useEffect(() => {
         authDataRefetch()
@@ -160,11 +180,11 @@ const ProfilePage = () => {
         <div className="w-full min-h-[calc(100vh-442px)] pb-[40px] pt-[15px] flex items-center justify-center">
             {isShowWindowInfo ? (<WarningWindow title='Доступ к Вашему аккаунту ограничен!' text='К сожалению, все возможные попытки закончились! Ваш аккаунт заблокирован на 2 недели из-за подозрения!' timeCount={7} />) : null}
             {(!isShowTurnOff2FA && !isShow2FA) && !isShowWindowInfo && <div className="my-2 w-full flex-1 items-center flex flex-col">
-                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-[512px] max-lg:max-w-8/11 max-sm:max-w-9/10 w-full flex flex-col items-center">
+                <div className="bg-white dark:text-[#E1E3E6] dark:bg-[#222222] py-6 px-9 rounded-2xl max-w-[512px] w-full max-lg:w-9/10 max-sm:w-9/10 flex flex-col items-center">
                     <div className="mb-5 flex justify-center">
                         <UserIcon nameFirstSymbol={profileData?.name && profileData?.name[0]} colorBackgroundIcon={profileData?.color} />
                     </div>
-                    <div className="border-2 flex flex-col items-center p-5 rounded-2xl border-gray-300">
+                    <div ref={refInfo} className="border-2 flex flex-col items-center p-5 rounded-2xl border-gray-300">
                         <span className="font-bold text-xl">
                             {profileData?.name}
                         </span>
@@ -190,7 +210,7 @@ const ProfilePage = () => {
                             </span>
                         </div>
                     </div>
-                    <div className="w-full flex justify-between mt-5">
+                    <div style={{ maxWidth: infoWidth ? `${infoWidth}px` : '100%' }} className="w-full flex justify-between mt-5">
                         <LinkNavigate path='/update-profile' text='Редактировать' />
                         <Btn text='Выйти' type='button' onAction={onLogout} />
                     </div>
